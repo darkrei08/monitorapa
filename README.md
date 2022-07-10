@@ -14,8 +14,6 @@ MonitoraPA is composed of several components.
   as specified in [SPECIFICATION.md](./cli/SPECIFICATION.md) and
   documented in [MANUAL.md](./cli/MANUAL.md)
 
-- A minimal website about the project in [web/](./web/)
-
 - Some datasets to further extend the reach and impact of the project
   in [datasets/](./datasets/)
 

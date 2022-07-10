@@ -86,6 +86,14 @@
 ### Shamar
 - Documented the new architecture of the observatory (see [ARCHITECTURE.md](./ARCHITECTURE.md))
 
+## 2022/07/10
+### Shamar
+- normalize.py, first working draft
+- ARCHITECTURE.md -> ARCHITETTURA.md
+
+### \_Zaizen\_
+- Removed web folder
+
 # Current status
 
 ## Folder structure
