@@ -57,11 +57,11 @@ scarica il dataset enti nella cartella ./out/enti/YYYY-MM-YY/enti.tsv
 `./cli/data/enti/normalize.py ./out/enti/YYYY-MM-YY/enti.tsv`
 
 crea il file ./out/enti/YYYY-MM-YY/dataset.tsv che contiene i seguenti campi
-- ID
+- Owner
 - Type
 - Address
 
-ID è l'identificativo univoco all'interno della sorgente dati 
+Owner è l'identificativo univoco dell'ente all'interno della sorgente dati 
 (il numero di righa se non esiste alcun indentificativo univoco)
 
 Type può essere uno dei seguenti valori:
@@ -80,8 +80,9 @@ associati a ciascun ente.
 dunque necessario aggiungere una riga di intestazione con i nomi delle colonne**.
 
 In questo modo sarà possibile parallelizzare l'esecuzione di qualsiasi
-script dell'osservatorio semplicemente eseguendo uno `split -l` sul suo
-input.
+script dell'osservatorio semplicemente eseguendo uno `./cli/tools/split.py`
+sul suo input e lanciando diverse istanze dell'osservatorio su ciascuno
+dei file creati.
 
 
 ## Verifiche
@@ -101,7 +102,7 @@ Se il file di output esiste già, individuano l'ultima riga nell'output
 ed ignorano tutte le righe che la precedono nel dataset.
 
 Scrivono un file tsv che contiene il seguente tracciato
-- ID
+- Owner
 - Type
 - Address
 - Time
@@ -184,6 +185,12 @@ scriverà il proprio output in ./out/enti/YYYY-MM-DD/report/http.png o ./out/ent
 # Tool
 
 Strumenti di sviluppo non eseguiti automaticamente dall'osservatorio.
+
+`./cli/tools/split.py ./out/enti/YYYY-MM-DD/dataset.tsv $(nproc --all)`
+spezzerà dataset.tsv in un numero di file pari al numero dei processori
+disponibili, salvandoli con un prefisso sequenziale di tre cifre 
+in ./out/enti/YYYY-MM-DD/000-dataset.tsv, ./out/enti/YYYY-MM-DD/001-dataset.tsv
+etc...
 
 ___
 
