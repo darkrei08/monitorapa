@@ -8,50 +8,59 @@
 from datetime import datetime
 
 class Input:
-    def __init__(self, owner, automatismType, automatismAddress):
+    def __init__(self, owner: str, automatismType: str, automatismAddress: str):
         self.owner = owner
         self.type = automatismType
         self.address = automatismAddress
     def __str__(self):
         return "\t".join([self.owner, self.type, self.address])
 
-def parseInput(line):
+def parseInput(line: str) -> Input:
     fields = line.strip().split('\t')
-    return CheckInput(fields[0], fields[1], fields[2])
+    return Input(fields[0], fields[1], fields[2])
 
 class Execution:
-    def __init__(self, automatism, time = str(datetime.now()), completed = "0", issues = ""):
+    owner: str
+    type: str
+    address: str
+    time: str
+    completed: str = "0"
+    issues:str = ""
+    def __init__(self, automatism: Input):
         self.owner = automatism.owner
         self.type = automatism.type
         self.address = automatism.address
-        self.time = time
-        self.completed = completed
-        self.issues = issues
-    def completed(self, issues = ""):
+        self.time = str(datetime.now())
+    def complete(self, issues = "") -> None:
         self.time = str(datetime.now())
         self.completed = "1"
         self.issues = issues
-    def interrupted(self, issues):
+    def interrupt(self, issues) -> None:
         self.time = str(datetime.now())
         self.issues = issues
-    def __str__(self):
-        return "\t".join([self.owner, self.type, self.address, self.time, self.completed, self.issues])
+    def __str__(self) -> str:
+        issues = self.issues.replace('\n', ' ').replace('\t', ' ')
+        return "\t".join([self.owner, self.type, self.address, self.time, self.completed, issues])
 
-def parseExecution(line):
-    fields = line.strip().split('\n')
-    checkInput = CheckInput(fields[0], fields[1], fields[2])
-    return CheckExecution(checkInput, fields[3], fields[4], fields[5])
+def parseExecution(line: str) -> Execution:
+    fields = line.strip().split('\t')
+    checkInput = Input(fields[0], fields[1], fields[2])
+    execution = Execution(checkInput)
+    execution.time = fields[3]
+    execution.completed = fields[4]
+    execution.issues = fields[5]
+    return execution
 
 def outputFileName(dataset, *names):
     from os.path import dirname, basename, join
 
     if not dataset.endswith('.tsv'):
-        raise ValueError("Input file name must end with .tsv").
+        raise ValueError("Input file name must end with .tsv")
     if len(names) < 1:
         raise ValueError("Missing file name components.")
     fileName = names[len(names) - 1]
     if not fileName.endswith('.tsv'):
-        raise ValueError("Output file name must end with .tsv").
+        raise ValueError("Output file name must end with .tsv")
 
     executionDir = dirname(dataset)
     if basename(dataset) != 'dataset.tsv':
