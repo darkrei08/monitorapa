@@ -189,15 +189,16 @@ def runChecks(automatism, browser):
         for js in jsChecks:
             execution = check.Execution(automatism)
             if results[js]['completed']:
-                execution.complete(results[js]['issues'])
+                execution.complete(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
             else:
-                execution.interrupt(results[js]['issues'])
+                execution.interrupt(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
             jsChecks[js]['output'].write(str(execution)+'\n')
 
     except WebDriverException as err:
         for js in jsChecks:
             execution = check.Execution(automatism)
-            execution.interrupt("WebDriverException: %s" % err)
+            issues = "WebDriverException: %s" % err
+            execution.interrupt(issues.replace('\n', ' ').replace('\t', ' '))
             jsChecks[js]['output'].write(str(execution)+'\n')
 
     #time.sleep(100000)
