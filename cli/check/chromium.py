@@ -13,42 +13,50 @@ import sys
 
 from lib import check
 
-from seleniumwire import webdriver
+from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 import time
 from datetime import datetime
 import os.path
 
-import socket
-
 jsChecks = {}
 
 jsFramework = """
-function sendMonitoraPACheckResult(url, name, issues){
-        var http = new XMLHttpRequest();
-        http.open("GET", url);
-        http.setRequestHeader('X-MonitoraPA-CheckName', name);
-        http.setRequestHeader('X-MonitoraPA-CheckIssues', issues);
-        http.setRequestHeader('X-MonitoraPA-Owner', window.monitoraPAOwner);
-        http.setRequestHeader('X-MonitoraPA-Address', window.monitoraPAAddress);
-        http.send()
-} 
-function runMonitoraPACheck(name, check){
+
+
+function runMonitoraPACheck(results, name, check){
     var issues;
     try {
         issues = check();
-        sendMonitoraPACheckResult("https://monitora-pa.it/check/completed", name, issues);
+        results[name] = {
+            'completed': True,
+            'issues': issues
+        }
     } catch(e) {
         issues = "runMonitoraPACheck: " + e.name + ": " + e.message;
-        sendMonitoraPACheckResult("https://monitora-pa.it/check/interrupted", name, issues);
+        results[name] = {
+            'completed': False,
+            'issues': issues
+        }
     }
 }
 """
 
 singleJSCheck = """
-runMonitoraPACheck('{%s}', function(){
-{%s}
+runMonitoraPACheck(monitoraPAResults, '%s', function(){
+%s
 });
+"""
+
+runAllJSChecks = """
+function runAllJSChecks(){
+    var monitoraPAResults;
+
+%s
+    
+    return monitoraPAResults;
+}
+return runAllJSChecks();
 """
 
 def usage():
@@ -118,10 +126,6 @@ def openBrowser():
     op.add_argument('--disk-cache-size=0')
 
     browser = webdriver.Chrome('chromedriver', options=op)
-    browser.request_interceptor = interceptor
-    browser.scopes = [
-        '.*monitora-pa.*'
-    ]
     
     browser.get('about:blank')
     
@@ -171,8 +175,6 @@ def runChecks(automatism, browser):
         if consented:
             waitUntilPageLoaded(browser)
 
-        driver.execute_script(f"window.monitoraPAOwner = '{automatism.owner}';")
-        driver.execute_script(f"window.monitoraPAAddress = '{automatism.address}';")
         driver.execute_script(jsFramework)
         
         allChecks = ""
@@ -180,14 +182,23 @@ def runChecks(automatism, browser):
             checkCode = jsChecks[js]['script']
             allChecks += singleJSCheck % (js, checkCode)
 
-        script = "setTimeout(function(){%s},0);" % allChecks
-        browser.execute_script(script)
+        script = runAllJSChecks % allChecks
+        results = browser.execute_script(script)
         
-        time.sleep(1)
-        
-        waitUntilPageLoaded(browser)
+        for js in jsChecks:
+            execution = check.Execution(automatism)
+            if results[js]['completed']:
+                execution.complete(results[js]['issues'])
+            else:
+                execution.interrupt(results[js]['issues'])
+            jsChecks[js]['output'].write(str(execution)+'\n')
+
     except WebDriverException as err:
-        saveError(lineNum, "%s\n%s" % (url, err))
+        for js in jsChecks:
+            execution = check.Execution(automatism)
+            execution.interrupt("WebDriverException: %s" % err)
+            jsChecks[js]['output'].write(str(execution)+'\n')
+
     #time.sleep(100000)
 
 def loadChecks(dataset):
@@ -231,7 +242,6 @@ def main(argv):
     except (KeyboardInterrupt):
         print("Interrupted at %s" % count)
 
-    del browser.request_interceptor
     browser.quit()
 
 
