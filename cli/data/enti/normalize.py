@@ -21,7 +21,13 @@ Will create ./out/enti/YYYY-MM-YY/dataset.tsv
 def outputFileName(inputFileName):
     return os.path.join(os.path.dirname(inputFileName), "dataset.tsv")
 
-
+def normalizeUrl(url):
+    if len(url) < 4 or url.startswith('about'):
+        return ""
+    if not url.startswith('http'):
+        return 'http://' + url
+    return url
+    
 def main(argv):
     if len(argv) != 2:
         usage()
@@ -35,7 +41,9 @@ def main(argv):
                 line = line.strip(" \n")
                 fields = line.split('\t');
                 outID = fields[1]
-                outf.write('\t'.join([outID, 'Web', fields[29]]) + '\n')
+                webSite = normalizeUrl(fields[29])
+                if webSite != '':
+                    outf.write('\t'.join([outID, 'Web', webSite]) + '\n')
                 outf.write('\t'.join([outID, 'Email', fields[19]]) + '\n')                
     except IOError as ioe:
         print(f"[ ERR ]: IOError: {ioe}")
