@@ -134,6 +134,7 @@ def browseTo(browser, url):
         browser.switch_to.window(driver.window_handles[-1])
         browser.close()
     browser.switch_to.window(browser.window_handles[0])
+    browser.get('about:blank')
     # browser.delete_all_cookies()
     browser.execute_script("window.open('');")
     browser.switch_to.window(browser.window_handles[-1])
