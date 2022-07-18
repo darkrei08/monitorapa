@@ -117,7 +117,7 @@ def clickConsentButton(url, browser):
 
 def openBrowser():
     op = webdriver.ChromeOptions()
-#    op.add_argument('--headless')
+    op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
     op.add_argument('--no-sandbox')
