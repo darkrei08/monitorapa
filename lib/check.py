@@ -66,4 +66,4 @@ def outputFileName(dataset, *names):
     if basename(dataset) != 'dataset.tsv':
         names[len(names) - 1] = fileName.replace('.tsv', '-' + basename(dataset))
     
-    targetDir = join(executionDir, 'check', *names)
+    return join(executionDir, 'check', *names)

@@ -18,6 +18,7 @@ from selenium.common.exceptions import WebDriverException
 import time
 from datetime import datetime
 import os.path
+import os
 
 jsChecks = {}
 
@@ -50,13 +51,12 @@ runMonitoraPACheck(monitoraPAResults, '%s', function(){
 
 runAllJSChecks = """
 function runAllJSChecks(){
-    var monitoraPAResults;
+    var monitoraPAResults = {};
 
 %s
     
     return monitoraPAResults;
 }
-return runAllJSChecks();
 """
 
 def usage():
@@ -75,7 +75,7 @@ Where:
 def clickConsentButton(url, browser):
 	# thanks Mauro Gorrino
     consentPath = "//button[contains(translate(., 'ACET', 'acet'), 'accett')]"
-    buttons = browser.find_elements_by_xpath(consentPath)
+    buttons = browser.find_elements("xpath", consentPath)
     for button in buttons:
         try:
             browser.execute_script("arguments[0].click()", button)
@@ -135,7 +135,7 @@ def browseTo(browser, url):
     # we are in incognito mode: each new tab get a clean state for cheap
     
     while len(browser.window_handles) > 1:
-        browser.switch_to.window(driver.window_handles[-1])
+        browser.switch_to.window(browser.window_handles[-1])
         browser.close()
     browser.switch_to.window(browser.window_handles[0])
     browser.get('about:blank')
@@ -145,23 +145,16 @@ def browseTo(browser, url):
     browser.get(url)
 
 def getPageContent(browser):
-    dom = browser.find_element_by_tag_name('html').get_attribute('innerHTML')
-    return dom.encode('utf-8')
+    dom = browser.page_source
+    return dom
     
 def waitUntilPageLoaded(browser):
     
-    oldContent = ''
-    newContent = getPageContent(browser)
+    readyState = False
     
-    oldRequests = 0
-    newRequests = len(browser.requests)
-    
-    while oldContent != newContent or oldRequests != newRequests:
+    while not readyState:
         time.sleep(2)
-        oldContent = newContent
-        oldRequests = newRequests
-        newContent = getPageContent(browser)
-        newRequests = len(browser.requests)
+        readyState = browser.execute_script('return document.readyState == "complete";')
 
 def runChecks(automatism, browser):
     url = automatism.address
@@ -169,22 +162,32 @@ def runChecks(automatism, browser):
     try:
         print("browsing to ", url)
         browseTo(browser, url)
+        print("wait")
         waitUntilPageLoaded(browser)
         
         print("clickConsentButton ", url)
         consented = clickConsentButton(url, browser)
         if consented:
+            time.sleep(2)
             waitUntilPageLoaded(browser)
+            print("waited for consent")
 
-        driver.execute_script(jsFramework)
+        browser.execute_script(jsFramework)
         
         allChecks = ""
+        print("jsChecks", jsChecks)
         for js in jsChecks:
             checkCode = jsChecks[js]['script']
+            print(js, " = ", checkCode)
             allChecks += singleJSCheck % (js, checkCode)
 
         script = runAllJSChecks % allChecks
-        results = browser.execute_script(script)
+        print(script)
+        browser.execute_script(script)
+        
+        results = browser.execute_script("return runAllJSChecks();")
+        
+        print("got results", results)
         
         for js in jsChecks:
             execution = check.Execution(automatism)
@@ -192,6 +195,7 @@ def runChecks(automatism, browser):
                 execution.complete(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
             else:
                 execution.interrupt(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
+            print("execution in %s:" % js, str(execution))
             jsChecks[js]['output'].write(str(execution)+'\n')
 
     except WebDriverException as err:
@@ -203,19 +207,23 @@ def runChecks(automatism, browser):
 
     #time.sleep(100000)
 
-def loadChecks(dataset):
-    checksToRun = {}
+def loadChecks(dataset, checksToRun):
     files = os.listdir('./cli/check/selenium/')
     for jsFile in files:
-        if os.path.isfile(jsFile) and jsFile.endswith('.js'):
-            with open(jsFile) as f:
+        jsFilePath = './cli/check/selenium/%s' % jsFile
+        print("jsFilePath %s" % jsFilePath)
+        if os.path.isfile(jsFilePath) and jsFile.endswith('.js'):
+            js = ""
+            with open(jsFilePath, "r") as f:
                 js = f.read()
             outputFile = check.outputFileName(dataset, 'selenium', jsFile.replace('.js', '.tsv'))
+            directory = os.path.dirname(outputFile)
+            print("mkdir %s", directory)
+            os.makedirs(directory, 0o755, True)
             checksToRun[jsFile] = {
                 'script': js,
-                'output': open(outputFile, "w")
+                'output': open(outputFile, "w", buffering=1)
             }
-    return checksToRun;
 
 
 def main(argv):
@@ -228,7 +236,7 @@ def main(argv):
         print(f"input dataset not found {dataset}");
         usage()
 
-    jsChecks = loadChecks(dataset)
+    loadChecks(dataset, jsChecks)
     browser = openBrowser()
 
     count = 0
