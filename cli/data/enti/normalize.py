@@ -22,6 +22,7 @@ def outputFileName(inputFileName):
     return os.path.join(os.path.dirname(inputFileName), "dataset.tsv")
 
 def normalizeUrl(url):
+    url = url.lower()
     if len(url) < 4 or url.startswith('about'):
         return ""
     if url.startswith('https//'):
