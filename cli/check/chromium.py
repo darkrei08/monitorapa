@@ -24,19 +24,18 @@ jsChecks = {}
 
 jsFramework = """
 
-
 function runMonitoraPACheck(results, name, check){
     var issues;
     try {
         issues = check();
         results[name] = {
-            'completed': True,
+            'completed': true,
             'issues': issues
         }
     } catch(e) {
         issues = "runMonitoraPACheck: " + e.name + ": " + e.message;
         results[name] = {
-            'completed': False,
+            'completed': false,
             'issues': issues
         }
     }
@@ -52,10 +51,11 @@ runMonitoraPACheck(monitoraPAResults, '%s', function(){
 runAllJSChecks = """
 function runAllJSChecks(){
     var monitoraPAResults = {};
+    window.monitoraPAResults = monitoraPAResults;
 
 %s
     
-    return monitoraPAResults;
+    return window.monitoraPAResults;
 }
 """
 
@@ -160,34 +160,28 @@ def runChecks(automatism, browser):
     url = automatism.address
 
     try:
-        print("browsing to ", url)
         browseTo(browser, url)
-        print("wait")
         waitUntilPageLoaded(browser)
         
-        print("clickConsentButton ", url)
         consented = clickConsentButton(url, browser)
         if consented:
             time.sleep(2)
             waitUntilPageLoaded(browser)
-            print("waited for consent")
 
-        browser.execute_script(jsFramework)
+        script = jsFramework;
         
         allChecks = ""
-        print("jsChecks", jsChecks)
         for js in jsChecks:
             checkCode = jsChecks[js]['script']
-            print(js, " = ", checkCode)
             allChecks += singleJSCheck % (js, checkCode)
 
-        script = runAllJSChecks % allChecks
-        print(script)
-        browser.execute_script(script)
+        script += runAllJSChecks % allChecks
+        script += "return runAllJSChecks();";
+        #print(script)
         
-        results = browser.execute_script("return runAllJSChecks();")
+        results = browser.execute_script(script)
         
-        print("got results", results)
+        #print("got results", results)
         
         for js in jsChecks:
             execution = check.Execution(automatism)
@@ -211,14 +205,14 @@ def loadChecks(dataset, checksToRun):
     files = os.listdir('./cli/check/selenium/')
     for jsFile in files:
         jsFilePath = './cli/check/selenium/%s' % jsFile
-        print("jsFilePath %s" % jsFilePath)
+        #print("jsFilePath %s" % jsFilePath)
         if os.path.isfile(jsFilePath) and jsFile.endswith('.js'):
             js = ""
             with open(jsFilePath, "r") as f:
                 js = f.read()
             outputFile = check.outputFileName(dataset, 'selenium', jsFile.replace('.js', '.tsv'))
             directory = os.path.dirname(outputFile)
-            print("mkdir %s", directory)
+            #print("mkdir %s", directory)
             os.makedirs(directory, 0o755, True)
             checksToRun[jsFile] = {
                 'script': js,
