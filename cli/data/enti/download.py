@@ -32,10 +32,10 @@ def computeOutDir(argv):
 
     verifyExecutionDirectory()
 
-    dirName = f"out/{datetime.datetime.utcnow().strftime('%Y-%m-%d')}"
+    dirName = f"out/enti/{datetime.datetime.utcnow().strftime('%Y-%m-%d')}"
 
     if not os.path.isdir(dirName):
-        os.mkdir(dirName)
+        os.makedirs(dirName, 0o755, True)
         print(f"[ ℹ️  ] Created {dirName} directory")
 
     if not os.path.isfile(os.path.join(dirName, "LICENSE.txt")):

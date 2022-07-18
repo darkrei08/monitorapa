@@ -24,6 +24,10 @@ def outputFileName(inputFileName):
 def normalizeUrl(url):
     if len(url) < 4 or url.startswith('about'):
         return ""
+    if url.startswith('https//'):
+        return url.replace('https//', 'https://')
+    if url.startswith('https//'):
+        return url.replace('http//', 'http://')
     if not url.startswith('http'):
         return 'http://' + url
     return url
