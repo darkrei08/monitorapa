@@ -64,6 +64,8 @@ def outputFileName(dataset, *names):
 
     executionDir = dirname(dataset)
     if basename(dataset) != 'dataset.tsv':
-        names[len(names) - 1] = fileName.replace('.tsv', '-' + basename(dataset))
+        mutableNames = list(names)
+        mutableNames[len(names) - 1] = fileName.replace('.tsv', '-' + basename(dataset))
+        names = tuple(mutableNames)
     
     return join(executionDir, 'check', *names)
