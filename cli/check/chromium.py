@@ -88,11 +88,11 @@ def clickConsentButton(url, browser):
         "//button[text()[.='Ok' or .='OK' or .='ok']]",
         "//a[text()[.='Ok' or .='OK' or .='ok']]",
         "//button[contains(translate(., 'APROV', 'aprov'), 'approv')]",
-        "//a[contains(translate(., 'APROV', 'aprov'), 'approv')]",
+        "//a[translate(., 'APROV', 'aprov') = 'approvo' or translate(., 'APROV', 'aprov') = 'approva']",
         "//button[contains(translate(., 'CAPITO', 'capito'), 'capito')]",
         "//a[contains(translate(., 'CAPITO', 'capito'), 'capito')]",
         "//button[contains(translate(., 'ALE', 'ale'), 'alle')]",
-        "//a[contains(translate(., 'ALE', 'ale'), 'alle')]",
+        # "//a[contains(translate(., 'ALE', 'ale'), 'alle')]",
         "//button[contains(translate(., 'ACEPT', 'acept'), 'accept')]",
         "//a[contains(translate(., 'ACEPT', 'acept'), 'accept')]"
     ]
@@ -146,10 +146,10 @@ def browseTo(browser, url):
     
     while len(browser.window_handles) > 1:
         browser.switch_to.window(browser.window_handles[-1])
+        browser.delete_all_cookies()
         browser.close()
     browser.switch_to.window(browser.window_handles[0])
     browser.get('about:blank')
-    # browser.delete_all_cookies()
     browser.execute_script("window.open('');")
     browser.switch_to.window(browser.window_handles[-1])
     browser.get(url)
