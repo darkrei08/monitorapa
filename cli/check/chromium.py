@@ -204,9 +204,10 @@ def runChecks(automatism, browser):
     #time.sleep(100000)
 
 def loadChecks(dataset, checksToRun):
-    files = os.listdir('./cli/check/selenium/')
+    files = os.listdir('./cli/check/chromium/')
+    files = sorted(files)
     for jsFile in files:
-        jsFilePath = './cli/check/selenium/%s' % jsFile
+        jsFilePath = './cli/check/chromium/%s' % jsFile
         #print("jsFilePath %s" % jsFilePath)
         if os.path.isfile(jsFilePath) and jsFile.endswith('.js'):
             js = ""
