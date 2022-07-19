@@ -27,7 +27,10 @@ function monitoraPAClick(element){
     window.monitoraPAClickPending = true;
     window.setTimeout(function(){
         element.click();
-        window.monitoraPAClickPending = false;
+        
+        window.setTimeout(function(){
+            window.monitoraPAClickPending = false;
+        }, 4000);
     }, 2000);
 }
 
@@ -146,7 +149,7 @@ def runChecks(automatism, browser):
         results = {}
 
         while len(results) != len(jsChecks):
-            
+            print('waitUntilPageLoaded')
             waitUntilPageLoaded(browser)
             
             script = jsFramework;
@@ -161,7 +164,7 @@ def runChecks(automatism, browser):
             script += "return runAllJSChecks();";
         
             newResults = browser.execute_script(script)
-            print(newResults)
+            #print(newResults)
             for js in newResults:
                 results[js] = newResults[js]
         

@@ -13,7 +13,8 @@
 
 var consentRegExps = [
     (new RegExp('^ok$', 'i')),
-    (new RegExp('^accett[iao]', 'i')),
+    (new RegExp('accett[iao] tutti', 'i')),
+    (new RegExp('accett[iao]', 'i')),
     (new RegExp('^acconsent', 'i')),
     (new RegExp('^approv[ao]', 'i')),
     (new RegExp('capito', 'i')),
@@ -41,15 +42,17 @@ var findCookieBanner = function (){
     return topElement;
 }
 var findElementToClick = function(elements){
-    debugger;
     for(var e = elements.length; e > 0 ; --e){
         var element = elements[e-1];
-        for(var i = 0; i < consentRegExps.length; ++i){
-            var regexp = consentRegExps[i];
-            if(regexp.test(element.innerText)){
-                return element;
+        var elementStyles = window.getComputedStyle(element, null);
+        if(elementStyles['visibility'] == 'visible' && element.getClientRects().length > 0){        
+            for(var i = 0; i < consentRegExps.length; ++i){
+                var regexp = consentRegExps[i];
+                if(regexp.test(element.innerText)){
+                    return element;
+                }
             }
-        } 
+        }
     }
     return null;
 }
