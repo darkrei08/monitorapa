@@ -13,8 +13,10 @@ if(window[gaName] && window[gaName].q && window[gaName].q[0] && (window[gaName].
     // fast track (thanks Augusto Zanellato)
     for(var i = 0; i < window[gaName].q.length; ++i){
         for(var j = 0; j < window[gaName].q[i].length; ++j){
-            if(window[gaName].q[i][j].indexOf('UA-') == 0 || window[gaName].q[i][j].indexOf('G-') == 0){
-                return window[gaName].q[i][j]; 
+            var candidate = window[gaName].q[i][j];
+            if(typeof(candidate) == 'string' && 
+              (candidate.indexOf('UA-') == 0 || candidate.indexOf('G-') == 0)){
+                return candidate; 
             }
         }
     }
