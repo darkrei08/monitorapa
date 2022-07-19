@@ -54,7 +54,7 @@ if(test){
 }
 if(!test){
     test = html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/);
-    if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) != "G-")){
+    if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) == "G-")){
         console.log(`found Google Analytics in html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/)`, test);
         return test[1];
     }
