@@ -15,12 +15,14 @@ var consentRegExps = [
     (new RegExp('^ok$', 'i')),
     (new RegExp('accett[iao] tutti', 'i')),
     (new RegExp('accett[iao]', 'i')),
-    (new RegExp('^acconsent', 'i')),
-    (new RegExp('^approv[ao]', 'i')),
+    (new RegExp('acconsent', 'i')),
+    (new RegExp('approv[ao]', 'i')),
     (new RegExp('capito', 'i')),
     (new RegExp('^accept$', 'i')),
     (new RegExp('^accept all', 'i')),
-    (new RegExp('allow', 'i'))
+    (new RegExp('allow', 'i')),
+    (new RegExp('va bene', 'i')),
+    (new RegExp('akzepti', 'i'))
 ]
 
 var findCookieBanner = function (){
