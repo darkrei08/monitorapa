@@ -9,6 +9,8 @@
 /* Detect Google Analytics collecting the Tracking ID / Measurement ID
  * as an evidence of its presence
  */
+ 
+debugger;
 var gaName = window.GoogleAnalyticsObject;
 if(!gaName)
     gaName = "ga"
@@ -52,20 +54,16 @@ if(test){
 }
 if(!test){
     test = html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/);
-    if(test && test[1].substr(0,3) != "UA-" && test[1].substr(0,2) != "G-"){
-        test = null;
-    }
-    if(test){
+    if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) != "G-")){
         console.log(`found Google Analytics in html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/)`, test);
+        return test[1];
     }
 }
 if(!test){
     test = html.match(/push\(\s*\[\s*['"]_setAccount['"]\s*,\s*['"]([^'"]*)['"]\s*\]/);
-    if(test && test[1].substr(0,3) != "UA-" && test[1].substr(0,2) != "G-"){
-        test = null;
-    }
-    if(test){
+    if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) == "G-")){
         console.log(`found Google Analytics in html.match(/push\(\[['"]_setAccount['"], ?['"]([^'"]*)['"]\]/)`, test);
+        return test[1];
     }
 }
 if(!test || test[1].match(/_ID/)){

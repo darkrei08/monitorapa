@@ -10,6 +10,7 @@
  *
  * This check apply some heuristics to identify the consent button.
  */
+
 var consentRegExps = [
     (new RegExp('^ok$', 'i')),
     (new RegExp('^accett[iao]', 'i')),

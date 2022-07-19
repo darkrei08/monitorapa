@@ -26,7 +26,7 @@ jsFramework = """
 function monitoraPAClick(element){
     window.monitoraPAClickPending = true;
     window.setTimeout(function(){
-        elementToClick.click();
+        element.click();
         window.monitoraPAClickPending = false;
     }, 2000);
 }
@@ -160,7 +160,6 @@ def runChecks(automatism, browser):
             script += runAllJSChecks % allChecks
             script += "return runAllJSChecks();";
         
-            time.sleep(10)
             newResults = browser.execute_script(script)
             print(newResults)
             for js in newResults:
@@ -174,8 +173,6 @@ def runChecks(automatism, browser):
                 execution.interrupt(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
             print("execution in %s:" % js, str(execution))
             jsChecks[js]['output'].write(str(execution)+'\n')
-
-        time.sleep(100)
 
     except WebDriverException as err:
         for js in jsChecks:
