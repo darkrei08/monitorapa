@@ -25,6 +25,12 @@ jsFramework = """
 
 function runMonitoraPACheck(results, name, check){
     var issues;
+
+    if(window.monitoraPAUnloading == true){
+        // skip check since a previous check caused a navigation
+        return;
+    }
+    
     try {
         issues = check();
         results[name] = {
@@ -77,43 +83,6 @@ def waitUntilPageLoaded(browser, period=2):
         time.sleep(period)
         readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading;')
 
-def clickConsentButton(url, browser):
-	# thanks Mauro Gorrino
-    buttonsFound = 0
-    xpaths = [
-        "//button[contains(translate(., 'ACET', 'acet'), 'accett')]",
-        "//a[contains(translate(., 'ACET', 'acet'), 'accett')]",
-        "//button[contains(translate(., 'ACONST', 'aconst'), 'acconsent')]",
-        "//a[contains(translate(., 'ACONST', 'aconst'), 'acconsent')]",
-        "//button[text()[.='Ok' or .='OK' or .='ok']]",
-        "//a[text()[.='Ok' or .='OK' or .='ok']]",
-        "//button[contains(translate(., 'APROV', 'aprov'), 'approv')]",
-        "//a[translate(., 'APROV', 'aprov') = 'approvo' or translate(., 'APROV', 'aprov') = 'approva']",
-        "//button[contains(translate(., 'CAPITO', 'capito'), 'capito')]",
-        "//a[contains(translate(., 'CAPITO', 'capito'), 'capito')]",
-        "//button[contains(translate(., 'ALE', 'ale'), 'alle')]",
-        # "//a[contains(translate(., 'ALE', 'ale'), 'alle')]",
-        "//button[contains(translate(., 'ACEPT', 'acept'), 'accept')]",
-        "//a[contains(translate(., 'ACEPT', 'acept'), 'accept')]"
-    ]
-    listeningOnUnload = False
-    for consentPath in xpaths:
-        buttons = browser.find_elements("xpath", consentPath)
-        for button in buttons:
-            try:
-                if not listeningOnUnload:
-                    browser.execute_script("window.addEventListener('unload', e => { window.monitoraPAUnloading = true; });")
-                    listeningOnUnload = True
-                browser.execute_script("arguments[0].click()", button)
-                buttonsFound += 1
-                isUnloading = browser.execute_script("return window.monitoraPAUnloading == true;")
-                if isUnloading:
-                    waitUntilPageLoaded(browser)
-                    return True
-            except Exception:
-                pass
-    return buttonsFound > 0
-
 
 def openBrowser():
     op = webdriver.ChromeOptions()
@@ -153,6 +122,7 @@ def browseTo(browser, url):
     browser.execute_script("window.open('');")
     browser.switch_to.window(browser.window_handles[-1])
     browser.get(url)
+    browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
 
 def getPageContent(browser):
     dom = browser.page_source
