@@ -19,7 +19,8 @@ var consentRegExps = [
     (new RegExp('^approv[ao]', 'i')),
     (new RegExp('capito', 'i')),
     (new RegExp('^accept$', 'i')),
-    (new RegExp('^accept all', 'i'))
+    (new RegExp('^accept all', 'i')),
+    (new RegExp('allow', 'i'))
 ]
 
 var findCookieBanner = function (){
