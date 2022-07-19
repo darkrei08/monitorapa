@@ -77,7 +77,7 @@ if(!elementToClick){
 if(elementToClick){
     console.log("found consent button in ", elementToClick);
     monitoraPAClick(elementToClick);
-    return cookieBanner.innerText;
+    return "<" + elementToClick.innerText + "> " + cookieBanner.innerText;
 }
 
 return "";
