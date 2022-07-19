@@ -27,9 +27,7 @@ function monitoraPAClick(element){
     window.monitoraPAClickPending = true;
     window.setTimeout(function(){
         elementToClick.click();
-        if(window.monitoraPAUnloading){
-            window.monitoraPAClickPending = false;
-        }
+        window.monitoraPAClickPending = false;
     }, 2000);
 }
 
@@ -92,7 +90,7 @@ def waitUntilPageLoaded(browser, period=2):
     
     while not readyState:
         time.sleep(period)
-        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading;')
+        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPAClickPending;')
 
 
 def openBrowser():
@@ -144,11 +142,12 @@ def runChecks(automatism, browser):
 
     try:
         browseTo(browser, url)
-        waitUntilPageLoaded(browser)
         
         results = {}
 
         while len(results) != len(jsChecks):
+            
+            waitUntilPageLoaded(browser)
             
             script = jsFramework;
         

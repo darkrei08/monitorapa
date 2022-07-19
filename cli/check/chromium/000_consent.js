@@ -11,13 +11,13 @@
  * This check apply some heuristics to identify the consent button.
  */
 var consentRegExps = [
-    (new RegExp('^ok$', 'i')).compile(),
-    (new RegExp('^accett[iao]', 'i')).compile(),
-    (new RegExp('^acconsent', 'i')).compile(),
-    (new RegExp('^approv[ao]', 'i')).compile(),
-    (new RegExp('capito', 'i')).compile(),
-    (new RegExp('^accept$', 'i')).compile(),
-    (new RegExp('^accept all', 'i')).compile()
+    (new RegExp('^ok$', 'i')),
+    (new RegExp('^accett[iao]', 'i')),
+    (new RegExp('^acconsent', 'i')),
+    (new RegExp('^approv[ao]', 'i')),
+    (new RegExp('capito', 'i')),
+    (new RegExp('^accept$', 'i')),
+    (new RegExp('^accept all', 'i'))
 ]
 
 var findCookieBanner = function (){
@@ -27,7 +27,7 @@ var findCookieBanner = function (){
 
     for (var i = 0; i < elements.length - 1; i++) {
         try{
-            var zIndex = parseInt(window.getComputed(elements[i], null)['z-index']);
+            var zIndex = parseInt(window.getComputedStyle(elements[i], null)['z-index']);
             
             if (zIndex > topZIndex && elements[i].innerText.toLowerCase().indexOf('cookie') > -1) {
                 topElement = elements[i];
@@ -40,11 +40,12 @@ var findCookieBanner = function (){
     return topElement;
 }
 var findElementToClick = function(elements){
-    for(var e = 0; e < elements.length; ++e){
-        var element = elements[e];
+    debugger;
+    for(var e = elements.length; e > 0 ; --e){
+        var element = elements[e-1];
         for(var i = 0; i < consentRegExps.length; ++i){
             var regexp = consentRegExps[i];
-            if(regexp.test(e.innerText)){
+            if(regexp.test(element.innerText)){
                 return element;
             }
         } 
@@ -63,6 +64,14 @@ var elementToClick = findElementToClick(buttons);
 if(!elementToClick){
     var links = cookieBanner.querySelectorAll("a");
     elementToClick = findElementToClick(links);
+}
+if(!elementToClick){
+    var spans = cookieBanner.querySelectorAll("span");
+    elementToClick = findElementToClick(spans);
+}
+if(!elementToClick){
+    var divs = cookieBanner.querySelectorAll("divs");
+    elementToClick = findElementToClick(spans);
 }
 if(elementToClick){
     console.log("found consent button in ", elementToClick);
