@@ -26,10 +26,9 @@ var findCookieBanner = function (){
     var topZIndex = 0;
     var topElement = null;
 
-    for (var i = 0; i < elements.length - 1; i++) {
+    for (var i = 0; i < elements.length; i++) {
         try{
             var zIndex = parseInt(window.getComputedStyle(elements[i], null)['z-index']);
-            
             if (zIndex > topZIndex && elements[i].innerText.toLowerCase().indexOf('cookie') > -1) {
                 topElement = elements[i];
                 topZIndex = zIndex;
