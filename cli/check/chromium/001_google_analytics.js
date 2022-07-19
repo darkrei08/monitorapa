@@ -6,6 +6,9 @@
  * MonitoraPA is a hack. You can use it according to the terms and
  * conditions of the Hacking License (see LICENSE.txt)
  */
+/* Detect Google Analytics collecting the Tracking ID / Measurement ID
+ * as an evidence of its presence
+ */
 var gaName = window.GoogleAnalyticsObject;
 if(!gaName)
     gaName = "ga"
