@@ -23,10 +23,20 @@ jsChecks = {}
 
 jsFramework = """
 
+function monitoraPAClick(element){
+    window.monitoraPAClickPending = true;
+    window.setTimeout(function(){
+        elementToClick.click();
+        if(window.monitoraPAUnloading){
+            window.monitoraPAClickPending = false;
+        }
+    }, 2000);
+}
+
 function runMonitoraPACheck(results, name, check){
     var issues;
 
-    if(window.monitoraPAUnloading == true){
+    if(window.monitoraPAUnloading == true || window.monitoraPAClickPending == true){
         // skip check since a previous check caused a navigation
         return;
     }
@@ -55,6 +65,7 @@ runMonitoraPACheck(monitoraPAResults, '%s', function(){
 
 runAllJSChecks = """
 function runAllJSChecks(){
+debugger;
     var monitoraPAResults = {};
     window.monitoraPAResults = monitoraPAResults;
 
@@ -86,7 +97,7 @@ def waitUntilPageLoaded(browser, period=2):
 
 def openBrowser():
     op = webdriver.ChromeOptions()
-    op.add_argument('--headless')
+    #op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
     op.add_argument('--no-sandbox')
@@ -127,7 +138,7 @@ def browseTo(browser, url):
 def getPageContent(browser):
     dom = browser.page_source
     return dom
-    
+
 def runChecks(automatism, browser):
     url = automatism.address
 
@@ -135,25 +146,26 @@ def runChecks(automatism, browser):
         browseTo(browser, url)
         waitUntilPageLoaded(browser)
         
-        consented = clickConsentButton(url, browser)
-        if consented:
-            time.sleep(2)
-            waitUntilPageLoaded(browser)
+        results = {}
 
-        script = jsFramework;
+        while len(results) != len(jsChecks):
+            
+            script = jsFramework;
         
-        allChecks = ""
-        for js in jsChecks:
-            checkCode = jsChecks[js]['script']
-            allChecks += singleJSCheck % (js, checkCode)
+            allChecks = ""
+            for js in jsChecks:
+                if not (js in results): 
+                    checkCode = jsChecks[js]['script']
+                    allChecks += singleJSCheck % (js, checkCode)
 
-        script += runAllJSChecks % allChecks
-        script += "return runAllJSChecks();";
-        #print(script)
+            script += runAllJSChecks % allChecks
+            script += "return runAllJSChecks();";
         
-        results = browser.execute_script(script)
-        
-        #print("got results", results)
+            time.sleep(10)
+            newResults = browser.execute_script(script)
+            print(newResults)
+            for js in newResults:
+                results[js] = newResults[js]
         
         for js in jsChecks:
             execution = check.Execution(automatism)
@@ -164,12 +176,15 @@ def runChecks(automatism, browser):
             print("execution in %s:" % js, str(execution))
             jsChecks[js]['output'].write(str(execution)+'\n')
 
+        time.sleep(100)
+
     except WebDriverException as err:
         for js in jsChecks:
             execution = check.Execution(automatism)
             issues = "WebDriverException: %s" % err
             execution.interrupt(issues.replace('\n', ' ').replace('\t', ' '))
             jsChecks[js]['output'].write(str(execution)+'\n')
+            print(execution)
 
     #time.sleep(100000)
 

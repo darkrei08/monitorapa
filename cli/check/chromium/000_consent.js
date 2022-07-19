@@ -66,10 +66,7 @@ if(!elementToClick){
 }
 if(elementToClick){
     console.log("found consent button in ", elementToClick);
-    window.monitoraPAUnloading = true;
-    window.setTimeout(function(){
-        elementToClick.click();
-    }, 3000);
+    monitoraPAClick(elementToClick);
     return cookieBanner.innerText;
 }
 
