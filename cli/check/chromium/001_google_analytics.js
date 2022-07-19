@@ -35,7 +35,7 @@ html = html.replaceAll(/\n/g,' ').replaceAll('ga-disable-UA-', '').replaceAll(/<
 
 var test = html.match(/ga\(['"]create['"],\s*['"]([^'"]*)['"]/);
 if(test){
-    console.log(`found in html.match(/ga\(['"]create['"],\s*['"]([^'"]*)['"]/)`, test);
+    console.log(`found Google Analytics in html.match(/ga\(['"]create['"],\s*['"]([^'"]*)['"]/)`, test);
     return test[1];
 } else {
     var test = html.match(/ga\('create',\s*{[^}]*}/gm);
@@ -45,7 +45,7 @@ if(test){
         objStr = objStr.replace ('ga("create",', 'window.MonitoraPAObj = ');
         eval(objStr);
         test[1] = window.MonitoraPAObj.trackingId;
-        console.log(`found in html.match(/ga\('create',\s*{[^}]*}/gm);`, window.MonitoraPAObj);
+        console.log(`found Google Analytics in html.match(/ga\('create',\s*{[^}]*}/gm);`, window.MonitoraPAObj);
     }
 }
 if(!test){
@@ -54,7 +54,7 @@ if(!test){
         test = null;
     }
     if(test){
-        console.log(`found in html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/)`, test);
+        console.log(`found Google Analytics in html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/)`, test);
     }
 }
 if(!test){
@@ -63,7 +63,7 @@ if(!test){
         test = null;
     }
     if(test){
-        console.log(`found in html.match(/push\(\[['"]_setAccount['"], ?['"]([^'"]*)['"]\]/)`, test);
+        console.log(`found Google Analytics in html.match(/push\(\[['"]_setAccount['"], ?['"]([^'"]*)['"]\]/)`, test);
     }
 }
 if(!test || test[1].match(/_ID/)){
@@ -74,7 +74,7 @@ if(!test || test[1].match(/_ID/)){
                 test = sc.src.match(/G-[^&]+/);
             }
             if(test){
-                console.log(`found in '${sc.src}'`, test);
+                console.log(`found Google Analytics in '${sc.src}'`, test);
                 return test[0];
             }
         }
@@ -98,7 +98,7 @@ if(!test || test[1].match(/_ID/)){
                     if(tId){
                         if(tId[0].indexOf('d') == -1){
                             gaSearchResult['found'] = tId[0];
-                            console.log(`found inside '${srcURI}'`, tId);
+                            console.log(`found Google Analytics inside '${srcURI}'`, tId);
                         }
                     }
                 }
