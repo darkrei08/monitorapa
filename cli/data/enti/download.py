@@ -17,18 +17,18 @@ import shutil
 
 def verifyExecutionDirectory():
     if not os.path.isdir("cli") or not os.path.isfile("LICENSE.txt"):
-        print("[ Error ] Please run cli/ scripts from the root directory")
+        print("[ ERR ] Please run cli/ scripts from the root directory")
         sys.exit(1)
 
     if not os.path.isdir("out"):
         os.mkdir("out")
 
     if not os.access("out", os.W_OK):
-        print("[ Error ] ./out directory is not writable")
+        print("[ ERR ] ./out directory is not writable")
         sys.exit(1)
 
 
-def computeOutDir(argv):
+def computeOutDir():
 
     verifyExecutionDirectory()
 
@@ -36,7 +36,7 @@ def computeOutDir(argv):
 
     if not os.path.isdir(dirName):
         os.makedirs(dirName, 0o755, True)
-        print(f"[ ℹ️  ] Created {dirName} directory")
+        print(f"[ ℹ️ ] Created {dirName} directory")
 
     if not os.path.isfile(os.path.join(dirName, "LICENSE.txt")):
         shutil.copy(
@@ -64,7 +64,7 @@ def computeOutDir(argv):
     return dirName
 
 def main():
-    outDir = computeOutDir(sys.argv)
+    outDir = computeOutDir()
 
     url = 'https://indicepa.gov.it/ipa-dati/datastore/dump/d09adf99-dc10-4349-8c53-27b1e5aa97b6?bom=True&format=tsv'
     response = requests.get(url, allow_redirects=True)
@@ -73,12 +73,12 @@ def main():
     with open(f"{outDir}/enti.tsv", "wb") as outFile:
         outFile.write(result)
 
-    print(f"[ ✅ ] Done. You can find the dataset at {outDir}/enti.tsv directory")
+    print(f"[ V ] Done. You can find the dataset at {outDir}/enti.tsv directory")
 
 if __name__ == "__main__":
     try:
-        print("[ ℹ️  ] Started download.py script")
+        print("[ ℹ️ ] Started download.py script")
         main()
     except KeyboardInterrupt:
-        print("[ ❌ ] keyboard interrupt, aborting")
+        print("[ ERR ] keyboard interrupt, aborting")
         sys.exit(1)
