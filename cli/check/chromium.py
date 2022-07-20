@@ -27,11 +27,10 @@ function monitoraPAClick(element){
     window.monitoraPAClickPending = true;
     window.setTimeout(function(){
         element.click();
-        
-        window.setTimeout(function(){
-            window.monitoraPAClickPending = false;
-        }, 4000);
     }, 2000);
+    window.setTimeout(function(){
+        window.monitoraPAClickPending = false;
+    }, 6000);
 }
 
 function runMonitoraPACheck(results, name, check){
@@ -98,7 +97,7 @@ def waitUntilPageLoaded(browser, period=2):
 
 def openBrowser():
     op = webdriver.ChromeOptions()
-    #op.add_argument('--headless')
+    op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
     op.add_argument('--no-sandbox')
@@ -115,6 +114,10 @@ def openBrowser():
     op.add_argument('--disable-application-cache')
     op.add_argument('--disable-offline-load-stale-cache')
     op.add_argument('--disk-cache-size=0')
+    op.add_experimental_option("excludeSwitches", ["enable-automation"])
+    op.add_experimental_option('useAutomationExtension', False)
+    op.add_argument('--disable-blink-features=AutomationControlled')
+    #op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
 
     browser = webdriver.Chrome('chromedriver', options=op)
     
@@ -133,8 +136,14 @@ def browseTo(browser, url):
     browser.get('about:blank')
     browser.execute_script("window.open('');")
     browser.switch_to.window(browser.window_handles[-1])
-    browser.get(url)
-    browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
+    try:
+        browser.get(url)
+        browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
+    except WebDriverException as err:
+        if url.startswith('http://') and 'net::ERR_CONNECTION_REFUSED' in str(err):
+            browseTo(browser, url.replace('http://', 'https://'))
+        else:
+            raise
 
 def getPageContent(browser):
     dom = browser.page_source
@@ -228,6 +237,9 @@ def main(argv):
                 if automatism.type != 'Web':
                     continue
 
+                print()
+                print(count, automatism);
+                
                 runChecks(automatism, browser)
                 count += 1
     except (KeyboardInterrupt):

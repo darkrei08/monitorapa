@@ -18,34 +18,38 @@ var consentRegExps = [
     (new RegExp('acconsent', 'i')),
     (new RegExp('approv[ao]', 'i')),
     (new RegExp('capito', 'i')),
+    (new RegExp('va bene', 'i')),
+    (new RegExp('chiudi', 'i')),
+    (new RegExp('alle akzepti', 'i')),
+    (new RegExp('akzepti', 'i')),
     (new RegExp('^accept$', 'i')),
     (new RegExp('^accept all', 'i')),
     (new RegExp('allow', 'i')),
-    (new RegExp('va bene', 'i')),
-    (new RegExp('akzepti', 'i'))
-]
+    (new RegExp('got it', 'i')),
+    (new RegExp('agree', 'i')),
+    (new RegExp('conferm', 'i')),
+    (new RegExp('^ho letto$', 'i'))
+];
+var consentElementsToCheck = [
+    "button",
+    "*[role='button']",
+    "input[type='button']",
+    "input[type='submit']",
+    ".btn", // bootstrap
+    "a",
+    "span",
+    "div"
+];
 
-var findCookieBanner = function (){
-    var elements = document.getElementsByTagName("div");
-    var topZIndex = 0;
-    var topElement = null;
-
-    for (var i = 0; i < elements.length; i++) {
-        try{
-            var zIndex = parseInt(window.getComputedStyle(elements[i], null)['z-index']);
-            if (zIndex > topZIndex && elements[i].innerText.toLowerCase().indexOf('cookie') > -1) {
-                topElement = elements[i];
-                topZIndex = zIndex;
-            }
-        } catch {
-        }
-    }
-    
-    return topElement;
-}
 var findElementToClick = function(elements){
     for(var e = elements.length; e > 0 ; --e){
         var element = elements[e-1];
+        if(element.innerText.toLowerCase().indexOf('necessari') != -1
+        || element.innerText.toLowerCase().indexOf('non ') != -1
+        || element.innerText.toLowerCase().indexOf('selezionati') != -1
+        || element.innerText.toLowerCase().indexOf('auswahl') != -1){
+            continue;
+        }
         var elementStyles = window.getComputedStyle(element, null);
         if(elementStyles['visibility'] == 'visible' && element.getClientRects().length > 0){        
             for(var i = 0; i < consentRegExps.length; ++i){
@@ -58,31 +62,56 @@ var findElementToClick = function(elements){
     }
     return null;
 }
+function inspectCookieBanner(element){
+    for(var i = 0; i < consentElementsToCheck.length; ++i){
+        var selector = consentElementsToCheck[i];
+        var candidates = element.querySelectorAll(selector);
+        var elementToClick = findElementToClick(candidates);
+        if(elementToClick){
+            return elementToClick;
+        }
+    }
+    return null;
+}
+var computeZIndex = function(element){
+    var zIndexStr = 'auto';
+    while(zIndexStr == 'auto'){
+        zIndexStr = window.getComputedStyle(element, null)['z-index'];
+        element = element.parentElement;
+    }
+    return parseInt(zIndexStr);
+}
+var findCookieBanner = function (){
+    var elements = document.getElementsByTagName("div");
+    var topZIndex = 0;
+    var topElement = null;
+
+    for (var i = 0; i < elements.length; i++) {
+        try{
+            var zIndex = computeZIndex(elements[i]);
+            if (zIndex > topZIndex 
+            && elements[i].innerText.toLowerCase().indexOf('cookie') > -1
+            && inspectCookieBanner(elements[i])) {
+                topElement = elements[i];
+                topZIndex = zIndex;
+            }
+        } catch {
+        }
+    }
+    
+    return topElement;
+}
 
 var cookieBanner = findCookieBanner();
-
 if (!cookieBanner){
     return "";
 }
 
-var buttons = cookieBanner.querySelectorAll("button");
-var elementToClick = findElementToClick(buttons);
+var elementToClick = inspectCookieBanner(cookieBanner);
 if(!elementToClick){
-    var links = cookieBanner.querySelectorAll("a");
-    elementToClick = findElementToClick(links);
-}
-if(!elementToClick){
-    var spans = cookieBanner.querySelectorAll("span");
-    elementToClick = findElementToClick(spans);
-}
-if(!elementToClick){
-    var divs = cookieBanner.querySelectorAll("divs");
-    elementToClick = findElementToClick(spans);
-}
-if(elementToClick){
-    console.log("found consent button in ", elementToClick);
-    monitoraPAClick(elementToClick);
-    return "<" + elementToClick.innerText + "> " + cookieBanner.innerText;
+    return "";
 }
 
-return "";
+console.log("found consent button in ", elementToClick);
+monitoraPAClick(elementToClick);
+return "<" + elementToClick.innerText + "> " + cookieBanner.innerText;
