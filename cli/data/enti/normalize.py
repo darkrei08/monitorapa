@@ -37,7 +37,8 @@ def main(argv):
     if len(argv) != 2:
         usage()
     try:
-        with open(argv[1], "r") as inf, open(outputFileName(argv[1]), mode="w") as outf:
+        outFileName = outputFileName(argv[1])
+        with open(argv[1], "r") as inf, open(outFileName, "w") as outf:
             i = 0
             for line in inf:
                 if i == 0:
@@ -49,13 +50,16 @@ def main(argv):
                 webSite = normalizeUrl(fields[29])
                 if webSite != '':
                     outf.write('\t'.join([outID, 'Web', webSite]) + '\n')
-                outf.write('\t'.join([outID, 'Email', fields[19]]) + '\n')                
+                outf.write('\t'.join([outID, 'Email', fields[19]]) + '\n')  
+
+        print(f"[ V ] Done. You can find the dataset at {outFileName}")           
     except IOError as ioe:
         print(f"[ ERR ]: IOError: {ioe}")
         usage()
 
 if __name__ == "__main__":
     try:
+        print("[ ℹ️ ] Started normalize.py script")
         main(sys.argv)
     except KeyboardInterrupt:
         print("[ ERR ] KeyboardInterrupt, aborting")
