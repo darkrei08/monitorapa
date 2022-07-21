@@ -82,30 +82,16 @@ if(!test || test[1].match(/_ID/)){
 if(!test || test[1].match(/_ID/)){
     for(var sc of document.getElementsByTagName('script')){
         if(sc.src.indexOf('googletagmanager') > -1) {
-            
-            var srcURI = sc.src;
-            var txtFile = new XMLHttpRequest();
-            var gaSearchResult = {}
-            txtFile.open("GET", srcURI, false);
-            txtFile.onreadystatechange = function(){  
-
-                if (txtFile.readyState === 4) {
-                    var content = txtFile.responseText;
-                    var tId = content.match(/UA-[^'"]+/);
-                    if(!tId){
-                        tId = content.match(/G-[^'"]+/);
-                    }
-                    if(tId){
-                        if(tId[0].indexOf('d') == -1){
-                            gaSearchResult['found'] = tId[0];
-                            console.log(`found Google Analytics inside '${srcURI}'`, tId);
-                        }
-                    }
-                }
+            var txtFile = monitoraPADownloadResource(sc.src);
+            var tId = txtFile.match(/UA-[^'"]+/);
+            if(!tId){
+                tId = txtFile.match(/G-[^'"]+/);
             }
-            txtFile.send();
-            if(gaSearchResult['found']){
-                return gaSearchResult['found'];
+            if(tId){
+                if(tId[0].indexOf('d') == -1){
+                    return tId[0];
+                    console.log(`found Google Analytics inside '${sc.src}'`, tId);
+                }
             }
         }
     }

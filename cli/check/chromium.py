@@ -34,6 +34,25 @@ function monitoraPAClick(element){
     }, 2000);
 }
 
+window.monitoraPACache = {}
+function monitoraPADownloadResource(uri){
+    if(Object.hasOwn(window.monitoraPACache, uri)){
+        return window.monitoraPACache[uri];
+    }
+    window.monitoraPACache[uri] = '';
+    var req = new XMLHttpRequest();
+    req.open("GET", uri, false);
+    req.onreadystatechange = function(){
+        if (req.readyState === 4) {
+            var content = req.responseText;
+            window.monitoraPACache[uri] = content;
+        }
+    }
+    req.send();
+    return window.monitoraPACache[uri];
+}
+
+
 function runMonitoraPACheck(results, name, check){
     var issues;
 
