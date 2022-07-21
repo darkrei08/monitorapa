@@ -18,6 +18,7 @@ import time
 from datetime import datetime
 import os.path
 import os
+import psutil
 
 jsChecks = {}
 
@@ -75,6 +76,9 @@ debugger;
 }
 """
 
+class BrowserNeedRestartException(Exception):
+    pass
+
 def usage():
     print("""
 ./cli/selenium.py out/$SOURCE/$DATE/dataset.tsv
@@ -117,7 +121,7 @@ def openBrowser():
     op.add_experimental_option("excludeSwitches", ["enable-automation"])
     op.add_experimental_option('useAutomationExtension', False)
     op.add_argument('--disable-blink-features=AutomationControlled')
-    #op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
+    op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
 
     browser = webdriver.Chrome('chromedriver', options=op)
     
@@ -140,7 +144,7 @@ def browseTo(browser, url):
         browser.get(url)
         browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
     except WebDriverException as err:
-        if url.startswith('http://') and 'net::ERR_CONNECTION_REFUSED' in str(err):
+        if url.startswith('http://') and ('net::ERR_CONNECTION_REFUSED' in err.msg or 'net::ERR_CONNECTION_TIMED_OUT' in err.msg):
             browseTo(browser, url.replace('http://', 'https://'))
         else:
             raise
@@ -158,7 +162,6 @@ def runChecks(automatism, browser):
         results = {}
 
         while len(results) != len(jsChecks):
-            print('waitUntilPageLoaded')
             waitUntilPageLoaded(browser)
             
             script = jsFramework;
@@ -187,6 +190,8 @@ def runChecks(automatism, browser):
             jsChecks[js]['output'].write(str(execution)+'\n')
 
     except WebDriverException as err:
+        if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
+            raise BrowserNeedRestartException
         for js in jsChecks:
             execution = check.Execution(automatism)
             issues = "WebDriverException: %s" % err
@@ -195,6 +200,21 @@ def runChecks(automatism, browser):
             print(execution)
 
     #time.sleep(100000)
+
+def restartBrowser(browser):
+    process = psutil.Process(browser.service.process.pid)
+    tokill = process.children(recursive=True)
+    tokill.append(process)
+    browser.quit()
+    for p in tokill:
+        try:
+            p.kill()
+        except psutil.NoSuchProcess:
+            pass
+    browser = None
+    time.sleep(1)
+    return openBrowser()
+    
 
 def loadChecks(dataset, checksToRun):
     files = os.listdir('./cli/check/chromium/')
@@ -240,7 +260,16 @@ def main(argv):
                 print()
                 print(count, automatism);
                 
-                runChecks(automatism, browser)
+                try:
+                    runChecks(automatism, browser)
+                except BrowserNeedRestartException:
+                    print('BrowserNeedRestartException: restaring')
+                    browser = restartBrowser(browser)
+                    print('BrowserNeedRestartException: restarted: retry:', automatism)
+                    runChecks(automatism, browser)
+                    
+                    
+                    
                 count += 1
     except (KeyboardInterrupt):
         print("Interrupted at %s" % count)
