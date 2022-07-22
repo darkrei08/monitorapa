@@ -31,13 +31,13 @@ class Execution:
         self.type = automatism.type
         self.address = automatism.address
         self.time = str(datetime.now())
-    def complete(self, issues = "") -> None:
-        self.time = str(datetime.now())
+    def complete(self, issues = "", completionTime = str(datetime.now())) -> None:
+        self.time = completionTime
         self.completed = "1"
-        self.issues = issues
-    def interrupt(self, issues) -> None:
-        self.time = str(datetime.now())
-        self.issues = issues
+        self.issues = issues.replace('\n', ' ').replace('\t', ' ')
+    def interrupt(self, issues, failTime = str(datetime.now())) -> None:
+        self.time = failTime
+        self.issues = issues.replace('\n', ' ').replace('\t', ' ')
     def __str__(self) -> str:
         issues = self.issues.replace('\n', ' ').replace('\t', ' ')
         return "\t".join([self.owner, self.type, self.address, self.time, self.completed, issues])
