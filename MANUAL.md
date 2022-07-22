@@ -53,7 +53,7 @@ Activate your environment:
 
 Install the required packages:
 ```bash
-pip install -r /clirequirements.txt
+pip install -r ./clirequirements.txt
 ```
 
 
