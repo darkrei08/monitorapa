@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -u
 
 # This file is part of MonitoraPA
 #
@@ -9,11 +9,12 @@
 # conditions of the Hacking License (see LICENSE.txt)
 
 import sys
+sys.path.insert(0, '.') # NOTA: da eseguire dalla root del repository git
 
 from lib import check
 
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, TimeoutException
 import time
 from datetime import datetime
 import os.path
@@ -100,7 +101,7 @@ class BrowserNeedRestartException(Exception):
 
 def usage():
     print("""
-./cli/selenium.py out/$SOURCE/$DATE/dataset.tsv
+./cli/check/browsing.py out/$SOURCE/$DATE/dataset.tsv
 
 Where:
 - $SOURCE is a folder dedicated to a particular data source
@@ -143,6 +144,7 @@ def openBrowser():
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
 
     browser = webdriver.Chrome('chromedriver', options=op)
+    browser.set_page_load_timeout(90)
     
     browser.get('about:blank')
     
@@ -161,24 +163,25 @@ def browseTo(browser, url):
     browser.switch_to.window(browser.window_handles[-1])
     try:
         browser.get(url)
-        browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
+    except TimeoutException:
+        if len(browser.title) > 1:
+            pass # after 90 something has been loaded anyway
+        else:
+            raise
     except WebDriverException as err:
         if url.startswith('http://') and ('net::ERR_CONNECTION_REFUSED' in err.msg or 'net::ERR_CONNECTION_TIMED_OUT' in err.msg):
             browseTo(browser, url.replace('http://', 'https://'))
+            return
         else:
             raise
-
-def getPageContent(browser):
-    dom = browser.page_source
-    return dom
+    browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
 
 def runChecks(automatism, browser):
     url = automatism.address
+    results = {}
 
     try:
         browseTo(browser, url)
-        
-        results = {}
 
         while len(results) != len(jsChecks):
             waitUntilPageLoaded(browser)
@@ -199,24 +202,42 @@ def runChecks(automatism, browser):
             for js in newResults:
                 results[js] = newResults[js]
         
+        completionTime = str(datetime.now())
         for js in jsChecks:
             execution = check.Execution(automatism)
+            issues = results[js]['issues']
             if results[js]['completed']:
-                execution.complete(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
+                execution.complete(issues, completionTime)
             else:
-                execution.interrupt(results[js]['issues'].replace('\n', ' ').replace('\t', ' '))
-            print("execution in %s:" % js, str(execution))
+                execution.interrupt(issues, completionTime)
+            print("execution of %s:" % js, str(execution))
             jsChecks[js]['output'].write(str(execution)+'\n')
 
     except WebDriverException as err:
-        if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
-            raise BrowserNeedRestartException
+        print("WebDriverException of type %s occurred" % err.__class__.__name__, err.msg)
+            
+        # un check ha causato una eccezione: 
+        # - registro i risultati raccolti
+        # - registro l'eccezione su tutti i check che non ho potuto eseguire
+        failTime = str(datetime.now())
         for js in jsChecks:
             execution = check.Execution(automatism)
-            issues = "WebDriverException: %s" % err
-            execution.interrupt(issues.replace('\n', ' ').replace('\t', ' '))
+            if js in results:
+                issues = results[js]['issues']
+                if results[js]['completed']:
+                    execution.complete(issues, failTime)
+                else:
+                    execution.interrupt(issues, failTime)
+            else:
+                issues = "%s: %s" % (err.__class__.__name__, err.msg)
+                execution.interrupt(issues)
             jsChecks[js]['output'].write(str(execution)+'\n')
-            print(execution)
+            print("execution of %s:" % js, str(execution))
+
+        if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
+            raise BrowserNeedRestartException
+        if 'invalid session id' in err.msg:
+            raise BrowserNeedRestartException
 
     #time.sleep(100000)
 
@@ -231,21 +252,21 @@ def restartBrowser(browser):
         except psutil.NoSuchProcess:
             pass
     browser = None
-    time.sleep(1)
+    time.sleep(5)
     return openBrowser()
     
 
 def loadChecks(dataset, checksToRun):
-    files = os.listdir('./cli/check/chromium/')
+    files = os.listdir('./cli/check/browsing/')
     files = sorted(files)
     for jsFile in files:
-        jsFilePath = './cli/check/chromium/%s' % jsFile
+        jsFilePath = './cli/check/browsing/%s' % jsFile
         #print("jsFilePath %s" % jsFilePath)
         if os.path.isfile(jsFilePath) and jsFile.endswith('.js'):
             js = ""
             with open(jsFilePath, "r") as f:
                 js = f.read()
-            outputFile = check.outputFileName(dataset, 'selenium', jsFile.replace('.js', '.tsv'))
+            outputFile = check.outputFileName(dataset, 'browsing', jsFile.replace('.js', '.tsv'))
             directory = os.path.dirname(outputFile)
             #print("mkdir %s", directory)
             os.makedirs(directory, 0o755, True)
@@ -282,10 +303,12 @@ def main(argv):
                 try:
                     runChecks(automatism, browser)
                 except BrowserNeedRestartException:
-                    print('BrowserNeedRestartException: restaring')
-                    browser = restartBrowser(browser)
-                    print('BrowserNeedRestartException: restarted: retry:', automatism)
-                    runChecks(automatism, browser)
+                    try:
+                        browseTo(browser, 'https://monitora-pa.it/tools/ping.html')
+                    except TimeoutException:
+                        print('BrowserNeedRestartException: restaring')
+                        browser = restartBrowser(browser)
+                        print('BrowserNeedRestartException: restarted')
                     
                     
                     
