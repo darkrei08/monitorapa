@@ -111,7 +111,7 @@ Where:
     sys.exit(-1)
 
 
-def waitUntilPageLoaded(browser, period=2):
+def waitUntilPageLoaded(browser, period=20):
     
     readyState = False
     
@@ -125,7 +125,7 @@ def openBrowser(cacheDir):
     op = webdriver.ChromeOptions()
     op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
-    op.add_argument('--headless')
+    #op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
     op.add_argument('--no-sandbox')
@@ -177,16 +177,18 @@ def browseTo(browser, url):
             return
         else:
             raise
-    browser.execute_script("window.addEventListener('beforeunload', e => { window.monitoraPAUnloading = true; });")
+    browser.execute_script("window.addEventListener('unload', e => { window.monitoraPAUnloading = true; }, {capture:true});")
 
 def runChecks(automatism, browser):
     url = automatism.address
     results = {}
 
     try:
-        browseTo(browser, url)
 
         while len(results) != len(jsChecks):
+            if url[8:] not in browser.current_url:
+                browseTo(browser, url)
+
             waitUntilPageLoaded(browser)
             
             script = jsFramework;
@@ -201,7 +203,7 @@ def runChecks(automatism, browser):
             script += "return runAllJSChecks();";
         
             newResults = browser.execute_script(script)
-            #print(newResults)
+            #print('script executed:', newResults)
             for js in newResults:
                 results[js] = newResults[js]
         
@@ -235,7 +237,6 @@ def runChecks(automatism, browser):
                 issues = "%s: %s" % (err.__class__.__name__, err.msg)
                 execution.interrupt(issues)
             jsChecks[js]['output'].write(str(execution)+'\n')
-            print("execution of %s:" % js, str(execution))
 
         if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
             raise BrowserNeedRestartException
@@ -286,21 +287,15 @@ def browserReallyNeedARestart(browser):
         return True
     return False
 
-def main(argv):
-    if len(sys.argv) != 2:
-        usage()
-
-    dataset = sys.argv[1]
-
-    if not os.path.isfile(dataset):
-        print(f"input dataset not found {dataset}");
-        usage()
-
-    cacheDirsContainer = os.path.dirname(check.outputFileName(dataset, 'browsing.caches', 'tmp.tsv'))
+def getCacheDir(dataset):
+    cacheDirsContainer = os.path.dirname(check.outputFileName(dataset, 'browsing', 'user-data-dirs', 'tmp.tsv'))
     os.makedirs(cacheDirsContainer, 0o755, True)
-    cacheDir = tempfile.mkdtemp(prefix='cache-%d-' % os.getpid(), dir=cacheDirsContainer)
+    cacheDir = tempfile.mkdtemp(prefix='udd-%d-' % os.getpid(), dir=cacheDirsContainer)
+    return cacheDir
 
+def run(dataset):
     loadChecks(dataset, jsChecks)
+    cacheDir = getCacheDir(dataset)
     browser = openBrowser(cacheDir)
 
     count = 0
@@ -327,6 +322,20 @@ def main(argv):
         print("Interrupted at %s" % count)
 
     browser.quit()
+    
+
+
+def main(argv):
+    if len(sys.argv) != 2:
+        usage()
+
+    dataset = sys.argv[1]
+
+    if not os.path.isfile(dataset):
+        print(f"input dataset not found {dataset}");
+        usage()
+
+    run(dataset)
 
 
 if __name__ == "__main__":
