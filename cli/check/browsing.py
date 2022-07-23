@@ -128,6 +128,15 @@ def openBrowser(cacheDir):
     #op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
+    chrome_local_state_prefs = {
+        "browser": {
+            "enabled_labs_experiments": [
+                "cookies-without-same-site-must-be-secure@2",
+                "same-site-by-default-cookies@2",
+            ],
+        }
+    }
+    op.add_experimental_option("localState", chrome_local_state_prefs)
     op.add_argument('--no-sandbox')
     op.add_argument('--disable-extensions')
     op.add_argument('--dns-prefetch-disable')
