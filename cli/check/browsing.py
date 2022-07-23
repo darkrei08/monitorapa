@@ -17,9 +17,10 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException, TimeoutException
 import time
 from datetime import datetime
-import os.path
 import os
+import os.path
 import psutil
+import tempfile
 
 jsChecks = {}
 
@@ -119,8 +120,11 @@ def waitUntilPageLoaded(browser, period=2):
         readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPAClickPending;')
 
 
-def openBrowser():
+def openBrowser(cacheDir):
+    
     op = webdriver.ChromeOptions()
+    op.add_argument('--user-data-dir='+cacheDir)
+    op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
     op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
@@ -141,7 +145,6 @@ def openBrowser():
     op.add_experimental_option("excludeSwitches", ["enable-automation"])
     op.add_experimental_option('useAutomationExtension', False)
     op.add_argument('--disable-blink-features=AutomationControlled')
-    op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
 
     browser = webdriver.Chrome('chromedriver', options=op)
     browser.set_page_load_timeout(90)
@@ -241,7 +244,8 @@ def runChecks(automatism, browser):
 
     #time.sleep(100000)
 
-def restartBrowser(browser):
+def restartBrowser(browser, cacheDir):
+    print('restarting Browser: pid %d, dataDir %s' % (browser.service.process.pid, cacheDir))
     process = psutil.Process(browser.service.process.pid)
     tokill = process.children(recursive=True)
     tokill.append(process)
@@ -253,7 +257,7 @@ def restartBrowser(browser):
             pass
     browser = None
     time.sleep(5)
-    return openBrowser()
+    return openBrowser(cacheDir)
     
 
 def loadChecks(dataset, checksToRun):
@@ -275,6 +279,12 @@ def loadChecks(dataset, checksToRun):
                 'output': open(outputFile, "w", buffering=1)
             }
 
+def browserReallyNeedARestart(browser):
+    try:
+        browseTo(browser, 'https://monitora-pa.it/tools/ping.html')
+    except:
+        return True
+    return False
 
 def main(argv):
     if len(sys.argv) != 2:
@@ -286,8 +296,12 @@ def main(argv):
         print(f"input dataset not found {dataset}");
         usage()
 
+    cacheDirsContainer = os.path.dirname(check.outputFileName(dataset, 'browsing.caches', 'tmp.tsv'))
+    os.makedirs(cacheDirsContainer, 0o755, True)
+    cacheDir = tempfile.mkdtemp(prefix='cache-%d-' % os.getpid(), dir=cacheDirsContainer)
+
     loadChecks(dataset, jsChecks)
-    browser = openBrowser()
+    browser = openBrowser(cacheDir)
 
     count = 0
     try:
@@ -303,15 +317,11 @@ def main(argv):
                 try:
                     runChecks(automatism, browser)
                 except BrowserNeedRestartException:
-                    try:
-                        browseTo(browser, 'https://monitora-pa.it/tools/ping.html')
-                    except TimeoutException:
-                        print('BrowserNeedRestartException: restaring')
-                        browser = restartBrowser(browser)
-                        print('BrowserNeedRestartException: restarted')
+                    if browserReallyNeedARestart(browser):
+                        browser = restartBrowser(browser, cacheDir)
                     
-                    
-                    
+                if count % 500 == 499:
+                    browser = restartBrowser(browser, cacheDir)
                 count += 1
     except (KeyboardInterrupt):
         print("Interrupted at %s" % count)
