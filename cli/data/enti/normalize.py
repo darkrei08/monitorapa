@@ -25,9 +25,13 @@ def normalizeUrl(url):
     url = url.lower()
     if len(url) < 4 or url.startswith('about'):
         return ""
+    if url.find(':') == 4 and url[0:7] != 'http://':
+        return url.replace(url[0:5], 'http://')
+    if url.find(':') == 5 and url[0:8] != 'https://':
+        return url.replace(url[0:6], 'https://')
     if url.startswith('https//'):
         return url.replace('https//', 'https://')
-    if url.startswith('https//'):
+    if url.startswith('http//'):
         return url.replace('http//', 'http://')
     if not url.startswith('http'):
         return 'http://' + url

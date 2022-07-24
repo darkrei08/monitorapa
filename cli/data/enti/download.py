@@ -68,12 +68,11 @@ def main():
 
     url = 'https://indicepa.gov.it/ipa-dati/datastore/dump/d09adf99-dc10-4349-8c53-27b1e5aa97b6?bom=True&format=tsv'
     response = requests.get(url, allow_redirects=True)
-    result = response.content.replace(b'HTTPS:SISTEMAAMBIENTELUCCA.IT', b'HTTPS://SISTEMAAMBIENTELUCCA.IT')
 
     with open(f"{outDir}/enti.tsv", "wb") as outFile:
-        outFile.write(result)
+        outFile.write(response.content)
 
-    print(f"[ V ] Done. You can find the dataset at {outDir}/enti.tsv directory")
+    print(f"[ V ] Done. You can find the dataset at {outDir}/enti.tsv")
 
 if __name__ == "__main__":
     try:
