@@ -22,17 +22,28 @@ import os.path
 import psutil
 import tempfile
 
-jsChecks = {}
+checksToRun = {}
 
 jsFramework = """
 
+window.MonitoraPA = {};
+window.monitoraPACallbackPending = 0;
+
+function monitoraPAWaitForCallback(){
+    ++window.monitoraPACallbackPending;
+}
+function monitoraPACallbackCompleted(){
+    --window.monitoraPACallbackPending;
+}
+
 function monitoraPAClick(element){
-    window.monitoraPAClickPending = true;
+    monitoraPAWaitForCallback();
     window.setTimeout(function(){
         element.click();
     }, 2000);
     window.setTimeout(function(){
-        window.monitoraPAClickPending = false;
+        // this will be executed only if no navigation occurred
+        monitoraPACallbackCompleted();
     }, 6000);
 }
 
@@ -58,7 +69,7 @@ function monitoraPADownloadResource(uri){
 function runMonitoraPACheck(results, name, check){
     var issues;
 
-    if(window.monitoraPAUnloading == true || window.monitoraPAClickPending == true){
+    if(window.monitoraPAUnloading == true || window.monitoraPACallbackPending > 0){
         // skip check since a previous check caused a navigation
         return;
     }
@@ -97,6 +108,12 @@ debugger;
 }
 """
 
+def checkActualUrl(browser):
+    return browser.current_url
+def checkCookies(browser):
+    return str(browser.get_cookies())
+
+
 class BrowserNeedRestartException(Exception):
     pass
 
@@ -111,13 +128,13 @@ Where:
     sys.exit(-1)
 
 
-def waitUntilPageLoaded(browser, period=20):
+def waitUntilPageLoaded(browser, period=2):
     
     readyState = False
     
     while not readyState:
         time.sleep(period)
-        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPAClickPending;')
+        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
 
 
 def openBrowser(cacheDir):
@@ -125,18 +142,9 @@ def openBrowser(cacheDir):
     op = webdriver.ChromeOptions()
     op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
-    #op.add_argument('--headless')
+    op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
-    chrome_local_state_prefs = {
-        "browser": {
-            "enabled_labs_experiments": [
-                "cookies-without-same-site-must-be-secure@2",
-                "same-site-by-default-cookies@2",
-            ],
-        }
-    }
-    op.add_experimental_option("localState", chrome_local_state_prefs)
     op.add_argument('--no-sandbox')
     op.add_argument('--disable-extensions')
     op.add_argument('--dns-prefetch-disable')
@@ -188,25 +196,63 @@ def browseTo(browser, url):
             raise
     browser.execute_script("window.addEventListener('unload', e => { window.monitoraPAUnloading = true; }, {capture:true});")
 
+def runPythonChecks(prefix, results, browser):
+    for toRun in checksToRun:
+        if not toRun.startswith(prefix):
+            continue
+        if checksToRun[toRun]['type'] != 'py':
+            continue
+        if toRun in results:
+            continue
+        try:
+            functionToRun = checksToRun[toRun]['function']
+            checkResult = functionToRun(browser)
+            #print(f'{toRun} completed:', checkResult)
+            results[toRun] = {
+                'completed': True,
+                'issues': checkResult
+            }
+        except Exception as err:
+            print(f'{toRun} interrupted:', str(err))
+            results[toRun] = {
+                'completed': False,
+                'issues': str(err)
+            }
+
+def countJSChecks(dictionary):
+    return len([c for c in dictionary if c.endswith('.js')])
+
 def runChecks(automatism, browser):
     url = automatism.address
     results = {}
+    jsChecksCount = countJSChecks(checksToRun)
 
     try:
+        browseTo(browser, url)
+        actual_url = browser.current_url
 
-        while len(results) != len(jsChecks):
-            if url[8:] not in browser.current_url:
-                browseTo(browser, url)
+        runPythonChecks('000_', results, browser)
+        
+        #time.sleep(20)  # to wait for F12
+        
+        while countJSChecks(results) != jsChecksCount:
+            if actual_url != browser.current_url:
+                browseTo(browser, actual_url)
 
             waitUntilPageLoaded(browser)
-            
-            script = jsFramework;
-        
+
+            # due to the async nature of some check operations
+            # we need to regenerate and run this script several times
+            # collecting results provided by each run and excluding
+            # the previous executed tests.
+            script = jsFramework;        
             allChecks = ""
-            for js in jsChecks:
-                if not (js in results): 
-                    checkCode = jsChecks[js]['script']
-                    allChecks += singleJSCheck % (js, checkCode)
+            for toRun in checksToRun:
+                if checksToRun[toRun]['type'] != 'js':
+                    continue
+                if not (toRun in results): 
+                    checkCode = checksToRun[toRun]['script']
+                    allChecks += singleJSCheck % (toRun, checkCode)
 
             script += runAllJSChecks % allChecks
             script += "return runAllJSChecks();";
@@ -215,9 +261,14 @@ def runChecks(automatism, browser):
             #print('script executed:', newResults)
             for js in newResults:
                 results[js] = newResults[js]
+
+        #time.sleep(2000)   # to wait for some debugging
+ 
+        runPythonChecks('999_', results, browser)
         
         completionTime = str(datetime.now())
-        for js in jsChecks:
+                
+        for js in checksToRun:
             execution = check.Execution(automatism)
             issues = results[js]['issues']
             if results[js]['completed']:
@@ -225,7 +276,7 @@ def runChecks(automatism, browser):
             else:
                 execution.interrupt(issues, completionTime)
             print("execution of %s:" % js, str(execution))
-            jsChecks[js]['output'].write(str(execution)+'\n')
+            checksToRun[js]['output'].write(str(execution)+'\n')
 
     except WebDriverException as err:
         print("WebDriverException of type %s occurred" % err.__class__.__name__, err.msg)
@@ -234,7 +285,7 @@ def runChecks(automatism, browser):
         # - registro i risultati raccolti
         # - registro l'eccezione su tutti i check che non ho potuto eseguire
         failTime = str(datetime.now())
-        for js in jsChecks:
+        for js in checksToRun:
             execution = check.Execution(automatism)
             if js in results:
                 issues = results[js]['issues']
@@ -245,7 +296,7 @@ def runChecks(automatism, browser):
             else:
                 issues = "%s: %s" % (err.__class__.__name__, err.msg)
                 execution.interrupt(issues)
-            jsChecks[js]['output'].write(str(execution)+'\n')
+            checksToRun[js]['output'].write(str(execution)+'\n')
 
         if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
             raise BrowserNeedRestartException
@@ -269,25 +320,45 @@ def restartBrowser(browser, cacheDir):
     time.sleep(5)
     return openBrowser(cacheDir)
     
+def addPythonCheck(dataset, checksToRun, name, pythonFunction):
+    outputFile = check.outputFileName(dataset, 'browsing', name + '.tsv')
+    checksToRun[name] = {
+        'type': 'py',
+        'function': pythonFunction,
+        'output': open(outputFile, "w", buffering=1)
+    }
+
+def addJSCheck(dataset, checksToRun, jsFile):
+    jsFilePath = './cli/check/browsing/%s' % jsFile
+    #print("jsFilePath %s" % jsFilePath)
+    if not (jsFile.endswith('.js') and os.path.isfile(jsFilePath)):
+        return # nothing to do
+
+    js = ""
+    with open(jsFilePath, "r") as f:
+        js = f.read()
+    outputFile = check.outputFileName(dataset, 'browsing', jsFile.replace('.js', '.tsv'))
+    directory = os.path.dirname(outputFile)
+    #print("mkdir %s", directory)
+    os.makedirs(directory, 0o755, True)
+    checksToRun[jsFile] = {
+        'type': 'js',
+        'script': js,
+        'output': open(outputFile, "w", buffering=1)
+    }
+
 
 def loadChecks(dataset, checksToRun):
+    
+    addPythonCheck(dataset, checksToRun, '000_actual_url.py', checkActualUrl)
+    addPythonCheck(dataset, checksToRun, '000_cookies.py', checkCookies)
+    
     files = os.listdir('./cli/check/browsing/')
     files = sorted(files)
     for jsFile in files:
-        jsFilePath = './cli/check/browsing/%s' % jsFile
-        #print("jsFilePath %s" % jsFilePath)
-        if os.path.isfile(jsFilePath) and jsFile.endswith('.js'):
-            js = ""
-            with open(jsFilePath, "r") as f:
-                js = f.read()
-            outputFile = check.outputFileName(dataset, 'browsing', jsFile.replace('.js', '.tsv'))
-            directory = os.path.dirname(outputFile)
-            #print("mkdir %s", directory)
-            os.makedirs(directory, 0o755, True)
-            checksToRun[jsFile] = {
-                'script': js,
-                'output': open(outputFile, "w", buffering=1)
-            }
+        addJSCheck(dataset, checksToRun, jsFile)
+
+    addPythonCheck(dataset, checksToRun, '999_cookies', checkCookies)
 
 def browserReallyNeedARestart(browser):
     try:
@@ -303,7 +374,7 @@ def getCacheDir(dataset):
     return cacheDir
 
 def run(dataset):
-    loadChecks(dataset, jsChecks)
+    loadChecks(dataset, checksToRun)
     cacheDir = getCacheDir(dataset)
     browser = openBrowser(cacheDir)
 
