@@ -287,13 +287,13 @@ def loadChecks(dataset, checksToRun):
 
 
 def main(argv):
-    if len(sys.argv) != 2:
+    if len(argv) != 2:
         usage()
 
-    dataset = sys.argv[1]
+    dataset = argv[1]
 
     if not os.path.isfile(dataset):
-        print(f"input dataset not found {dataset}");
+        print(f"input dataset not found: {dataset}");
         usage()
 
     loadChecks(dataset, jsChecks)
