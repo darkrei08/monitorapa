@@ -322,6 +322,9 @@ def restartBrowser(browser, cacheDir):
     
 def addPythonCheck(dataset, checksToRun, name, pythonFunction):
     outputFile = check.outputFileName(dataset, 'browsing', name + '.tsv')
+    directory = os.path.dirname(outputFile)
+    #print("mkdir %s", directory)
+    os.makedirs(directory, 0o755, True)
     checksToRun[name] = {
         'type': 'py',
         'function': pythonFunction,
