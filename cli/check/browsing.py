@@ -350,8 +350,8 @@ def addJSCheck(dataset, checksToRun, jsFile):
 
 def loadChecks(dataset, checksToRun):
     
-    addPythonCheck(dataset, checksToRun, '000_actual_url.py', checkActualUrl)
-    addPythonCheck(dataset, checksToRun, '000_cookies.py', checkCookies)
+    addPythonCheck(dataset, checksToRun, '000_actual_url', checkActualUrl)
+    addPythonCheck(dataset, checksToRun, '000_cookies', checkCookies)
     
     files = os.listdir('./cli/check/browsing/')
     files = sorted(files)
