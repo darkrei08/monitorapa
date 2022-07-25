@@ -61,6 +61,13 @@ pip install -r /cli/requirements.txt
 
 The scripts assume to be run from the repository root.
 
+Once in the repository root, you must set the environment variable
+PYTHONPATH to include the current directory, e.g.
+
+```bash
+export PYTHONPATH=.
+```
+
 Since the list of PA is updated daily, all script must be run on the
 same copy of the list, to preserve results' meaning.
 
