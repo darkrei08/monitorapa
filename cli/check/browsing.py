@@ -15,6 +15,8 @@ from lib import check
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException, TimeoutException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time
 from datetime import datetime
 import os
@@ -143,7 +145,8 @@ def waitUntilPageLoaded(browser, period=2):
 
 def openBrowser(cacheDir):
     
-    op = webdriver.ChromeOptions()
+    op = Options()
+    op.binary_location = os.path.abspath(os.getcwd())+'/browserBin/chrome-linux/chrome'
     op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
     op.add_argument('--headless')
@@ -167,7 +170,7 @@ def openBrowser(cacheDir):
     op.add_experimental_option('useAutomationExtension', False)
     op.add_argument('--disable-blink-features=AutomationControlled')
 
-    browser = webdriver.Chrome('chromedriver', options=op)
+    browser = webdriver.Chrome(service=Service(os.path.abspath(os.getcwd())+'/browserBin/chromedriver_linux64/chromedriver'), options=op)
     browser.set_page_load_timeout(90)
     
     browser.get('about:blank')
