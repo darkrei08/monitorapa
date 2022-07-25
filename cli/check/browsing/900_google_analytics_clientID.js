@@ -13,6 +13,12 @@ if (window.MonitoraPA['GA_clientID'] !== undefined){
     return window.MonitoraPA['GA_clientID'];
 }
 monitoraPAWaitForCallback();
+setTimeout(function(){
+    if(window.MonitoraPA['GA_clientID'] === undefined){
+        window.MonitoraPA['GA_clientID'] = '';
+        monitoraPACallbackCompleted();
+    }
+}, 15000);
 try{
     ga(function() {
         var allTrackers = ga.getAll();
