@@ -26,13 +26,17 @@ checksToRun = {}
 
 jsFramework = """
 
-window.MonitoraPA = {};
-window.monitoraPACallbackPending = 0;
+if(!Object.hasOwn(window, 'MonitoraPA')){
+    window.MonitoraPA = {};
+    window.monitoraPACallbackPending = 0;
+}
 
 function monitoraPAWaitForCallback(){
+debugger;
     ++window.monitoraPACallbackPending;
 }
 function monitoraPACallbackCompleted(){
+debugger;
     --window.monitoraPACallbackPending;
 }
 
@@ -258,11 +262,10 @@ def runChecks(automatism, browser):
             script += "return runAllJSChecks();";
         
             newResults = browser.execute_script(script)
-            #print('script executed:', newResults)
+            print('script executed:', newResults)
             for js in newResults:
-                results[js] = newResults[js]
-
-        #time.sleep(2000)   # to wait for some debugging
+                if newResults[js]['issues'] != None:
+                    results[js] = newResults[js]
  
         runPythonChecks('999_', results, browser)
         
