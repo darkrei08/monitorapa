@@ -31,11 +31,15 @@ class Execution:
         self.type = automatism.type
         self.address = automatism.address
         self.time = str(datetime.now())
-    def complete(self, issues = "", completionTime = str(datetime.now())) -> None:
+    def complete(self, issues = "", completionTime = None) -> None:
+        if completionTime is None:
+            completionTime = str(datetime.now())
         self.time = completionTime
         self.completed = "1"
         self.issues = issues.replace('\n', ' ').replace('\t', ' ')
-    def interrupt(self, issues, failTime = str(datetime.now())) -> None:
+    def interrupt(self, issues, failTime = None) -> None:
+        if failTime is None:
+            failTime = str(datetime.now())
         self.time = failTime
         self.issues = issues.replace('\n', ' ').replace('\t', ' ')
     def __str__(self) -> str:
