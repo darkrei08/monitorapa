@@ -11,7 +11,7 @@
 import sys
 sys.path.insert(0, '.') # NOTA: da eseguire dalla root del repository git
 
-from lib import check
+from lib import commons, check
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException, TimeoutException
@@ -301,13 +301,19 @@ def runChecks(automatism, browser):
                     execution.interrupt(issues, failTime)
             else:
                 issues = "%s: %s" % (err.__class__.__name__, err.msg)
-                execution.interrupt(issues)
+                execution.interrupt(issues, failTime)
             checksToRun[js]['output'].write(str(execution)+'\n')
+
+        if commons.isNetworkDown():
+            print('Network down: waiting...')
+            commons.waitUntilNetworkIsBack()
+            print('Network restored: back to work')
 
         if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
             raise BrowserNeedRestartException
         if 'invalid session id' in err.msg:
             raise BrowserNeedRestartException
+
 
     #time.sleep(100000)
 

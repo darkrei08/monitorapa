@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -u
 
 # This file is part of MonitoraPA
 #
@@ -47,7 +47,8 @@ def checkUrl(url, timeout):
         return False, "Error Connecting"
     except requests.exceptions.Timeout:
         return False, "Timeout Error"
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as rexp:
+        #print(rexp)
         return False, "Ops: Something Else"
     except requests.packages.urllib3.exceptions.LocationParseError:
         return False, "Url not valid"
@@ -65,7 +66,7 @@ def main(argv):
         print(f"input dataset not found: {dataset}");
         usage()
 
-    outputFile = check.outputFileName(dataset, 'browsing', 'website-reachability.tsv')
+    outputFile = check.outputFileName(dataset, 'website-reachability.tsv')
     directory = os.path.dirname(outputFile)
     #print("mkdir %s", directory)
     os.makedirs(directory, 0o755, True)
