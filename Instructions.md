@@ -25,25 +25,17 @@ Entriamo nella cartella dove posizioneremo i binari dei browser:
 ```
 cd browserBin
 ```
-Per gli utenti debian:
-```
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-```
-```
-sudo apt install ./google-chrome-stable_current_amd64.deb
-```
-Se non sei utente debian dovrai installare chrome come più si confà alla tua distribuzione
 
 Scarichiamo il binario di chrome e lo scompattiamo
 ```
-curl -L https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012728%2Fchrome-linux.zip\?generation\=1654813044687278\&alt\=media --output chrome-linux.zip
+curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012728%2Fchrome-linux.zip?generation=1654813044687278&alt=media' --output chrome-linux.zip
 ```
 ```
 unzip chrome-linux.zip
 ```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
-curl -L https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012728%2Fchromedriver_linux64.zip\?generation\=1654813050598651\&alt\=media --output chromedriver_linux64.zip
+curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchromedriver_linux64.zip?generation=1654830636205228&alt=media' --output chromedriver_linux64.zip
 ```
 ```
 unzip chromedriver_linux64.zip
