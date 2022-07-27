@@ -16,9 +16,12 @@ def isNetworkDown(host='monitora-pa.it'):
 def waitUntilNetworkIsBack(host='monitora-pa.it'):
     period = 0
     count = 0
+    print('waitUntilNetworkIsBack', end='')
     while isNetworkDown(host):
+        print('waitUntilNetworkIsBack', end='')
         if count % 80 == 0:
             period += 15
         time.sleep(period)
         count += 1
+    print()
 

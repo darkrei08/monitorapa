@@ -135,21 +135,26 @@ Where:
 
 
 def waitUntilPageLoaded(browser, period=2):
+    #print('waitUntilPageLoaded %s ' % browser.current_url, end='')
     
     readyState = False
     
     while not readyState:
+        #print('.', end='')
         time.sleep(period)
         readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
+    #print()
 
 
 def openBrowser(cacheDir):
     
     op = Options()
     op.binary_location = os.path.abspath(os.getcwd())+'/browserBin/chrome-linux/chrome'
+    op.headless = True
     op.add_argument('--user-data-dir='+cacheDir)
+    op.add_argument('--home='+cacheDir.replace('cache', 'home'))
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
-    op.add_argument('--headless')
+    #op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
     op.add_argument('--no-sandbox')
@@ -323,13 +328,14 @@ def restartBrowser(browser, cacheDir):
     tokill = process.children(recursive=True)
     tokill.append(process)
     browser.quit()
+    time.sleep(10)
     for p in tokill:
         try:
             p.kill()
         except psutil.NoSuchProcess:
             pass
     browser = None
-    time.sleep(5)
+    time.sleep(10)
     return openBrowser(cacheDir)
     
 def addPythonCheck(dataset, checksToRun, name, pythonFunction):
@@ -410,13 +416,13 @@ def run(dataset):
                     if browserReallyNeedARestart(browser):
                         browser = restartBrowser(browser, cacheDir)
                     
-                if count % 500 == 499:
-                    browser = restartBrowser(browser, cacheDir)
+                #if count % 500 == 499:
+                #    browser = restartBrowser(browser, cacheDir)
                 count += 1
     except (KeyboardInterrupt):
         print("Interrupted at %s" % count)
-
-    browser.quit()
+    finally:
+        browser.quit()
     
 
 def main(argv):
