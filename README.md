@@ -11,8 +11,8 @@ MonitoraPA is composed of several components.
 - A command line interface (in Python3) to run various automatic GDPR
   compliance checks on several Public Administrations and to automate
   some statistics and notifications to proper authorities in [cli/](./cli/),
-  as specified in [ARCHITETTURA.md](./cli/SPECIFICATION.md) and
-  documented in [MANUALE.md](./cli/MANUAL.md)
+  as specified in [ARCHITETTURA.md](./cli/ARCHITETTURA.md) and
+  documented in [MANUALE.md](./cli/MANUALE.md)
 
 - Some datasets to further extend the reach and impact of the project
   in [datasets/](./datasets/)
