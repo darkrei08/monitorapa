@@ -152,7 +152,7 @@ def openBrowser(cacheDir):
     op.binary_location = os.path.abspath(os.getcwd())+'/browserBin/chrome-linux/chrome'
     op.headless = True
     op.add_argument('--user-data-dir='+cacheDir)
-    op.add_argument('--home='+cacheDir.replace('cache', 'home'))
+    op.add_argument('--home='+cacheDir.replace('udd', 'home'))
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
     #op.add_argument('--headless')
     op.add_argument('--incognito')
@@ -170,7 +170,7 @@ def openBrowser(cacheDir):
     op.add_argument('--disable-cache')
     op.add_argument('--disable-application-cache')
     op.add_argument('--disable-offline-load-stale-cache')
-    op.add_argument('--disk-cache-size=0')
+    op.add_argument('--disk-cache-size=' + str(5*1024*1024)) # 5MB
     op.add_experimental_option("excludeSwitches", ["enable-automation"])
     op.add_experimental_option('useAutomationExtension', False)
     op.add_argument('--disable-blink-features=AutomationControlled')
