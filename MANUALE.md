@@ -28,7 +28,7 @@ cd browserBin
 
 Scarichiamo il binario di chrome e lo scompattiamo
 ```
-curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012728%2Fchrome-linux.zip?generation=1654813044687278&alt=media' --output chrome-linux.zip
+curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchrome-linux.zip?generation=1654830630689916&alt=media' --output chrome-linux.zip
 ```
 ```
 unzip chrome-linux.zip
