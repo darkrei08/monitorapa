@@ -47,6 +47,7 @@ var findElementToClick = function(elements){
         if(element.innerText.toLowerCase().indexOf('necessari') != -1
         || element.innerText.toLowerCase().indexOf('non ') != -1
         || element.innerText.toLowerCase().indexOf('selezionati') != -1
+        || element.innerText.toLowerCase().indexOf('senza') != -1
         || element.innerText.toLowerCase().indexOf('auswahl') != -1){
             continue;
         }
