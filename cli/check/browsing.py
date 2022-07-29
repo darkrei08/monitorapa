@@ -166,6 +166,7 @@ def openBrowser(cacheDir):
     op.add_argument('--disable-extensions')
     op.add_argument('--dns-prefetch-disable')
     op.add_argument('--disable-gpu')
+    op.add_argument('--disable-dev-shm-usage')
     op.add_argument('--ignore-certificate-errors')
     op.add_argument('--ignore-ssl-errors')
     op.add_argument('enable-features=NetworkServiceInProcess')
