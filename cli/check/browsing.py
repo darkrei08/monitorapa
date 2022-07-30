@@ -22,6 +22,7 @@ from datetime import datetime
 import os
 import os.path
 import psutil
+import shutil
 import tempfile
 
 checksToRun = {}
@@ -429,6 +430,8 @@ def run(dataset):
         print("Interrupted at %s" % count)
     finally:
         browser.quit()
+        time.sleep(5)
+        shutil.rmtree(cacheDir, False)
     
 
 def main(argv):
