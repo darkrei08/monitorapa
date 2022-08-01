@@ -48,6 +48,13 @@ curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 ```
 unzip chromedriver.zip -d chromedriver && cp -R chromedriver/chromedriver_linux64/* chromedriver && rm -rf chromedriver/chromedriver_linux64
 ```
+Scarichiamo il binario di geckodriver e lo scompattiamo
+```
+curl -L 'https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz' --output geckodriver.zip
+```
+```
+mkdir geckodriver && tar -xzf geckodriver.zip -C geckodriver 
+```
 Usciamo dalla cartella
 ```
 cd ..
@@ -60,6 +67,10 @@ Normalizziamo il dataset, ricorda di aggiustare il comando così da usare la dat
 ```
 python3 cli/data/enti/normalize.py out/enti/2022-07-25/enti.tsv 
 ```
+In questo punto se vuoi usare firefox come driver invece che chrome esegui il seguente comando
+```
+export SELECTED_BROWSER=firefox
+```
 Avviamo il check. Ricorda anche qua di sistemare la data.
 ```
 python3 cli/check/browsing.py out/enti/2022-07-25/dataset.tsv
@@ -68,7 +79,6 @@ python3 cli/check/browsing.py out/enti/2022-07-25/dataset.tsv
 # Sei su Windows e vuoi eseguire l'osservatorio?
 
 Requisiti
-- [Chrome](https://www.google.com/chrome/)
 - [Python](https://www.python.org/downloads/)
 
 Cloniamo la repo
@@ -110,6 +120,13 @@ curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 ```
 mkdir chromedriver && tar -xzf chromedriver.zip -C chromedriver --strip-components=1
 ```
+Scarichiamo il binario di geckodriver e lo scompattiamo
+```
+curl -L "https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-win64.zip" --output geckodriver.zip
+```
+```
+mkdir geckodriver && tar -xzf geckodriver.zip -C geckodriver
+```
 Usciamo dalla cartella
 ```
 cd ..
@@ -121,6 +138,10 @@ python cli\data\enti\download.py
 Normalizziamo il dataset, ricorda di aggiustare il comando così da usare la data odierna!
 ```
 python cli\data\enti\normalize.py out\enti\2022-07-25\enti.tsv 
+```
+In questo punto se vuoi usare firefox come driver invece che chrome esegui il seguente comando
+```
+set SELECTED_BROWSER=firefox
 ```
 Avviamo il check. Ricorda anche qua di sistemare la data.
 ```
