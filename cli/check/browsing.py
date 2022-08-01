@@ -148,19 +148,23 @@ def waitUntilPageLoaded(browser, period=2):
 
 
 def openBrowser(cacheDir):
-    
+
     op = Options()
-    op.binary_location = os.path.abspath(os.getcwd())+'/browserBin/chrome-linux/chrome'
+    chrome_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
+    if os.name == 'nt': # Se viene eseguito su windows
+        chrome_path += ".exe"
+    op.binary_location = chrome_path
     op.headless = True
 
     # Disabilita il downlaod dei file (trovato su https://stackoverflow.com/questions/27378883/how-can-i-disable-file-download-in-webdriver-chromeprofile)
     profile = {"download.default_directory": "NUL", "download.prompt_for_download": False, }
     op.add_experimental_option("prefs", profile)
-    
+
+    op.add_argument("--remote-debugging-port=9222") # https://github.com/SeleniumHQ/selenium/issues/6049#issuecomment-475382749
+
     op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--home='+cacheDir.replace('udd', 'home'))
     op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
-    #op.add_argument('--headless')
     op.add_argument('--incognito')
     op.add_argument('--disable-web-security')
     op.add_argument('--no-sandbox')
@@ -182,11 +186,15 @@ def openBrowser(cacheDir):
     op.add_experimental_option('useAutomationExtension', False)
     op.add_argument('--disable-blink-features=AutomationControlled')
 
-    browser = webdriver.Chrome(service=Service(os.path.abspath(os.getcwd())+'/browserBin/chromedriver_linux64/chromedriver'), options=op)
+    chromedriver_path = os.path.join(os.getcwd(),'browserBin/chromedriver/chromedriver')
+    if os.name == 'nt': # Se viene eseguito su windows
+        chromedriver_path += ".exe"
+    browser = webdriver.Chrome(service=Service(chromedriver_path), options=op)
+
     browser.set_page_load_timeout(90)
     
     browser.get('about:blank')
-    
+
     return browser
     
 def browseTo(browser, url):
