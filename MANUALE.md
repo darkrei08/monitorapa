@@ -48,13 +48,6 @@ curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 ```
 unzip chromedriver.zip -d chromedriver && cp -R chromedriver/chromedriver_linux64/* chromedriver && rm -rf chromedriver/chromedriver_linux64
 ```
-Scarichiamo il binario di geckodriver e lo scompattiamo
-```
-curl -L 'https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz' --output geckodriver.zip
-```
-```
-mkdir geckodriver && tar -xzf geckodriver.zip -C geckodriver 
-```
 Usciamo dalla cartella
 ```
 cd ..
@@ -119,13 +112,6 @@ curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 ```
 ```
 mkdir chromedriver && tar -xzf chromedriver.zip -C chromedriver --strip-components=1
-```
-Scarichiamo il binario di geckodriver e lo scompattiamo
-```
-curl -L "https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-win64.zip" --output geckodriver.zip
-```
-```
-mkdir geckodriver && tar -xzf geckodriver.zip -C geckodriver
 ```
 Usciamo dalla cartella
 ```

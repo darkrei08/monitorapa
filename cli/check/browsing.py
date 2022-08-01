@@ -163,94 +163,55 @@ def waitUntilPageLoaded(browser, period=2):
 
 
 def openBrowser(cacheDir):
-    browser = ""
-    if os.getenv('SELECTED_BROWSER') and os.getenv('SELECTED_BROWSER').upper() == "FIREFOX":
-        op = FirefoxOptions()
-        op.headless = True
+    op = ChromeOptions()
+    chrome_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
+    if os.name == 'nt': # Se viene eseguito su windows
+        chrome_path += ".exe"
+    op.binary_location = chrome_path
+    op.headless = True
 
-        # Da testare se riesce realmente a bloccare il download dei file
-        op.set_preference("browser.download.useDownloadDir", True)
-        op.set_preference("browser.download.folderList", 1)
-        op.set_preference("browser.download.dir", "NUL")
+    # Disabilita il downlaod dei file (trovato su https://stackoverflow.com/questions/27378883/how-can-i-disable-file-download-in-webdriver-chromeprofile)
+    profile = {"download.default_directory": "NUL", "download.prompt_for_download": False, }
+    op.add_experimental_option("prefs", profile)
 
-        op.add_argument('--user-data-dir='+cacheDir)
-        op.add_argument('--home='+cacheDir.replace('udd', 'home'))
-        op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
-        op.add_argument('--incognito')
-        op.add_argument('--disable-web-security')
-        op.add_argument('--no-sandbox')
-        op.add_argument('--disable-extensions')
-        op.add_argument('--dns-prefetch-disable')
-        op.add_argument('--disable-gpu')
-        op.add_argument('--disable-dev-shm-usage')
-        op.add_argument('--ignore-certificate-errors')
-        op.add_argument('--ignore-ssl-errors')
-        op.add_argument('enable-features=NetworkServiceInProcess')
-        op.add_argument('disable-features=NetworkService')
-        op.add_argument('--window-size=1920,1080')
-        op.add_argument('--aggressive-cache-discard')
-        op.add_argument('--disable-cache')
-        op.add_argument('--disable-application-cache')
-        op.add_argument('--disable-offline-load-stale-cache')
-        op.add_argument('--disk-cache-size=' + str(5*1024*1024)) # 5MB
-        op.add_argument('--disable-blink-features=AutomationControlled')
+    # Tentiamo porte finchè non ne troviamo una libera
+    base_port = 42069
+    while(not tryPort(base_port)):
+        base_port += 1
 
-        geckodriver_path = os.path.join(os.getcwd(),'browserBin/geckodriver/geckodriver')
-        if os.name == 'nt': # Se viene eseguito su windows
-            geckodriver_path += ".exe"
+    print(base_port)
     
-        browser = webdriver.Firefox(service=FirefoxService(geckodriver_path), options=op)
-        
-    else:
-        op = ChromeOptions()
-        chrome_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
-        if os.name == 'nt': # Se viene eseguito su windows
-            chrome_path += ".exe"
-        op.binary_location = chrome_path
-        op.headless = True
+    op.add_argument("--remote-debugging-port=" + str(base_port))
+    
+    op.add_argument('--user-data-dir='+cacheDir)
+    op.add_argument('--home='+cacheDir.replace('udd', 'home'))
+    op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
+    op.add_argument('--incognito')
+    op.add_argument('--disable-web-security')
+    op.add_argument('--no-sandbox')
+    op.add_argument('--disable-extensions')
+    op.add_argument('--dns-prefetch-disable')
+    op.add_argument('--disable-gpu')
+    op.add_argument('--disable-dev-shm-usage')
+    op.add_argument('--ignore-certificate-errors')
+    op.add_argument('--ignore-ssl-errors')
+    op.add_argument('enable-features=NetworkServiceInProcess')
+    op.add_argument('disable-features=NetworkService')
+    op.add_argument('--window-size=1920,1080')
+    op.add_argument('--aggressive-cache-discard')
+    op.add_argument('--disable-cache')
+    op.add_argument('--disable-application-cache')
+    op.add_argument('--disable-offline-load-stale-cache')
+    op.add_argument('--disk-cache-size=' + str(5*1024*1024)) # 5MB
+    op.add_experimental_option("excludeSwitches", ["enable-automation"])
+    op.add_experimental_option('useAutomationExtension', False)
+    op.add_argument('--disable-blink-features=AutomationControlled')
 
-        # Disabilita il downlaod dei file (trovato su https://stackoverflow.com/questions/27378883/how-can-i-disable-file-download-in-webdriver-chromeprofile)
-        profile = {"download.default_directory": "NUL", "download.prompt_for_download": False, }
-        op.add_experimental_option("prefs", profile)
-
-        # Tentiamo porte finchè non ne troviamo una libera
-        base_port = 42069
-        while(not tryPort(base_port)):
-            base_port += 1
-
-        print(base_port)
-        
-        op.add_argument("--remote-debugging-port=" + str(base_port))
-        
-        op.add_argument('--user-data-dir='+cacheDir)
-        op.add_argument('--home='+cacheDir.replace('udd', 'home'))
-        op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
-        op.add_argument('--incognito')
-        op.add_argument('--disable-web-security')
-        op.add_argument('--no-sandbox')
-        op.add_argument('--disable-extensions')
-        op.add_argument('--dns-prefetch-disable')
-        op.add_argument('--disable-gpu')
-        op.add_argument('--disable-dev-shm-usage')
-        op.add_argument('--ignore-certificate-errors')
-        op.add_argument('--ignore-ssl-errors')
-        op.add_argument('enable-features=NetworkServiceInProcess')
-        op.add_argument('disable-features=NetworkService')
-        op.add_argument('--window-size=1920,1080')
-        op.add_argument('--aggressive-cache-discard')
-        op.add_argument('--disable-cache')
-        op.add_argument('--disable-application-cache')
-        op.add_argument('--disable-offline-load-stale-cache')
-        op.add_argument('--disk-cache-size=' + str(5*1024*1024)) # 5MB
-        op.add_experimental_option("excludeSwitches", ["enable-automation"])
-        op.add_experimental_option('useAutomationExtension', False)
-        op.add_argument('--disable-blink-features=AutomationControlled')
-
-        chromedriver_path = os.path.join(os.getcwd(),'browserBin/chromedriver/chromedriver')
-        if os.name == 'nt': # Se viene eseguito su windows
-            chromedriver_path += ".exe"
-        
-        browser = webdriver.Chrome(service=ChromeService(chromedriver_path), options=op)
+    chromedriver_path = os.path.join(os.getcwd(),'browserBin/chromedriver/chromedriver')
+    if os.name == 'nt': # Se viene eseguito su windows
+        chromedriver_path += ".exe"
+    
+    browser = webdriver.Chrome(service=ChromeService(chromedriver_path), options=op)
 
     browser.set_page_load_timeout(90)
         
