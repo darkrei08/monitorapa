@@ -65,11 +65,13 @@ def outputFileName(dataset, *names):
     fileName = names[len(names) - 1]
     if not fileName.endswith('.tsv'):
         raise ValueError("Output file name must end with .tsv")
+    if '_' in fileName:
+		raise ValueError("Output file name cannot contain '_' (see issue #20)")
 
     executionDir = dirname(dataset)
     if basename(dataset) != 'dataset.tsv':
         mutableNames = list(names)
-        mutableNames[len(names) - 1] = fileName.replace('.tsv', '-' + basename(dataset))
+        mutableNames[len(names) - 1] = fileName.replace('.tsv', '_' + basename(dataset))
         names = tuple(mutableNames)
     
     return join(executionDir, 'check', *names)
