@@ -87,6 +87,8 @@ class Template:
             raise Error("Invalid Template: missing From header")
         if 'Subject' not in self._headers:
             raise Error("Invalid Template: missing Subject header")
+        if 'To' not in self._headers:
+            raise Error("Invalid Template: missing recipient")
         if self._message == "":
             raise Error("Invalid Template: missing message content")
             
