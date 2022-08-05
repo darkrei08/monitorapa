@@ -66,7 +66,7 @@ def outputFileName(dataset, *names):
     if not fileName.endswith('.tsv'):
         raise ValueError("Output file name must end with .tsv")
     if '_' in fileName:
-		raise ValueError("Output file name cannot contain '_' (see issue #20)")
+        raise ValueError("Output file name cannot contain '_' (see issue #20)")
 
     executionDir = dirname(dataset)
     if basename(dataset) != 'dataset.tsv':
