@@ -10,7 +10,6 @@
 import sys
 sys.path.insert(0, '.') # NOTA: da eseguire dalla root del repository git
 
-from lib import check
 import os
 import glob
 
