@@ -63,7 +63,7 @@ class Template:
         if len(lines) < 3:
             raise Error("Template is too short: " + filePath)
         if senderEmail == None or len(senderEmail) < 3 or "@" not in senderEmail:
-			raise Error("Really invalid email: '%s'" % senderEmail)
+            raise Error("Really invalid email: '%s'" % senderEmail)
 
         separator = lines[0]
         index = 1
@@ -81,10 +81,10 @@ class Template:
         while index < len(lines) and lines[index] != separator:
             header = lines[index].strip(" \n")
             if len(header) > 0:
-				headerNameEnd = header.index(':')
-				headerName = header[0:headerNameEnd].strip()
-				headerValue = header[headerNameEnd+1:].strip()
-				self._headers[headerName] = headerValue # aggiungiamo all'elenco di header
+                headerNameEnd = header.index(':')
+                headerName = header[0:headerNameEnd].strip()
+                headerValue = header[headerNameEnd+1:].strip()
+                self._headers[headerName] = headerValue # aggiungiamo all'elenco di header
             index += 1
         
         index += 1
@@ -95,7 +95,7 @@ class Template:
         if 'From' in self._headers and self._senderEmail not in self._headers['From']:
             raise Error("Invalid Template in " + filePath + ": From header must contains sender's email: " + self._senderEmail)
         if 'From' not in self._headers:
-			self._headers['From'] = self._senderEmail
+            self._headers['From'] = self._senderEmail
         if 'Subject' not in self._headers:
             raise Error("Invalid Template in " + filePath + ": missing Subject header")
         if 'To' not in self._headers:

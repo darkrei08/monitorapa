@@ -18,7 +18,6 @@ import ssl
 import configparser
 import sys
 import datetime
-import commons
 import os
 import time
 from email.message import EmailMessage
@@ -173,7 +172,7 @@ def main(argv):
                 lineNumber += 1
                 continue
             
-            cells = line.strip().split('\t')
+            cells = line.strip(" \n").split('\t')
             if len(columnNames) == 0:
                 columnNames = cells
                 if primaryKeyColumn not in columnNames:
@@ -200,4 +199,7 @@ def main(argv):
  
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except KeyboardInterrupt:
+        print("Interrupted.")
