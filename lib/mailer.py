@@ -61,9 +61,9 @@ class Template:
         with open(filePath, "r") as f:
             lines = f.readlines()
         if len(lines) < 3:
-            raise Error("Template is too short: " + filePath)
+            raise Exception("Template is too short: " + filePath)
         if senderEmail == None or len(senderEmail) < 3 or "@" not in senderEmail:
-            raise Error("Really invalid email: '%s'" % senderEmail)
+            raise Exception("Really invalid email: '%s'" % senderEmail)
 
         separator = lines[0]
         index = 1
@@ -93,15 +93,15 @@ class Template:
             index += 1
         
         if 'From' in self._headers and self._senderEmail not in self._headers['From']:
-            raise Error("Invalid Template in " + filePath + ": From header must contains sender's email: " + self._senderEmail)
+            raise Exception("Invalid Template in " + filePath + ": From header must contains sender's email: " + self._senderEmail)
         if 'From' not in self._headers:
             self._headers['From'] = self._senderEmail
         if 'Subject' not in self._headers:
-            raise Error("Invalid Template in " + filePath + ": missing Subject header")
+            raise Exception("Invalid Template in " + filePath + ": missing Subject header")
         if 'To' not in self._headers:
-            raise Error("Invalid Template in " + filePath + ": missing recipient")
+            raise Exception("Invalid Template in " + filePath + ": missing recipient")
         if self._message == "":
-            raise Error("Invalid Template in " + filePath + ": missing message content")
+            raise Exception("Invalid Template in " + filePath + ": missing message content")
             
     def headers(self, execution: check.Execution, environment: dict[str, str]) -> dict[str, str]:
         result = {}
@@ -117,8 +117,8 @@ def replaceVariables(execution: check.Execution, environment: dict[str, str], co
     """
     Sostituisce le variabili contenute in content con i valori forniti da environment e automatism
     """
-    content = content.replace("$owner", automatism.owner)
-    content = content.replace("$automatism", automatism.address)
+    content = content.replace("$owner", execution.owner)
+    content = content.replace("$automatism", execution.address)
     for var in environment:
         content = content.replace("${"+var+"}", environment[var])
     return content

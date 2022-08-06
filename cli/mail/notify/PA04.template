@@ -14,8 +14,9 @@ Questo notifica le violazioni del GDPR relative all'uso di Google Fonts.
 ATTENZIONE: concede 30 GIORNI per la rimozione!!!
 ______
 
-Subject: [RIF PA04.$cod_amm] Segnalazione di illecito utilizzo di Google Fonts su $sito_web e invito a risolvere la violazione del Regolamento generale sulla protezione dei dati personali 2016/679 (GDPR)
-From: Monitora PA <monitora-pa@peceasy.it>
+Subject: [RIF PA04.$cod_amm] [${Denominazione_ente} <${Mail1}>] Segnalazione di illecito utilizzo di Google Fonts su $sito_web e invito a risolvere la violazione del Regolamento generale sulla protezione dei dati personali 2016/679 (GDPR)
+From: Monitora PA <monitorapa@peceasy.it>
+To: ${Denominazione_ente} <${Mail1}>
 ______
 
 All'attenzione di:

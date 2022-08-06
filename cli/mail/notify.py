@@ -48,11 +48,11 @@ con il consueto formato di check.Execution:
 
 def computeLogFileName(checkToNotify, mailTemplatePath):
     if not '/check/' in checkToNotify:
-        raise Error("Checks to notify must be in a .../check/.. folder")
+        raise Exception("Checks to notify must be in a .../check/.. folder")
     if not checkToNotify.endswith('.tsv'):
-        raise Error("Checks to notify must end in .tsv")
+        raise Exception("Checks to notify must end in .tsv")
     if not mailTemplatePath.endswith('.template'):
-        raise Error("Mail templates must end in .template")
+        raise Exception("Mail templates must end in .template")
     templateName = os.path.basename(mailTemplatePath).replace('.template', '')
     result = checkToNotify
     result = result.replace('/check/', '/notify/')
@@ -79,20 +79,22 @@ def sendMail(server, template, environment, execution, debugReceiverEmail):
     
     try:
         headers = template.headers(execution, environment)
-        messageContent = template.message(execution, environment)
-        
-        msg = EmailMessage()
-        for header in headers:
-            msg[header] = headers[header]
         if debugReceiverEmail != "":
-            msg['To']=debugReceiverEmail
-        
+            headers["To"] = debugReceiverEmail
         # Ci mettiamo in Cc per vedere le mail che mandiamo
         # (Bcc non viene accettato dalle PEC)
         if 'Cc' in headers and headers['Cc'] != headers['From']:
-            msg['Cc'] = headers['From'] + '; ' + headers['Cc']
+            headers['Cc'] = headers['From'] + '; ' + headers['Cc']
         else:
-            msg['Cc'] = headers['From']
+            headers['Cc'] = headers['From']
+
+        messageContent = template.message(execution, environment)
+        
+        msg = EmailMessage()
+        
+        for header in headers:
+            msg[header] = headers[header]
+        
         
         msg.set_content(messageContent)
         
@@ -119,10 +121,26 @@ def loadCheckResults(fileName):
             if needsNotification(execution):
                 executions[execution.owner] = execution
     return executions
-    
+
+def initLogFile(logFile):
+    # Nel file di output dobbiamo aggiungere la riga di intestazione per
+    # avere la corrispondenza fra i numeri di riga e quelli nel database sorgente
+    columnHeaders = [
+        "Owner",
+        "Type",
+        "Automatism",
+        "Time",
+        "Completed",
+        "Details"
+    ]
+    logFile.write("\t".join(columnHeaders)+'\n')
 
 def main(argv):
     if len(argv) != 5:
+        usage()
+    
+    if not os.path.isfile('./cli/mail/notify.cfg'):
+        print("Cannot open configuration file at ./cli/mail/notify.cfg")
         usage()
     
     # NOTA BENE: carichiamo l'intero set delle esecuzioni che richiedono
@@ -138,8 +156,6 @@ def main(argv):
     configParser = configparser.RawConfigParser()
     configParser.read('./cli/mail/notify.cfg')
     config = dict(configParser.items('server-settings'))
-
-    sendForReal = str(config['send_for_real'])
 
     smtpServer = str(config['smtp_server'])
     port = int(config['port'])
@@ -164,34 +180,43 @@ def main(argv):
          open(logFileName, "a") as logFile, \
          smtplib.SMTP_SSL(smtpServer, port) as server:
 
-        server.login(sender_email, password) # login al server SMTP
+        try:
+            server.login(senderEmail, password) # login al server SMTP
+        except smtplib.SMTPAuthenticationError:
+            print("SMTPAuthenticationError: %s cannot authenticate to %s:%d with the given password." % (senderEmail, smtpServer, port))
+            usage()
         
         for line in inputFile:
             
-            if lineNumber < linesToSkip:
-                lineNumber += 1
-                continue
-            
+            loggedExecution = None
             cells = line.strip(" \n").split('\t')
             if len(columnNames) == 0:
                 columnNames = cells
                 if primaryKeyColumn not in columnNames:
-                    raise Error("Owner column '" + primaryKeyColumn + "' not found in "+argv[3])
+                    raise Exception("Owner column '" + primaryKeyColumn + "' not found in "+argv[3])
+                if linesToSkip == 0:
+                    initLogFile(logFile)
+                lineNumber += 1
+                continue
+
+            if lineNumber < linesToSkip:
+                lineNumber += 1
+                continue
+            
+            environment = {}
+            for index in range(len(columnNames)):
+                variableName = columnNames[index]
+                environment[variableName] = cells[index]
+            
+            owner = environment[primaryKeyColumn]
+            
+            if owner in executions:
+                loggedExecution = sendMail(server, template, environment, executions[owner], debugReceiverEmail)
+                time.sleep(delay)
             else:
-                environment = {}
-                for index in range(len(columnNames)):
-                    variableName = columnNames[index]
-                    environment[variableName] = cell[index]
-                
-                owner = environment[primaryKeyColumn]
-                loggedExecution = None
-                
-                if owner in executions:
-                    loggedExecution = sendMail(server, template, environment, executions[owner], debugReceiverEmail)
-                else:
-                    loggedAutomatism = check.Input(owner, 'MonitoraPA_Notification', 'unknown')
-                    loggedExecution = check.Execution(loggedAutomatism)
-                    loggedExecution = check.interrupt('No need for notification.')
+                loggedAutomatism = check.Input(owner, 'MonitoraPA_Notification', '')
+                loggedExecution = check.Execution(loggedAutomatism)
+                loggedExecution.interrupt('No need for notification.')
             
             print(lineNumber, loggedExecution)
             logFile.write(str(loggedExecution)+'\n')
