@@ -6,6 +6,8 @@
 # MonitoraPA is a hack. You can use it according to the terms and
 # conditions of the Hacking License (see LICENSE.txt)
 
+from lib import check
+
 """
 Classi di utilità per l'invio di segnalazioni agli enti in violazione
 
@@ -51,18 +53,24 @@ class Template:
        Le variabili non presenti non verranno sostituite, ma non comporteranno
        un errore.
     """
-    def __init__(self, filePath):
-        "Legge il template da filePath."
+    def __init__(self, filePath: str, senderEmail: str):
+        """
+        Legge il template da filePath.
+        Utilizza senderEmail come mittente.
+        """
         with open(filePath, "r") as f:
             lines = f.readlines()
         if len(lines) < 3:
             raise Error("Template is too short: " + filePath)
+        if senderEmail == None or len(senderEmail) < 3 or "@" not in senderEmail:
+			raise Error("Really invalid email: '%s'" % senderEmail)
 
         separator = lines[0]
         index = 1
         self._documentation = ""
         self._headers = {}
         self._message = ""
+        self._senderEmail = senderEmail
 
         # cicliamo le righe del template fino a trovare il separatore o la fine del file
         while index < len(lines) and lines[index] != separator:
@@ -83,26 +91,28 @@ class Template:
             self._message += lines[index] # aggiungiamo al messaggio
             index += 1
         
+        if 'From' in self._headers and self._senderEmail not in self._headers['From']:
+            raise Error("Invalid Template in " + filePath + ": From header must contains sender's email: " + self._senderEmail)
         if 'From' not in self._headers:
-            raise Error("Invalid Template: missing From header")
+			self._headers['From'] = self._senderEmail
         if 'Subject' not in self._headers:
-            raise Error("Invalid Template: missing Subject header")
+            raise Error("Invalid Template in " + filePath + ": missing Subject header")
         if 'To' not in self._headers:
-            raise Error("Invalid Template: missing recipient")
+            raise Error("Invalid Template in " + filePath + ": missing recipient")
         if self._message == "":
-            raise Error("Invalid Template: missing message content")
+            raise Error("Invalid Template in " + filePath + ": missing message content")
             
-    def headers(self, execution, environment):
+    def headers(self, execution: check.Execution, environment: dict[str, str]) -> dict[str, str]:
         result = {}
         for headerName in self._headers:
             result[headerName] = replaceVariables(execution, environment, self._headers[headerName])
         return result
     
-    def message(self, execution, environment):
+    def message(self, execution: check.Execution, environment: dict[str, str]) -> str:
         result = replaceVariables(execution, environment, self._message)
         return result
 
-def replaceVariables(automatism, environment, content):
+def replaceVariables(execution: check.Execution, environment: dict[str, str], content: str) -> str:
     """
     Sostituisce le variabili contenute in content con i valori forniti da environment e automatism
     """

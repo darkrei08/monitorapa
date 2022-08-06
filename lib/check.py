@@ -8,6 +8,9 @@
 from datetime import datetime
 
 class Input:
+    owner: str
+    type: str
+    address: str
     def __init__(self, owner: str, automatismType: str, automatismAddress: str):
         self.owner = owner
         self.type = automatismType

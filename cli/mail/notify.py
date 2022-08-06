@@ -24,6 +24,7 @@ import commons
 import os
 import time
 from email.message import EmailMessage
+from getpass import getpass
 
 
 def usage():
@@ -54,24 +55,76 @@ def computeLogFileName(checkToNotify):
     result = checkToNotify.replace('/check/', '/notify/')
     return result
 
-def sendMail(server, template, environment, execution):
-    pass
+def countLinesToSkip(logFileName):
+    result = 0
+    try:
+        with open(logFileName, "r") as inputFile:
+            for line in inputFile:
+                result += 1
+    except:
+        # in caso di errore si rifa dall'inizio
+        return 0
+    return result
+
+def sendMail(server, template, environment, execution, debugReceiverEmail):
+    loggedAutomatism = check.Input(execution.owner, 'MonitoraPA_Notification', execution.address)
+    loggedExecution = check.Execution(loggedAutomatism)
+    
+    try:
+        headers = template.headers(execution, environment)
+        messageContent = template.message(execution, environment)
+        
+        msg = EmailMessage()
+        for header in headers:
+            msg[header] = headers[header]
+        if debugReceiverEmail != "":
+            msg['To']=debugReceiverEmail
+        
+        # Ci mettiamo in Cc per vedere le mail che mandiamo
+        # (Bcc non viene accettato dalle PEC)
+        if 'Cc' in headers and headers['Cc'] != headers['From']:
+            msg['Cc'] = headers['From'] + '; ' + headers['Cc']
+        else:
+            msg['Cc'] = headers['From']
+        
+        msg.set_content(messageContent)
+        
+        #server.send_message(msg)   # Invio effettivo
+        
+        loggedExecution.complete(headers['To'])
+
+    except Exception as ex:
+        loggedExecution.interrupt(str(ex))
+
+    return loggedExecution
+
+def needsNotification(execution: check.Execution):
+    return execution.completed == "1" and execution.issues != ""
+
+def loadCheckResults(fileName):
+    # ATTENZIONE: stiamo assumendo una singola esecuzione per owner
+    # questo è vero per il dataset AgID-IPA ma potrebbe non esserlo in
+    # futuro!
+    executions = {}
+    with open(fileName, "r") as inputFile:
+        for line in inputFile:
+            execution = check.parseExecution(line)
+            if needsNotification(execution):
+                executions[execution.owner] = execution
+    return executions
+    
 
 def main(argv):
     if len(argv) != 5:
         usage()
     
-    needingNotifications = {}
-    with open(argv[1], "r") as inputFile:
-        for line in inputFile:
-            execution = check.parseExecution(line)
-            if execution.completed == "1" and execution.issues != "":
-                needingNotifications[execution.owner] = execution
-    if len(needingNotification) == 0:
-        return
+    # NOTA BENE: carichiamo l'intero set delle esecuzioni che richiedono
+    # notifica in memoria. Quando ciò dovesse risultare insostenibile
+    # possiamo effettuare gli invii in blocchi via ./cli/tools/split.py
+    executions = loadCheckResults(argv[1])
         
-    template = mailer.Template(argv[2])
     logFileName = computeLogFileName(argv[1])
+    linesToSkip = countLinesToSkip(logFileName)
     
     # leggo la configurazione del server mail
     # TODO: prompt per la password, in modo da non doverla salvare
@@ -84,126 +137,58 @@ def main(argv):
     smtpServer = str(config['smtp_server'])
     port = int(config['port'])
     senderEmail = str(config['sender_email'])
-    password = str(config['password'])
-    receiverEmail = str(config['debug_receiver_email'])
-    
+    delay = int(config['delay'])
+    debugReceiverEmail = str(config['debug_receiver_email'])
+    if debugReceiverEmail != "":
+        print("DEBUG RUN: mails will be sent to " + debugReceiverEmail);
 
-    # TODO leggere da logFileName quanti sono già stati trattati
-    # e ignorarne lo stesso numero durante la lettura della sorgente dati
-    skip = 0 # quanti da scartare
-    
-    primaryKey = argv[4]
-    count = 0
+    password = getpass("Insert Password for " + smtpServer + " (empty to stop):\n")
+    if password == "":
+        return
+    print("OK.")
+
+    template = mailer.Template(argv[2], senderEmail)
+
+    primaryKeyColumn = argv[4]
+    lineNumber = 0
     columnNames = []
-    with open(argv[3], "r") as inputFile and smtplib.SMTP_SSL(smtpServer, port) as server:
+
+    with open(argv[3], "r") as inputFile, \
+         open(logFileName, "a") as logFile, \
+         smtplib.SMTP_SSL(smtpServer, port) as server:
+
         server.login(sender_email, password) # login al server SMTP
         
         for line in inputFile:
+            
+            if lineNumber < linesToSkip:
+                lineNumber += 1
+                continue
+            
             cells = line.strip().split('\t')
             if len(columnNames) == 0:
                 columnNames = cells
-                if primaryKey not in columnNames:
-                    raise Error("Owner column '"+primaryKey+"' not found in "+argv[3])
+                if primaryKeyColumn not in columnNames:
+                    raise Error("Owner column '" + primaryKeyColumn + "' not found in "+argv[3])
             else:
                 environment = {}
                 for index in range(len(columnNames)):
                     variableName = columnNames[index]
                     environment[variableName] = cell[index]
-                if environment[primaryKey] in needingNotification:
-                    ownerNeedingNotification = environment[primaryKey]
-                    sendMail(server, template, environment, needingNotification[ownerNeedingNotification])
                 
+                owner = environment[primaryKeyColumn]
+                loggedExecution = None
                 
+                if owner in executions:
+                    loggedExecution = sendMail(server, template, environment, executions[owner], debugReceiverEmail)
+                else:
+                    loggedAutomatism = check.Input(owner, 'MonitoraPA_Notification', 'unknown')
+                    loggedExecution = check.Execution(loggedAutomatism)
+                    loggedExecution = check.interrupt('No need for notification.')
                 
-    # TODO
-    # TODO  Spostare l'invio dentro sendMail()
-    # TODO
-                
-    
-    subject = ""
-    message = ""
-    configParser = configparser.RawConfigParser()
-    configParser.read('./cli/point4.cfg')
-    config = dict(configParser.items('server-settings'))
-
-    send_for_real = str(config['send_for_real'])
-
-    smtp_server = str(config['smtp_server'])
-    port = int(config['port'])
-    sender_email = str(config['sender_email'])
-    password = str(config['password'])
-    receiver_email = str(config['debug_receiver_email'])
-
-    a = datetime.datetime(2022,5,11,17,2,20)
-
-
-    with smtplib.SMTP_SSL(smtp_server, port) as server:
-        server.login(sender_email, password)
-
-        try:
-            time_to_wait = int(argv[3])
-        except:
-            time_to_wait = 0
-        
-        count = 0
-        out_count = 1
-
-        if not os.path.exists(outDir + '/../point4/log.tsv'):
-            open(outDir + '/../point4/log.tsv', 'w').close()
-
-        length = 0
-
-        with open(outDir + '/../point4/log.tsv', 'r') as logf:
-            length = len(logf.readlines())
-            if length != 0:   
-                out_count = length 
-
-        with open(outDir + '/../point3/enti.tsv', 'r') as f, open(outDir + '/../point4/log.tsv', 'ab', buffering=0) as logf:
-            if length == 0:   
-                logf.write("Codice_IPA\tMail1\tSito_istituzionale\tData".encode("utf-8"))
-                logf.flush()
-     
-            for line in f:
-                if count >= out_count:
-                  
-                    fields = line.split('\t')
-
-                    if (int(fields[35]) == 1):
-
-                        primo_invio = a + datetime.timedelta(seconds=count*10)
-
-                        subject = process(fields, subject, primo_invio)
-                        msg = process(fields, message, primo_invio)
-                        
-                        print("Codice: " + fields[1] + ", Denominazione: " + fields[2] + ", nome: " + fields[12]
-          + ", cognome: " + fields[13] + ", sito: " + fields[29].lower() + ", mail: " + fields[19], ", result: " + fields[35])
-
-                        if send_for_real.lower() == "true":
-                            # Rimpiazzare receiver_email con fields[19] quando si vuole mandare realmente le mail
-                            final_msg = EmailMessage()
-                            final_msg['From']=sender_email
-
-                            final_msg['To']=receiver_email #per provare in debug: receiver_email altrimenti fields[19]
-                            final_msg['Cc']=sender_email #Per vedere le mail che mandiamo, Bcc non pare essere accettato.
-
-                            final_msg['Subject']=subject
-                            final_msg.set_content(msg)
-
-                            print(fields[19])
-                            
-                            #server.send_message(final_msg)
-                            
-                            logf.write(("\n%s\t%s\t%s\t%s" % (fields[1], fields[19], fields[29], str(datetime.datetime.now()))).encode("utf-8"))
-                            logf.flush()
-
-                            time.sleep(time_to_wait)
-                
-                    else:
-                        logf.write(("\n%s\t%s\t%s" % (fields[1], fields[19], fields[29])).encode("utf-8"))
-                        logf.flush()
-
-                count += 1
-
+            logFile.write(str(loggedExecution)+'\n')
+            lineNumber += 1
+ 
 
 if __name__ == "__main__":
     main(sys.argv)
