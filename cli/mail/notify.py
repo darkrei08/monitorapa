@@ -3,8 +3,6 @@
 # This file is part of MonitoraPA
 #
 # Copyright (C) 2022 Leonardo Canello <leonardocanello@protonmail.com>
-# Copyright (C) 2022 Stefano Gazzella <stefano@gdpready.it>
-# Copyright (C) 2022 Mario Sabatino <mario@sabatino.pro>
 # Copyright (C) 2022 Giacomo Tesio <giacomo@tesio.it>
 #
 # MonitoraPA is a hack. You can use it according to the terms and
@@ -29,18 +27,18 @@ from getpass import getpass
 
 def usage():
     print("""
-./cli/mail/notify.py out/$SOURCE/$DATE/check/output.tsv cli/mail/notify/template.PA04.txt out/$SOURCE/$DATE/enti.tsv "Colonna Owner"
+./cli/mail/notify.py out/$SOURCE/$DATE/check/output.tsv cli/mail/notify/PA04.template out/$SOURCE/$DATE/enti.tsv "Colonna Owner"
 
 Laddove:
 - out/$SOURCE/$DATE/check/output.tsv contiene l'output di un check i cui
   problemi si intende segnalare ai responsabili affinché li correggano
-- cli/mail/notify/template.PA04.txt è il template della mail che si intende inviare
+- cli/mail/notify/PA04.template è il template della mail che si intende inviare
 - out/$SOURCE/$DATE/enti.tsv è il dataset iniziale da cui si era partiti
   che fornirà le variabili sostituite nel testo della mail
 - "Colonna Owner" è la colonna in cui è possibile rintracciare la chiave
   contenuta nella prima colonna dell'output.tsv
   
-I log degli invii effettuati viene salvato in out/$SOURCE/$DATE/notify/output.tsv
+I log degli invii effettuati viene salvato in out/$SOURCE/$DATE/notify/output.PA04.tsv
 un log per ogni riga presente nel file sorgente iniziale (ad esempio enti.tsv)
 con il consueto formato di check.Execution:
 - Completed == 0 and Issues = "" => l'invio non era necessario
@@ -49,10 +47,20 @@ con il consueto formato di check.Execution:
 """)
     sys.exit(-1)
 
-def computeLogFileName(checkToNotify):
+def computeLogFileName(checkToNotify, mailTemplatePath):
     if not '/check/' in checkToNotify:
         raise Error("Checks to notify must be in a .../check/.. folder")
-    result = checkToNotify.replace('/check/', '/notify/')
+    if not checkToNotify.endswith('.tsv'):
+        raise Error("Checks to notify must end in .tsv")
+    if not mailTemplatePath.endswith('.template'):
+        raise Error("Mail templates must end in .template")
+    templateName = os.path.basename(mailTemplatePath).replace('.template', '')
+    result = checkToNotify
+    result = result.replace('/check/', '/notify/')
+    result = result.replace('.tsv', '.' + templateName + '.tsv')
+    
+    os.makedirs(os.path.dirname(result), 0o755, True)
+    
     return result
 
 def countLinesToSkip(logFileName):
@@ -123,7 +131,7 @@ def main(argv):
     # possiamo effettuare gli invii in blocchi via ./cli/tools/split.py
     executions = loadCheckResults(argv[1])
         
-    logFileName = computeLogFileName(argv[1])
+    logFileName = computeLogFileName(argv[1], argv[2])
     linesToSkip = countLinesToSkip(logFileName)
     
     # leggo la configurazione del server mail
@@ -185,7 +193,8 @@ def main(argv):
                     loggedAutomatism = check.Input(owner, 'MonitoraPA_Notification', 'unknown')
                     loggedExecution = check.Execution(loggedAutomatism)
                     loggedExecution = check.interrupt('No need for notification.')
-                
+            
+            print(lineNumber, loggedExecution)
             logFile.write(str(loggedExecution)+'\n')
             lineNumber += 1
  

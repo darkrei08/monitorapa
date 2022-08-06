@@ -1,0 +1,147 @@
+______
+
+This file is part of MonitoraPA
+
+Copyright (C) 2022 Stefano Gazzella <stefano@gdpready.it>
+Copyright (C) 2022 Mario Sabatino <mario@sabatino.pro>
+Copyright (C) 2022 Giacomo Tesio <giacomo@tesio.it>
+
+MonitoraPA is a hack. You can use it according to the terms and
+conditions of the Hacking License (see LICENSE.txt)
+
+Questo notifica le violazioni del GDPR relative all'uso di Google Fonts.
+
+ATTENZIONE: concede 30 GIORNI per la rimozione!!!
+______
+
+Subject: [RIF PA04.$cod_amm] Segnalazione di illecito utilizzo di Google Fonts su $sito_web e invito a risolvere la violazione del Regolamento generale sulla protezione dei dati personali 2016/679 (GDPR)
+From: Monitora PA <monitora-pa@peceasy.it>
+______
+
+All'attenzione di:
+
+- $desc_amm, in qualità di soggetto titolare del trattamento ai 
+  sensi dell'art. 4 par. 1 n. 7) - GDPR.
+
+Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980 
+(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome e
+per conto delle associazioni sostenitrici in calce nonché della comunità
+di hacker, attiviste, attivisti, cittadine e cittadini che, attenti a
+riservatezza, libertà e diritti cibernetici, ha realizzato
+Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
+l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
+e a domicilio fisico via Aretusa 34, a Milano.
+
+Vogliamo segnalarvi che tramite l'esecuzione di Agosto del nostro nuovo
+osservatorio automatico distribuito, abbiamo rilevato che il vostro
+Ente incorpora ancora diversi font e css richiesti direttamente ai
+server di Google Fonts nel suo sito $sito_istituzionale, nonostante
+questo strumento non  sia attualmente conforme, in assenza di misure
+tecniche supplementari efficaci, alle disposizioni del GDPR in ordine
+al trasferimento transfrontaliero di dati personali.
+
+L'inclusione di tali risorse determina l'invio sistematico, attraverso
+gli header HTTP trasmessi automaticamente dal browser dei visitatori
+del vostro sito, di diversi dati personali dell'utente verso i server
+di Google, fra cui:
+
+- indirizzo IP
+- User Agent
+- sistema operativo
+- la visita del vostro sito
+- la data e l'ora di tale visita
+- i dati personali descrittivi che dall'interesse per i contenuti
+  del vostro sito è possibile dedurre
+
+Informazioni più che sufficienti, per Google, ad identificare
+il soggetto interessato e ad arricchirne il profilo
+cognitivo-comportamentale.
+
+Come ben noto anche a seguito della sentenza Schrems II della Corte di
+Giustizia dell'Unione Europea, l'uso Google Fonts non è attualmente
+conforme, in assenza di misure tecniche supplementari efficaci che non
+ci risultano presenti sul vostro sito, alle disposizioni del GDPR in
+ordine al trasferimento transfrontaliero dei dati personali.
+In forza di ciò, il Tribunale di Monaco, con la sentenza definitiva 
+3 O 17493/20  del 19 gennaio 2022 (disponibile all'indirizzo
+https://openjur.de/u/2384915.html ) ha già riconosciuto a 
+un soggetto interessato un risarcimento di 100€ da parte del Titolare 
+del Trattamento che aveva adottato tale strumento, imponendo al
+Titolare stesso l'interruzione immediata delle chiamate verso 
+Google Fonts pena una multa fino 250.000€ ogni sei mesi in caso
+di violazioni future.
+
+Riteniamo quindi che il mantenimento da parte dell'Ente di tale
+trasferimento di dati personali non conforme al disposto normativo,
+in ragione del trasferimento trasfrontaliero di dati personali
+e in assenza di una condizione legittimante ai sensi degli artt. 44
+e ss. GDPR, esponga a rischi ingiustificati tutti i visitatori del
+sito $sito_web.
+
+Pertanto invitiamo l'Ente in indirizzo a voler provvedere
+alla rimozione di Google Fonts e di qualsiasi altra risorsa incorporata
+nel suddetto sito web che produca effetti analoghi, entro il termine di
+30 giorni dalla ricezione della presente.
+In considerazione del periodo di ferie estive abbiamo infatti ritenuto, 
+in via del tutto eccezionale, di protrarre il consueto termine di 
+ulteriori 15 giorni, anche in considerazione dell'imminente scadenza, 
+il 7 settembre 2022, dei 90 giorni concessi dall'Autorità Garante 
+della Protezione dei Dati Personali per interrompere i trasferimenti 
+trasfrontalieri in violazione del GDPR prima dell'avvio delle ispezioni:
+https://www.garanteprivacy.it/web/guest/home/docweb/-/docweb-display/docweb/9782874
+
+In alternativa e negli stessi termini, invitiamo l'Ente ad adottare
+misure tecniche supplementari efficaci a protezione dei dati personali
+dei visitatori, tali che nessun dato (o insieme di dati),
+raggiungendone i server, possa permettere a Google di identificare con
+probabilità non trascurabile un qualsiasi cittadino italiano o europeo.
+
+Ci teniamo a precisare che per quanto riguarda Google Fonts, da un
+punto di vista tecnico l'interruzione del trasferimento è piuttosto
+semplice: sarà sufficiente installare sul vostro server web suddette
+risorse e modificare le pagine del vostro sito affinché le incorporino 
+attraverso chiamate locali invece di richiederle ai server di Google.
+
+Il supporto del web master del vostro sito sarà sicuramente risolutivo
+anche per tutti gli altri trasferimenti analoghi.
+
+In difetto di ottemperanza da parte Vostra nei termini su indicati
+agli obblighi di legge in materia di trattamento dei dati personali,
+ci vedremo costretti a inviare una segnalazione al Garante per la
+protezione dei dati personali, ai sensi e per gli effetti
+dell'art. 144 del Codice in materia di protezione dei dati personali
+(DECRETO LEGISLATIVO 30 giugno 2003, n.196 e successive modifiche
+e integrazioni) per una valutazione della Vostra condotta anche ai
+fini dell'emanazione di eventuali provvedimenti di cui
+all'art. 58 del GDPR.
+
+Rimaniamo a disposizione per ulteriori chiarimenti.
+
+
+Con osservanza.
+
+Distinti saluti
+
+
+Fabio Pietrosanti
+Co-fondatore di Monitora PA
+https://monitora-pa.it
+
+Con il sostegno di:
+
+- Hermes Center, Associazione con sede in Via Aterusa n. 34, 20129
+  Milano, in persona del legale rappresentante p.t Fabio Pietrosanti  
+  C.F. 97621810155 https://www.hermescenter.org/
+- LinuxTrent, Associazione con sede in Via Marconi n. 105, 38057
+  Pergine Valsugana, in persona del legale rappresentante p.t Roberto
+  Resoli C.F. 96100790227 https://www.linuxtrent.it/
+- Open Genova, Associazione con sede in Piazza Matteotti n. 5
+  c/o Mentelocale.it, 16123 Genova, in persona del legale
+  rappresentante  p.t Pietro Biase C.F. 95165570102
+  https://associazione.opengenova.org/
+- AsCII, Associazione con sede in Via del Mare n.108, 80016
+  Marano di Napoli, in persona del legale rappresentante p.t Avvocato
+  Marco Andreoli C.F. 94200750639 https://www.ascii.it/
+- AsSoLi, Associazione con sede in Via San Quintino n. 32, 10121
+  Torino, in persona del legale rappresentante p.t Angelo Raffaele Meo
+  C.F. 94082140487 https://www.softwarelibero.it/

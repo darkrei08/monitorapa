@@ -80,10 +80,11 @@ class Template:
         index += 1
         while index < len(lines) and lines[index] != separator:
             header = lines[index].strip(" \n")
-            headerNameEnd = header.indexOf(':')
-            headerName = header[0:headerNameEnd].strip()
-            headerValue = header[headerNameEnd+1:].strip()
-            self._headers[headerName] = headerValue # aggiungiamo all'elenco di header
+            if len(header) > 0:
+				headerNameEnd = header.index(':')
+				headerName = header[0:headerNameEnd].strip()
+				headerValue = header[headerNameEnd+1:].strip()
+				self._headers[headerName] = headerValue # aggiungiamo all'elenco di header
             index += 1
         
         index += 1
