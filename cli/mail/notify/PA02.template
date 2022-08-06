@@ -13,12 +13,12 @@ Questo template è stato usato per l'invio di Giugno 2022 relativo
 a Google Analytics
 ______
 
-Subject: Segnalazione di illecito utilizzo di Google Analytics su $cod_amm e invito a risolvere la violazione del Regolamento generale sulla protezione dei dati personali 2016/679 (GDPR) all'interno del sito web $sito_istituzionale
+Subject: Segnalazione di illecito utilizzo di Google Analytics su ${Codice_IPA} e invito a risolvere la violazione del Regolamento generale sulla protezione dei dati personali 2016/679 (GDPR) all'interno del sito web $sito_istituzionale
 From: Monitora PA <monitorapa@peceasy.it>
 To: ${Denominazione_ente} <${Mail1}>
 ______
 
-All'att.ne di $cod_amm, in qualità di soggetto titolare 
+All'att.ne di ${Codice_IPA}, in qualità di soggetto titolare 
 del trattamento ai sensi dell'art. 4 par. 1 n. 7) - GDPR.
 
 Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980 
@@ -29,9 +29,9 @@ ha realizzato Monitora PA (https://monitora-pa.it), eleggendo a
 domicilio digitale l'indirizzo di posta elettronica certificata
 monitorapa@peceasy.it, e a domicilio fisico via Aretusa 34, a Milano.
 
-Facciamo seguito alla PEC già inviata in data $primo_invio, avendo
+Facciamo seguito alla PEC già inviata in data ${primo_invio}, avendo
 rilevato come il vostro Ente utilizzi ancora Google Analytics (GA)
-nel suo sito $sito_istituzionale.
+nel suo sito ${Sito_istituzionale} .
 Come ben noto questo strumento non è attualmente conforme, in
 assenza di misure tecniche supplementari efficaci, alle disposizioni
 del GDPR in ordine al trasferimento transfrontaliero dei dati personali
@@ -47,7 +47,7 @@ trattamento di dati personali non conforme al disposto normativo,
 in ragione del trasferimento trasfrontaliero di dati personali
 e in assenza di una condizione legittimante ai sensi degli artt. 44
 e ss. GDPR, esponga a rischi ingiustificati tutti i visitatori del
-sito $sito_istituzionale.
+sito ${Sito_istituzionale}.
 
 Pertanto invitiamo nuovamente l'Ente in indirizzo a voler provvedere
 alla rimozione di GA e di qualsiasi altro strumento di analisi
