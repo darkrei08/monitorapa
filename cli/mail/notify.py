@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -u
 
 # This file is part of MonitoraPA
 #
@@ -84,11 +84,14 @@ def sendMail(server, template, environment, execution, debugReceiverEmail):
         # Ci mettiamo in Cc per vedere le mail che mandiamo
         # (Bcc non viene accettato dalle PEC)
         if 'Cc' in headers and headers['Cc'] != headers['From']:
-            headers['Cc'] = headers['From'] + '; ' + headers['Cc']
+            headers['Cc'] = headers['From'] + ', ' + headers['Cc']
         else:
             headers['Cc'] = headers['From']
 
         messageContent = template.message(execution, environment)
+        
+        #print(headers)
+        #print(messageContent)
         
         msg = EmailMessage()
         
@@ -98,9 +101,10 @@ def sendMail(server, template, environment, execution, debugReceiverEmail):
         
         msg.set_content(messageContent)
         
-        #server.send_message(msg)   # Invio effettivo
+        server.send_message(msg)   # Invio effettivo
         
         loggedExecution.complete(headers['To'])
+        #sys.exit()
 
     except Exception as ex:
         loggedExecution.interrupt(str(ex))
@@ -221,6 +225,7 @@ def main(argv):
             print(lineNumber, loggedExecution)
             logFile.write(str(loggedExecution)+'\n')
             lineNumber += 1
+
  
 
 if __name__ == "__main__":
