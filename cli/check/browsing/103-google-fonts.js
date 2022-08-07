@@ -16,7 +16,7 @@ var fonts = []
 
 // direct link to stylesheet
 for(var sc of document.getElementsByTagName('link')){
-    if(sc.rel != "preconnect" && sc.href.indexOf('fonts.google') > -1) {
+    if(sc.rel != "preconnect" && sc.href.indexOf('//fonts.google') > -1) {
         console.log('MonitoraPA: found Google Fonts in ', sc);
         fonts.push(sc.href);
     }
@@ -48,7 +48,7 @@ if(fonts.length == 0){
                 console.log('MonitoraPA: found Google Fonts in ', urls, sc);
                 for(var i = 0; i<urls.length; ++i){
                     var candidate = urls[i];
-                    if(candidate.indexOf('woff') > -1 && (candidate.indexOf('google') > -1 || candidate.indexOf('gstatic') > -1) ) {
+                    if(candidate.indexOf('woff') > -1 && (candidate.indexOf('//fonts.google') > -1 || candidate.indexOf('//fonts.gstatic') > -1 || candidate.indexOf('//themes.googleusercontent') > -1) ) {
                         fonts.push(candidate);
                     }
                 }
