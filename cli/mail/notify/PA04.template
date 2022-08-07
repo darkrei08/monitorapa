@@ -25,21 +25,20 @@ All'attenzione di:
   soggetto titolare del trattamento ai sensi dell'art. 4 par. 1 n. 7 - GDPR.
 
 Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980 
-(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome e
-per conto delle associazioni sostenitrici in calce nonché della comunità
-di hacker, attiviste, attivisti, cittadine e cittadini che, attenti a
-riservatezza, libertà e diritti cibernetici, ha realizzato
+(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome della 
+comunità di hacker, attiviste, attivisti, cittadine e cittadini che, 
+attenti a riservatezza, libertà e diritti cibernetici, ha realizzato
 Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
 l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
 e a domicilio fisico via Aretusa 34, a Milano.
 
-Vogliamo segnalarvi che tramite l'esecuzione di Agosto del nostro nuovo
+Vogliamo segnalarvi che, tramite l'esecuzione di agosto del nostro nuovo
 osservatorio automatico distribuito, abbiamo rilevato che il vostro
 Ente incorpora ancora diversi font e css richiesti direttamente ai
-server di Google Fonts nel suo sito ${Sito_istituzionale}, nonostante
-questo strumento non  sia attualmente conforme, in assenza di misure
-tecniche supplementari efficaci, alle disposizioni del GDPR in ordine
-al trasferimento transfrontaliero di dati personali.
+server di Google Fonts nel suo sito ${Sito_istituzionale}, 
+nonostante questo strumento non sia attualmente conforme, in assenza
+di misure tecniche supplementari efficaci, alle disposizioni del GDPR
+in ordine al trasferimento transfrontaliero di dati personali.
 
 L'inclusione di tali risorse determina l'invio sistematico, attraverso
 gli header HTTP trasmessi automaticamente dal browser dei visitatori
@@ -49,10 +48,11 @@ di Google, fra cui:
 - indirizzo IP
 - User Agent
 - sistema operativo
+- lingue conosciute
 - la visita del vostro sito
 - la data e l'ora di tale visita
-- i dati personali descrittivi che dall'interesse per i contenuti
-  del vostro sito è possibile dedurre
+- i dati personali descrittivi deducibili dall'incrocio dei dati 
+  precedenti e dall'interesse per i contenuti del vostro sito
 
 Informazioni più che sufficienti, per Google, ad identificare
 il soggetto interessato e ad arricchirne il profilo
