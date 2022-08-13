@@ -280,7 +280,7 @@ def runChecks(automatism, browser):
         browseTo(browser, url)
         actual_url = browser.current_url
 
-        runPythonChecks('000_', results, browser)
+        runPythonChecks('000-', results, browser)
         
         #time.sleep(20)  # to wait for F12
         
@@ -312,7 +312,7 @@ def runChecks(automatism, browser):
                 if newResults[js]['issues'] != None:
                     results[js] = newResults[js]
  
-        runPythonChecks('999_', results, browser)
+        runPythonChecks('999-', results, browser)
         
         completionTime = str(datetime.now())
                 
@@ -408,15 +408,15 @@ def addJSCheck(dataset, checksToRun, jsFile):
 
 def loadChecks(dataset, checksToRun):
     
-    addPythonCheck(dataset, checksToRun, '000_actual_url', checkActualUrl)
-    addPythonCheck(dataset, checksToRun, '000_cookies', checkCookies)
+    addPythonCheck(dataset, checksToRun, '000-actual-url', checkActualUrl)
+    addPythonCheck(dataset, checksToRun, '000-cookies', checkCookies)
     
     files = os.listdir('./cli/check/browsing/')
     files = sorted(files)
     for jsFile in files:
         addJSCheck(dataset, checksToRun, jsFile)
 
-    addPythonCheck(dataset, checksToRun, '999_cookies', checkCookies)
+    addPythonCheck(dataset, checksToRun, '999-cookies', checkCookies)
 
 def browserReallyNeedARestart(browser):
     try:
