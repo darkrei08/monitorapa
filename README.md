@@ -9,7 +9,7 @@ Telegram: https://t.me/monitoraPA
 MonitoraPA is composed of several components.
 
 - A command line interface (in Python3) to run various automatic GDPR
-  compliance checks on several Public Administrations and to automate
+  compliance checks on several systems (websites, email, cms...) and to automate
   some statistics and notifications to proper authorities in [cli/](./cli/),
   as specified in [ARCHITETTURA.md](./ARCHITETTURA.md) and
   documented in [MANUALE.md](./MANUALE.md)
