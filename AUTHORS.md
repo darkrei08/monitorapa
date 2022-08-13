@@ -6,3 +6,5 @@ MonitoringPA. Each file list actual contributors.
 - Fabio Pietrosanti <fabio.pietrosanti@hermescenter.org>
 - Giacomo Tesio <giacomo@tesio.it>
 - Leonardo Canello <leonardocanello@protonmail.com>
+- Andrea Foletto <andrea@yaaaw.it>
+- Pietro Biase <pietro@pietrobiase.it>
