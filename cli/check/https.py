@@ -52,6 +52,10 @@ def check_url(url):
             return True, status_code
         else:
             return False, status_code
+    except KeyboardInterrupt:
+        # non blocchiamo questa eccezione per permettere l'interruzione
+        # del check con un semplice Ctrl+C
+        raise
     except:
     	return False, 0
 
