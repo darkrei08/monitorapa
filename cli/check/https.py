@@ -59,10 +59,13 @@ def check_url(url):
     except:
     	return False, 0
 
+def stripProtocol(url):
+    [protocol, rest] = url.split('://')
+    return rest
 
 def runCheckProtocol(url):
     
-    url_https = 'https://' + url.split('//')[1]
+    url_https = 'https://' + stripProtocol(url)
     esito, status = check_url(url_https)
     
     if esito == True:
@@ -74,7 +77,7 @@ def runCheckProtocol(url):
         print("  Oh no, %s does not load with https" % url_https)
         
         
-    url_http = 'http://' + url.split('//')[1]
+    url_http = 'http://' + stripProtocol(url)
     esito, status = check_url(url_http)  
     if esito == True:
         print("  Nice, you can load %s with http" % url_http)
