@@ -1,5 +1,5 @@
 # MonitoraPA
-Monitoring system for GDPR compliance of Public Administrations
+Monitoring system legal compliance (GDPR & all) of software systems
 
 Telegram: https://t.me/monitoraPA   
 [Element/Matrix](https://element.io): https://matrix.to/#/%23MonitoraPA:matrix.opencloud.lu
