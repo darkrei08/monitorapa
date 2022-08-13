@@ -86,7 +86,7 @@ def runCheckProtocol(url):
 def run(dataset):
     outputFile = check.outputFileName(dataset, 'https.tsv')
     directory = os.path.dirname(outputFile)
-    print("mkdir %s", directory)
+    print("mkdir %s" % directory)
     os.makedirs(directory, 0o755, True)
 
     count = 0
