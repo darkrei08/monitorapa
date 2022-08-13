@@ -28,7 +28,7 @@ import requests
 TimeoutValue = 10	# in seconds
 
 # value written in tsv as result
-HTTPS_OK = 'HTTPS-ok'
+HTTPS_OK = ''
 HTTP_OK = 'HTTP-only'
 HTTPS_HTTP_NOK = 'HTTPS_HTTP_nok'
 
