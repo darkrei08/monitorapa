@@ -70,7 +70,7 @@ def runCheckProtocol(url):
     
     if esito == True:
         print("  Nice, you can load %s with https" % url_https)
-        text = HTTPS_OK+" ("+str(status)+")"
+        text = ""
         return True, text
 
     else:
