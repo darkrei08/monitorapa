@@ -355,7 +355,8 @@ def runChecks(automatism, browser):
             raise BrowserNeedRestartException
         if 'invalid session id' in err.msg:
             raise BrowserNeedRestartException
-
+        if 'chrome not reachable' in err.msg:
+            raise BrowserNeedRestartException
 
     #time.sleep(100000)
 
