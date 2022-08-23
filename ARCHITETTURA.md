@@ -124,14 +124,14 @@ che andranno sostituiti con uno spazio prima di aggiungerli al file
 
 ``` 
 ./cli/check/
-  http.py <- script precedentemente proposto da Emilie
-  selenium.py <- attuale point2.py
-  selenium/   <- cartella che contiene i test da effettuare via browser
-    google_analytics.js <- test per la presenza di Google Analytics
-    google_font.js      <- test per la presenza di Google Fonts
-    google_maps.js      <- test per la presenza di Google Maps
-    google_youtube.js   <- test per la presenza di video YouTube
-    facebook_pixel.js   <- test per la presenza di Facebook Pixel
+  https.py <- script di verifica HTTPS
+  browsing.py <- attuale point2.py
+  browsing/   <- cartella che contiene i test da effettuare in ordine alfabetico via browser
+    100-google-analytics-clientID.js   <- test per la presenza di Google Analytics
+    101-consent.js                     <- test per il click sul consenso
+    102-google-analytics-trackingID.js <- test per la presenza di Google Maps
+    103-google-fonts.js                <- test per la presenza di video YouTube
+    900-google-analytics-clientID.js   <- test per la presenza di Facebook Pixel
     ...
   smtp.py <- script di verifica del record mx delle mail istituzionali per
              - individuare chi usa GMail o Outlook 365 con una mail non
@@ -151,8 +151,8 @@ scriverà il proprio output in ./out/enti/YYYY-MM-DD/check/http.tsv
 `./cli/check/smtp.py ./out/enti/YYYY-MM-DD/dataset.tsv`
 scriverà il proprio output in ./out/enti/YYYY-MM-DD/check/smtp.tsv
 
-`./cli/check/selenium.py ./out/enti/YYYY-MM-DD/dataset.tsv`
-scriverà il proprio output in ./out/enti/YYYY-MM-DD/check/selenium/*.tsv
+`./cli/check/browsing.py ./out/enti/YYYY-MM-DD/dataset.tsv`
+scriverà il proprio output in ./out/enti/YYYY-MM-DD/check/browsing/*.tsv
 
 Ogni check può utilizzare una cartella con il proprio nome, dentro
 check/ per eventuali dati temporanei
@@ -232,18 +232,15 @@ monitorapa
 │   │   │   │   normalize.py <- produce out/partiti/YYYY-MM-DD/dataset.tsv
 │   │   
 │   └───check
-│   │   │   http.py <- produce out/*/YYYY-MM-DD/check/http.tsv
+│   │   │   https.py <- produce out/*/YYYY-MM-DD/check/http.tsv
 │   │   │   smtp.py <- produce out/*/YYYY-MM-DD/check/smtp.tsv
-│   │   │   selenium.py <- produce out/*/YYYY-MM-DD/check/browse/*/*.tsv
-│   │   │   selenium/
-│   │   │   │   google_analytics.js <- test per la presenza di Google Analytics
-│   │   │   │   google_font.js      <- test per la presenza di Google Fonts
-│   │   │   │   google_maps.js      <- test per la presenza di Google Maps
-│   │   │   │   google_youtube.js   <- test per la presenza di video YouTube
-│   │   │   │   facebook_pixel.js   <- test per la presenza di Facebook Pixel
+│   │   │   browsing.py <- produce out/*/YYYY-MM-DD/check/browse/*/*.tsv
+│   │   │   browsing/
+│   │   │   │   100-google-analytics-clientID.js <- test vari da eseguire nel browser
+│   │   │   │   ...
 │   │   
 │   └───report
-│   │   │   http.py <- produce out/*/YYYY-MM-DD/report/http.html/png
+│   │   │   https.py <- produce out/*/YYYY-MM-DD/report/http.html/png
 │
 └───out
 │   │
@@ -254,13 +251,14 @@ monitorapa
 │   │   │   │   dataset.tsv
 │   │   │   │
 │   │   │   └───check
-│   │   │   │   │   http.tsv
+│   │   │   │   │   https.tsv
 │   │   │   │   │   smtp.tsv
-│   │   │   │   │   browse/
-│   │   │   │   │   │   google_analytics.tsv
+│   │   │   │   │   browsing/
+│   │   │   │   │   │   100-google-analytics-clientID.tsv
+│   │   │   │   │   │   ...
 │   │   │   │
 │   │   │   └───report
-│   │   │   │   │   http.png
+│   │   │   │   │   https.png
 │   │
 │   └───scuola
 │   │   │
@@ -269,9 +267,11 @@ monitorapa
 │   │   │   │   dataset.tsv
 │   │   │   │
 │   │   │   └───check
-│   │   │   │   │   http.tsv
+│   │   │   │   │   https.tsv
 │   │   │   │   │   smtp.tsv
-│   │   │   │   │   google_analytics.tsv
+│   │   │   │   │   browsing/
+│   │   │   │   │   │   100-google-analytics-clientID.tsv
+│   │   │   │   │   │   ...
 │   │   │   │
 │   │   │   └───report
 │   │   │   │   │   http.png
