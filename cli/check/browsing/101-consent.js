@@ -28,7 +28,8 @@ var consentRegExps = [
     (new RegExp('got it', 'i')),
     (new RegExp('agree', 'i')),
     (new RegExp('conferm', 'i')),
-    (new RegExp('^ho letto$', 'i'))
+    (new RegExp('^ho letto$', 'i')),
+    (new RegExp('continu', 'i'))
 ];
 var consentElementsToCheck = [
     "button",

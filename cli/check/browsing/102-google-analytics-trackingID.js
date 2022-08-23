@@ -10,7 +10,7 @@
  * as an evidence of its presence
  */
  
-debugger;
+
 var gaName = window.GoogleAnalyticsObject;
 if(!gaName)
     gaName = "ga"
@@ -41,59 +41,69 @@ var test = html.match(/ga\(['"]create['"],\s*['"]([^'"]*)['"]/);
 if(test){
     console.log(`found Google Analytics in html.match(/ga\(['"]create['"],\s*['"]([^'"]*)['"]/)`, test);
     return test[1];
-} else {
-    var test = html.match(/ga\('create',\s*{[^}]*}/gm);
-    if(test){
-        objStr = test[0];
-        objStr = objStr.replace ("ga('create',", 'window.MonitoraPAObj = ');
-        objStr = objStr.replace ('ga("create",', 'window.MonitoraPAObj = ');
-        eval(objStr);
-        test[1] = window.MonitoraPAObj.trackingId;
-        console.log(`found Google Analytics in html.match(/ga\('create',\s*{[^}]*}/gm);`, window.MonitoraPAObj);
-    }
 }
-if(!test){
-    test = html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/);
-    if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) == "G-")){
-        console.log(`found Google Analytics in html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/)`, test);
-        return test[1];
-    }
+test = html.match(/ga\('create',\s*{[^}]*}/gm);
+if(test){
+    objStr = test[0];
+    objStr = objStr.replace ("ga('create',", 'window.MonitoraPAObj = ');
+    objStr = objStr.replace ('ga("create",', 'window.MonitoraPAObj = ');
+    eval(objStr);
+    console.log(`found Google Analytics in html.match(/ga\('create',\s*{[^}]*}/gm);`, window.MonitoraPAObj);
+    return window.MonitoraPAObj.trackingId;
 }
-if(!test){
-    test = html.match(/push\(\s*\[\s*['"]_setAccount['"]\s*,\s*['"]([^'"]*)['"]\s*\]/);
-    if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) == "G-")){
-        console.log(`found Google Analytics in html.match(/push\(\[['"]_setAccount['"], ?['"]([^'"]*)['"]\]/)`, test);
-        return test[1];
-    }
+test = html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/);
+if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) == "G-")){
+    console.log(`found Google Analytics in html.match(/gtag\(['"]config['"],\s*['"]([^'"]*)['"]/)`, test);
+    return test[1];
 }
-if(!test || test[1].match(/_ID/)){
-    for(var sc of document.getElementsByTagName('script'))
-        if(!test && sc.src.indexOf('googletagmanager') > -1) {
-            test = sc.src.match(/UA-[^&]+/);
-            if(!test){
-                test = sc.src.match(/G-[^&]+/);
-            }
-            if(test){
-                console.log(`found Google Analytics in '${sc.src}'`, test);
-                return test[0];
-            }
+test = html.match(/push\(\s*\[\s*['"]_setAccount['"]\s*,\s*['"]([^'"]*)['"]\s*\]/);
+if(test && (test[1].substr(0,3) == "UA-" || test[1].substr(0,2) == "G-")){
+    console.log(`found Google Analytics in html.match(/push\(\[['"]_setAccount['"], ?['"]([^'"]*)['"]\]/)`, test);
+    return test[1];
+}
+
+for(var sc of document.getElementsByTagName('script')) {
+    if(sc.src.indexOf('googletagmanager') > -1) {
+        test = sc.src.match(/UA-[^&]+/);
+        if(!test){
+            test = sc.src.match(/G-[^&]+/);
         }
+        if(test){
+            console.log(`found Google Analytics in '${sc.src}'`, test);
+            return test[0];
+        }
+    }
 }
-if(!test || test[1].match(/_ID/)){
-    for(var sc of document.getElementsByTagName('script')){
-        if(sc.src.indexOf('googletagmanager') > -1) {
-            var txtFile = monitoraPADownloadResource(sc.src);
-            var tId = txtFile.match(/UA-[^'"]+/);
-            if(!tId){
-                tId = txtFile.match(/G-[^'"]+/);
-            }
-            if(tId){
-                if(tId[0].indexOf('d') == -1){
-                    return tId[0];
-                    console.log(`found Google Analytics inside '${sc.src}'`, tId);
-                }
+
+for(var sc of document.getElementsByTagName('script')){
+    if(sc.src.indexOf('googletagmanager') > -1) {
+        var txtFile = monitoraPADownloadResource(sc.src);
+        var tId = txtFile.match(/UA-[^'"]+/);
+        if(!tId){
+            tId = txtFile.match(/G-[^'"]+/);
+        }
+        if(tId){
+            if(tId[0].indexOf('d') == -1){
+                console.log(`found Google Analytics inside '${sc.src}'`, tId);
+                return tId[0];
             }
         }
     }
 }
+
+for(var sc of document.getElementsByTagName('script')) {
+    if(!sc.src && sc.text.indexOf('_uacct') > -1){
+        var tId = sc.text.match(/UA-[^'"]+/);
+        if(!tId){
+            tId = sc.text.match(/G-[^'"]+/);
+        }
+        if(tId){
+            if(tId[0].indexOf('d') == -1){
+                console.log(`found Google Analytics (old Urchin Tracker) in script '${sc.text}'`, tId);
+                return tId[0];
+            }
+        }
+    }
+}
+
 return "";
