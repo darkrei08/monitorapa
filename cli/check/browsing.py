@@ -122,7 +122,10 @@ debugger;
 def checkActualUrl(browser):
     return browser.current_url
 def checkCookies(browser):
-    return str(browser.get_cookies())
+    cookies = browser.get_cookies()
+    if len(cookies) == 0:
+        return ""
+    return str(cookies)
 
 
 class BrowserNeedRestartException(Exception):
