@@ -31,11 +31,11 @@ Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
 l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
 e a domicilio fisico via Aretusa 34, a Milano.
 
-Vogliamo segnalarvi che, tramite l'esecuzione di agosto del nostro nuovo
+Vogliamo segnalarvi che, tramite l'esecuzione del nostro nuovo
 osservatorio automatico distribuito, abbiamo rilevato che il vostro
-Partito invia sistematicamente notevoli quantità di dati personali
-a Google LLC attraverso l'utilizzo di Google Analytics (GA)
-nel sito ${SITO}.
+Partito rende sistematicamente accessibili notevoli quantità di dati
+personali dei vostri elettori a Google LLC attraverso l'utilizzo 
+di Google Analytics (GA) nel sito ${SITO}.
 
 Come ben noto questo strumento non è attualmente conforme, in
 assenza di misure tecniche supplementari efficaci, alle disposizioni
@@ -50,7 +50,7 @@ dell'Unione Europea, hanno riconosciuto il suo utilizzo come illegittimo.
 In particolare, l'Autorità Garante per la Protezione dei Dati Personali,
 in data 23 giugno 2022 ha richiamato "all’attenzione di tutti i gestori
 italiani di siti web, pubblici e privati, l’illiceità dei trasferimenti
-effettuati verso gli Stati Uniti attraverso GA" e invitato tutti i
+effettuati verso gli Stati Uniti attraverso GA" e invitato "tutti i
 titolari del trattamento a verificare la conformità delle modalità di
 utilizzo di cookie e altri strumenti di tracciamento utilizzati sui
 propri siti web, con particolare attenzione a Google Analytics e ad
