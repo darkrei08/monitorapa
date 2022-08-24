@@ -1,0 +1,121 @@
+______
+
+This file is part of MonitoraPA
+
+Copyright (C) 2022 Stefano Gazzella <stefano@gdpready.it>
+Copyright (C) 2022 Mario Sabatino <mario@sabatino.pro>
+Copyright (C) 2022 Giacomo Tesio <giacomo@tesio.it>
+
+MonitoraPA is a hack. You can use it according to the terms and
+conditions of the Hacking License (see LICENSE.txt)
+
+Questo notifica le violazioni del GDPR relative all'uso di 
+Google Analytics sui siti dei partiti politici italiani.
+
+______
+
+Subject: [RIF SE22-01.${CODICE}] Segnalazione di illecito utilizzo di Google Analytics su ${SITO} e invito a risolvere la violazione del Regolamento Europeo 2016/679 (GDPR)
+From: Monitora PA <monitorapa@peceasy.it>
+To: ${DENOMINAZIONE} <${MAIL}>
+______
+
+All'attenzione del Titolare del Trattamento dei dati personali
+per il sito ${SITO} ai sensi
+dell'art. 4 par. 1 n. 7 - GDPR.
+
+Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980 
+(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome della 
+comunità di hacker, attiviste, attivisti, cittadine e cittadini che, 
+attenti a riservatezza, libertà e diritti cibernetici, ha realizzato
+Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
+l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
+e a domicilio fisico via Aretusa 34, a Milano.
+
+Vogliamo segnalarvi che, tramite l'esecuzione di agosto del nostro nuovo
+osservatorio automatico distribuito, abbiamo rilevato che il vostro
+Partito invia sistematicamente notevoli quantità di dati personali
+a Google LLC attraverso l'utilizzo di Google Analytics (GA)
+nel sito ${SITO}.
+
+Come ben noto questo strumento non è attualmente conforme, in
+assenza di misure tecniche supplementari efficaci, alle disposizioni
+del GDPR in ordine al trasferimento transfrontaliero dei dati personali
+e alle "Linee guida cookie e altri strumenti di tracciamento" approvate
+dall'Autorità garante per la protezione dei dati personali il
+10 giugno 2021.
+L'EDPS e le Autorità di controllo austriaca, francese e italiana,
+a seguito della sentenza Schrems II della Corte di Giustizia 
+dell'Unione Europea, hanno riconosciuto il suo utilizzo come illegittimo.
+
+In particolare, l'Autorità Garante per la Protezione dei Dati Personali,
+in data 23 giugno 2022 ha richiamato "all’attenzione di tutti i gestori
+italiani di siti web, pubblici e privati, l’illiceità dei trasferimenti
+effettuati verso gli Stati Uniti attraverso GA" e invitato tutti i
+titolari del trattamento a verificare la conformità delle modalità di
+utilizzo di cookie e altri strumenti di tracciamento utilizzati sui
+propri siti web, con particolare attenzione a Google Analytics e ad
+altri servizi analoghi, con la normativa in materia di protezione dei
+dati personali".
+
+Riteniamo quindi che il mantenimento da parte del vostro Partito di tale
+trattamento di dati personali non conforme al disposto normativo,
+in ragione del trasferimento trasfrontaliero di dati personali
+e in assenza di una condizione legittimante ai sensi degli artt. 44
+e ss. GDPR, esponga a rischi ingiustificati tutti i visitatori del
+sito ${SITO}.
+
+Si tratta infatti di dati personali fortemente sensibili, come sono
+gli interessi e le opinioni politiche dei vostri elettori, che Google
+userà per arricchirne i profili cognitivo-comportamentali attraverso cui
+ne orienta le scelte commerciali, sociali e politiche.
+
+Favorire tali manipolazioni individuali su larga scala, costituisce
+una responsabilità gravissima nei confronti della democrazia del nostro
+Paese, resa eclatante dall'approssimarsi delle elezioni nazionali.
+
+
+Pertanto vi chiediamo di interrompere suddetti trasferimenti e qualsiasi
+altro trasferimento verso Google LLC o altra società sottoposta a normative
+incompatibili con il diritto dei cittadini italiani ed europei entro 
+10 giorni dalla ricezione della presente.
+
+In difetto di ottemperanza da parte Vostra nei termini su indicati
+agli obblighi di legge in materia di trattamento dei dati personali,
+ci vedremo costretti a inviare una segnalazione al Garante per la
+protezione dei dati personali, ai sensi e per gli effetti
+dell'art. 144 del Codice in materia di protezione dei dati personali
+(DECRETO LEGISLATIVO 30 giugno 2003, n.196 e successive modifiche
+e integrazioni) per una valutazione della Vostra condotta anche ai
+fini dell'emanazione di eventuali provvedimenti di cui
+all'art. 58 del GDPR.
+
+Rimaniamo a disposizione per ulteriori chiarimenti.
+
+
+Con osservanza.
+
+Distinti saluti
+
+
+Fabio Pietrosanti
+Co-fondatore di Monitora PA
+https://monitora-pa.it
+
+Con il sostegno di:
+
+- Hermes Center, Associazione con sede in Via Aterusa n. 34, 20129
+  Milano, in persona del legale rappresentante p.t Fabio Pietrosanti  
+  C.F. 97621810155 https://www.hermescenter.org/
+- LinuxTrent, Associazione con sede in Via Marconi n. 105, 38057
+  Pergine Valsugana, in persona del legale rappresentante p.t Roberto
+  Resoli C.F. 96100790227 https://www.linuxtrent.it/
+- Open Genova, Associazione con sede in Piazza Matteotti n. 5
+  c/o Mentelocale.it, 16123 Genova, in persona del legale
+  rappresentante  p.t Pietro Biase C.F. 95165570102
+  https://associazione.opengenova.org/
+- AsCII, Associazione con sede in Via del Mare n.108, 80016
+  Marano di Napoli, in persona del legale rappresentante p.t Avvocato
+  Marco Andreoli C.F. 94200750639 https://www.ascii.it/
+- AsSoLi, Associazione con sede in Via San Quintino n. 32, 10121
+  Torino, in persona del legale rappresentante p.t Angelo Raffaele Meo
+  C.F. 94082140487 https://www.softwarelibero.it/

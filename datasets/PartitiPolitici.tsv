@@ -1,89 +1,47 @@
-ForzaItalia	Web	http://www.forzaitalia.it/
-FratelliDItalia	Web	https://www.fratelli-italia.it/
-PartitoDemocratico	Web	https://www.partitodemocratico.it/
-ItaliaViva	Web	https://www.italiaviva.it/
-Movimento5Stelle	Web	https://www.movimento5stelle.eu/
-Lega	Web	https://legaonline.it/
-+Europa	Web	https://www.piueuropa.eu/
-Azione	Web	https://www.azione.it/
-ArticoloUno	Web	https://articolo1mdp.it/
-SinistraItaliana	Web	https://www.sinistraitaliana.si/
-Alternativa	Web	https://www.pinocabras.it/
-CoraggioItalia	Web	https://www.coraggioitalia.it/
-Cambiamo	Web	https://cambiamo.eu/
-EuropaVerde	Web	https://europaverde.it/
-Italexit	Web	https://italexitperlitalia.it/
-UnionediCentro	Web	https://www.udc-italia.it/
-NoiconLItalia	Web	https://www.noiconlitalia.it/
-PartitoSocialistaItaliano	Web	https://www.partitosocialista.it/
-Èviva	Web	https://www.eviva.news
-CentroDemocratico	Web	https://www.ilcentrodemocratico.it/
-GreenItalia	Web	https://greenitalia.org/
-DestraLiberaleItaliana	Web	https://www.destraliberale.it/
-NoidiCentro	Web	https://noidicentro.org/
-NuovoPSI	Web	https://www.stefanocaldoro.it/
-R2020	Web	https://r2020.info/
-IdentitàeAzione	Web	http://www.movimentoidea.it/
-MovimentoAnimalista	Web	https://movimentoanimalista.it/
-PartitoPensionati	Web	http://www.partitopensionati.it/
-PatriaeCostituzione	Web	https://www.patriaecostituzione.it/home/
-Rinascimento	Web	https://www.rinascimentosgarbi.org/
-Verdeèpopolare	Web	https://www.verdeepopolare.it/
-AncoraItalia	Web	https://www.ancoraitalia.it/
-CentristiPerLEuropa	Web	http://www.pierferdinandocasini.it/
-Europeisti	Web	http://europeisti.org/
-ItaliaDeiValori	Web	https://www.italiadeivalori.it/
-PartitoComunista	Web	https://ilpartitocomunista.it/
-PoterealPopolo	Web	https://poterealpopolo.org/
-PartitoDellaRifondazioneComunista	Web	http://www.rifondazione.it/
-SudtirolerVolkspartei	Web	https://www.svp.eu/
-AutonomiaResponsabile	Web	https://www.autonomiaresponsabilefvg.it/
-Fassa	Web	http://www.forzafassa.it/
-LaPugliaInPiù	Web	https://www.lapugliainpiu.it/
-PartitoSardoDAzione	Web	http://www.psdaz.net/
-UnionValdotain	Web	https://www.unionvaldotaine.org/
-MovimentoAssociativoItalianiAllEstero	Web	https://maiemondiale.com/
-UnioneSudamericanaEmigratiItaliani	Web	https://www.usei-it.org/it/
-ForzaItalia	Mail	dpo@forzaitalia.it
-Movimento5Stelle	Mail	info@movimento5stelle.eu
-Lega	Mail	info@legaonline.it
-+Europa	Mail	info@piueuropa.eu
-Azione	Mail	info@azione.it
-ArticoloUno	Mail	info@articolo1mdp.it
-SinistraItaliana	Mail	organizzazione.sinistraitaliana@sxmail.it
-Alternativa	Mail	cabras_p@camera.it
-CoraggioItalia	Mail	info@coraggioitalia.it
-Cambiamo	Mail	info@cambiamo.eu
-EuropaVerde	Mail	europaverde19@gmail.com
-Italexit	Mail	organizzativo@italexitperlitalia.it
-UnionediCentro	Mail	info@udc-italia.it 
-NoiconLItalia	Mail	info@noiconlitalia.it
-PartitoSocialistaItaliano	Mail	info@partitosocialista.it
-CentroDemocratico	Mail	info@ilcentrodemocratico.it
-GreenItalia	Mail	greenitalia.nazionale@gmail.com
-DestraLiberaleItaliana	Mail	https://www.destraliberale.it/contatti/
-NoidiCentro	Mail	info@noidicentro.org
-R2020	Mail	info@r2020.it
-IdentitàeAzione	Mail	segreteria@movimentoidea.it
-InsiemePer	Mail	info@insieme-per.it
-InsiemePer	Mail	pec.insieme@pec.insieme-per.it
-PartitoPensionati	Mail	segreteria@partitopensionati.it
-PatriaeCostituzione	Mail	infopatriaecostituzione@gmail.com
-Rinascimento	Mail	info@rinascimentosgarbi.org
-Verdeèpopolare	Mail	verdeepopolare@gmail.com
-AncoraItalia	Mail	ancoraitalia@ancoraitalia.it
-CentristiPerLEuropa	Mail	pier.casini@gmail.com
-Europeisti	Mail	contatti@europeisti.org
-ItaliaDeiValori	Mail	tesoreria.italiadeivalori@gmail.com
-ItaliadeiValori	Mail	italiadeivalori@pec.it
-PartitoComunista	Mail	nazionale@ilpartitocomunista.it
-PoterealPopolo	Mail	poterealpopolo2018@gmail.com
-PartitodellaRifondazioneComunista	Mail	sitoprc@rifondazione.net
-PartitodellaRifondazioneComunista	Mail	organizzazione.prc@rifondazione.it
-SudtirolerVolkspartei	Mail	info@svp.eu
-AutonomiaResponsabile	Mail	segreteria@autonomiaresponsabilefvg.it
-AutonomiaResponsabile	Mail	 info@autonomiaresponsabilefvg.it
-Fassa	Mail	info@forzafassa.it
-PartitoSardoDAzione	Mail	info@psdaz.net
-UnionValdotain	Mail	siegecentral@unionvaldotaine.org
-UnioneSudamericanaEmigratiItaliani	Mail	info@usei-it.org
+CODICE	TIPO SITO		MAIL	FORM	DENOMINAZIONE
+ForzaItalia	Web	http://www.forzaitalia.it/	dpo@forzaitalia.it		Forza Italia
+FratelliDItalia	Web	https://www.fratelli-italia.it/			Fratelli d'Italia
+PartitoDemocratico	Web	https://www.partitodemocratico.it/	privacy@partitodemocratico.it		Partito Democratico
+ItaliaViva	Web	https://www.italiaviva.it/	info@italiaviva.it		Italia Viva
+Movimento5Stelle	Web	https://www.movimento5stelle.eu/	info@movimento5stelle.eu		Movimento 5 Stelle
+Lega	Web	https://legaonline.it/	info@legaonline.it		Lega
++Europa	Web	https://www.piueuropa.eu/	info@piueuropa.eu		+Europa
+Azione	Web	https://www.azione.it/	info@azione.it		Articolo Uno
+ArticoloUno	Web	https://articolo1mdp.it/	info@articolo1mdp.it		Sinistra Italiana
+SinistraItaliana	Web	https://www.sinistraitaliana.si/	organizzazione.sinistraitaliana@sxmail.it		Alternativa
+Alternativa	Web	https://www.pinocabras.it/	cabras_p@camera.it		Coraggio Italia
+CoraggioItalia	Web	https://www.coraggioitalia.it/	info@coraggioitalia.it		Cambiamo!
+Cambiamo	Web	https://cambiamo.eu/	info@cambiamo.eu		Europa Verde
+EuropaVerde	Web	https://europaverde.it/	info@europaverde.it 		Italexit
+Italexit	Web	https://italexitperlitalia.it/	organizzativo@italexitperlitalia.it		Unione di Centro
+UnionediCentro	Web	https://www.udc-italia.it/	info@udc-italia.it 		Noi con l'Italia
+NoiconLItalia	Web	https://www.noiconlitalia.it/	info@noiconlitalia.it		Partito Socialista Italiano
+PartitoSocialistaItaliano	Web	https://www.partitosocialista.it/	info@partitosocialista.it		Èviva
+CentroDemocratico	Web	https://www.ilcentrodemocratico.it/	info@ilcentrodemocratico.it		Centro Democratico
+GreenItalia	Web	https://greenitalia.org/	greenitalia.nazionale@gmail.com		Green Italia
+DestraLiberaleItaliana	Web	https://www.destraliberale.it/		https://www.destraliberale.it/contatti/	Destra Liberale Italiana
+NoiDiCentro	Web	https://noidicentro.org/	info@noidicentro.org		Noi di Centro
+NuovoPSI	Web	https://www.stefanocaldoro.it/		https://www.stefanocaldoro.it/#scrivimi	Nuovo PSI
+R2020	Web	https://r2020.info/	info@r2020.it		R2020
+IdentitàEAzione	Web	http://www.movimentoidea.it/	segreteria@movimentoidea.it		Identità e Azione
+InsiemePer	Web	https://www.insieme-per.it/	info@insieme-per.it		Insieme
+MovimentoAnimalista	Web	https://movimentoanimalista.it/			Movimento Animalista
+PartitoPensionati	Web	http://www.partitopensionati.it/	segreteria@partitopensionati.it		Partito Pensionati
+PatriaECostituzione	Web	https://www.patriaecostituzione.it/home/	infopatriaecostituzione@gmail.com		Patria e Costituzione
+Rinascimento	Web	https://www.rinascimentosgarbi.org/	info@rinascimentosgarbi.org		Rinascimento
+VerdeEPopolare	Web	https://www.verdeepopolare.it/	verdeepopolare@gmail.com		Verde è popolare
+AncoraItalia	Web	https://www.ancoraitalia.it/	ancoraitalia@ancoraitalia.it		Ancora Italia
+CentristiPerLEuropa	Web	http://www.pierferdinandocasini.it/	pier.casini@gmail.com		Centristi per l'Europa
+Europeisti	Web	http://europeisti.org/	contatti@europeisti.org		Europeisti
+ItaliaDeiValori	Web	https://www.italiadeivalori.it/	italiadeivalori@pec.it		Italia dei Valori
+PartitoComunista	Web	https://ilpartitocomunista.it/	nazionale@ilpartitocomunista.it		Partito Comunista
+PotereAlPopolo	Web	https://poterealpopolo.org/	poterealpopolo2018@gmail.com		Potere al Popolo
+Movimento5Stelle	Web	http://www.rifondazione.it/	organizzazione.prc@rifondazione.it		Partito della Rifondazione Comunista
+SudtirolerVolkspartei	Web	https://www.svp.eu/	info@svp.eu		Sudtiroler Volkspartei
+AutonomiaResponsabile	Web	https://www.autonomiaresponsabilefvg.it/	segreteria@autonomiaresponsabilefvg.it		Autonomia Responsabile
+Fassa	Web	http://www.forzafassa.it/	info@forzafassa.it		Fassa
+LaPugliaInPiù	Web	https://www.lapugliainpiu.it/			La Puglia in Più  Dario Stefàno
+PartitoSardoDAzione	Web	http://www.psdaz.net/	info@psdaz.net		Partito Sardo d'Azione
+UnionValdotain	Web	https://www.unionvaldotaine.org/	siegecentral@unionvaldotaine.org		Union Valdotain
+MovimentoAssociativoItalianiAllEstero	Web	https://maiemondiale.com/		https://maiemondiale.com/contatto/	Movimento Associativo Italiani all'Estero
+UnioneSudamericanaEmigratiItaliani	Web	https://www.usei-it.org/it/	info@usei-it.org		Unione Sudamericana Emigrati Italiani

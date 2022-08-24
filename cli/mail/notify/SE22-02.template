@@ -1,0 +1,133 @@
+______
+
+This file is part of MonitoraPA
+
+Copyright (C) 2022 Stefano Gazzella <stefano@gdpready.it>
+Copyright (C) 2022 Mario Sabatino <mario@sabatino.pro>
+Copyright (C) 2022 Giacomo Tesio <giacomo@tesio.it>
+
+MonitoraPA is a hack. You can use it according to the terms and
+conditions of the Hacking License (see LICENSE.txt)
+
+Questo notifica le violazioni del GDPR relative all'uso di 
+Google Fonts sui siti dei partiti politici italiani.
+
+______
+
+Subject: [RIF SE22-01.${CODICE}] Segnalazione di illecito utilizzo di Google Analytics su ${SITO} e invito a risolvere la violazione del Regolamento Europeo 2016/679 (GDPR)
+From: Monitora PA <monitorapa@peceasy.it>
+To: ${DENOMINAZIONE} <${MAIL}>
+______
+
+All'attenzione del Titolare del Trattamento dei dati personali
+per il sito ${SITO} ai sensi
+dell'art. 4 par. 1 n. 7 - GDPR.
+
+Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980 
+(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome della 
+comunità di hacker, attiviste, attivisti, cittadine e cittadini che, 
+attenti a riservatezza, libertà e diritti cibernetici, ha realizzato
+Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
+l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
+e a domicilio fisico via Aretusa 34, a Milano.
+
+Vogliamo segnalarvi che, tramite l'esecuzione di agosto del nostro nuovo
+osservatorio automatico distribuito, abbiamo rilevato che il vostro
+Partito invia sistematicamente notevoli quantità di dati personali
+a Google LLC attraverso l'utilizzo di Google Fonts
+nel sito ${SITO}.
+
+L'inclusione di tali risorse determina l'invio sistematico, attraverso
+gli header HTTP trasmessi automaticamente dal browser dei visitatori
+del vostro sito, di diversi dati personali dell'utente verso i server
+di Google, fra cui:
+
+- indirizzo IP
+- User Agent
+- sistema operativo
+- lingue conosciute
+- la visita del vostro sito
+- la data e l'ora di tale visita
+- i dati personali descrittivi deducibili dall'incrocio dei dati 
+  precedenti e dall'interesse per i contenuti del vostro sito
+
+Informazioni più che sufficienti, per Google, ad identificare
+il soggetto interessato e ad arricchirne il profilo
+cognitivo-comportamentale.
+
+Come ben noto anche a seguito della sentenza Schrems II della Corte di
+Giustizia dell'Unione Europea, l'uso Google Fonts non è attualmente
+conforme, in assenza di misure tecniche supplementari efficaci che non
+ci risultano presenti sul vostro sito, alle disposizioni del GDPR in
+ordine al trasferimento transfrontaliero dei dati personali.
+In forza di ciò, il Tribunale di Monaco, con la sentenza definitiva 
+3 O 17493/20  del 19 gennaio 2022 (disponibile all'indirizzo
+https://openjur.de/u/2384915.html ) ha già riconosciuto a 
+un soggetto interessato un risarcimento di 100€ da parte del Titolare 
+del Trattamento che aveva adottato tale strumento, imponendo al
+Titolare stesso l'interruzione immediata delle chiamate verso 
+Google Fonts pena una multa fino 250.000€ ogni sei mesi in caso
+di violazioni future.
+
+Riteniamo quindi che il mantenimento da parte del vostro Partito di tale
+trattamento di dati personali non conforme al disposto normativo,
+in ragione del trasferimento trasfrontaliero di dati personali
+e in assenza di una condizione legittimante ai sensi degli artt. 44
+e ss. GDPR, esponga a rischi ingiustificati tutti i visitatori del
+sito ${SITO}.
+
+Si tratta infatti di dati personali fortemente sensibili, come sono
+gli interessi e le opinioni politiche dei vostri elettori, che Google
+userà per arricchirne i profili cognitivo-comportamentali attraverso cui
+ne orienta le scelte commerciali, sociali e politiche.
+
+Favorire tali manipolazioni individuali su larga scala, costituisce
+una responsabilità gravissima nei confronti della democrazia del nostro
+Paese, resa eclatante dall'approssimarsi delle elezioni nazionali.
+
+
+Pertanto vi chiediamo di interrompere suddetti trasferimenti e qualsiasi
+altro trasferimento verso Google LLC o altra società sottoposta a normative
+incompatibili con il diritto dei cittadini italiani ed europei entro 
+10 giorni dalla ricezione della presente.
+
+In difetto di ottemperanza da parte Vostra nei termini su indicati
+agli obblighi di legge in materia di trattamento dei dati personali,
+ci vedremo costretti a inviare una segnalazione al Garante per la
+protezione dei dati personali, ai sensi e per gli effetti
+dell'art. 144 del Codice in materia di protezione dei dati personali
+(DECRETO LEGISLATIVO 30 giugno 2003, n.196 e successive modifiche
+e integrazioni) per una valutazione della Vostra condotta anche ai
+fini dell'emanazione di eventuali provvedimenti di cui
+all'art. 58 del GDPR.
+
+Rimaniamo a disposizione per ulteriori chiarimenti.
+
+
+Con osservanza.
+
+Distinti saluti
+
+
+Fabio Pietrosanti
+Co-fondatore di Monitora PA
+https://monitora-pa.it
+
+Con il sostegno di:
+
+- Hermes Center, Associazione con sede in Via Aterusa n. 34, 20129
+  Milano, in persona del legale rappresentante p.t Fabio Pietrosanti  
+  C.F. 97621810155 https://www.hermescenter.org/
+- LinuxTrent, Associazione con sede in Via Marconi n. 105, 38057
+  Pergine Valsugana, in persona del legale rappresentante p.t Roberto
+  Resoli C.F. 96100790227 https://www.linuxtrent.it/
+- Open Genova, Associazione con sede in Piazza Matteotti n. 5
+  c/o Mentelocale.it, 16123 Genova, in persona del legale
+  rappresentante  p.t Pietro Biase C.F. 95165570102
+  https://associazione.opengenova.org/
+- AsCII, Associazione con sede in Via del Mare n.108, 80016
+  Marano di Napoli, in persona del legale rappresentante p.t Avvocato
+  Marco Andreoli C.F. 94200750639 https://www.ascii.it/
+- AsSoLi, Associazione con sede in Via San Quintino n. 32, 10121
+  Torino, in persona del legale rappresentante p.t Angelo Raffaele Meo
+  C.F. 94082140487 https://www.softwarelibero.it/
