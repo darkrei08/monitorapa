@@ -23,19 +23,21 @@ All'attenzione del Titolare del Trattamento dei dati personali
 per il sito ${SITO} ai sensi
 dell'art. 4 par. 1 n. 7 - GDPR.
 
-Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980 
-(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome della 
-comunità di hacker, attiviste, attivisti, cittadine e cittadini che, 
+Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980
+(codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome della
+comunità di hacker, attiviste, attivisti, cittadine e cittadini che,
 attenti a riservatezza, libertà e diritti cibernetici, ha realizzato
 Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
 l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
 e a domicilio fisico via Aretusa 34, a Milano.
 
-Vogliamo segnalarvi che, tramite l'esecuzione del nostro nuovo
-osservatorio automatico distribuito, abbiamo rilevato che il vostro
-Partito rende sistematicamente accessibili notevoli quantità di dati
-personali dei vostri elettori a Google LLC attraverso l'utilizzo 
-di Google Analytics (GA) nel sito ${SITO}.
+
+Vogliamo segnalarvi che in data $datetime, tramite
+l'esecuzione del nostro nuovo osservatorio automatico distribuito,
+abbiamo rilevato che il vostro Partito rende sistematicamente
+accessibili notevoli quantità di dati personali dei vostri
+elettori a Google LLC attraverso l'utilizzo di Google Analytics (GA)
+nel sito ${SITO}.
 
 Come ben noto questo strumento non è attualmente conforme, in
 assenza di misure tecniche supplementari efficaci, alle disposizioni
@@ -44,7 +46,7 @@ e alle "Linee guida cookie e altri strumenti di tracciamento" approvate
 dall'Autorità garante per la protezione dei dati personali il
 10 giugno 2021.
 L'EDPS e le Autorità di controllo austriaca, francese e italiana,
-a seguito della sentenza Schrems II della Corte di Giustizia 
+a seguito della sentenza Schrems II della Corte di Giustizia
 dell'Unione Europea, hanno riconosciuto il suo utilizzo come illegittimo.
 
 In particolare, l'Autorità Garante per la Protezione dei Dati Personali,

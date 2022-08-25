@@ -31,11 +31,12 @@ Monitora PA (https://monitora-pa.it), eleggendo a domicilio digitale
 l'indirizzo di posta elettronica certificata monitorapa@peceasy.it,
 e a domicilio fisico via Aretusa 34, a Milano.
 
-Vogliamo segnalarvi che, tramite l'esecuzione del nostro nuovo
-osservatorio automatico distribuito, abbiamo rilevato che il vostro
-Partito rende sistematicamente accessibili notevoli quantità di dati
-personali dei vostri elettori a Google LLC attraverso l'utilizzo 
-di Google Fonts nel sito ${SITO}.
+Vogliamo segnalarvi che in data $datetime, tramite
+l'esecuzione del nostro nuovo osservatorio automatico distribuito,
+abbiamo rilevato che il vostro Partito rende sistematicamente
+accessibili notevoli quantità di dati personali dei vostri
+elettori a Google LLC attraverso l'utilizzo di Google Fonts
+nel sito ${SITO}.
 
 L'inclusione di tali risorse determina l'invio sistematico, attraverso
 gli header HTTP trasmessi automaticamente dal browser dei visitatori
@@ -46,9 +47,9 @@ di Google, fra cui:
 - User Agent
 - sistema operativo
 - lingue conosciute
-- la visita del vostro sito
-- la data e l'ora di tale visita
-- i dati personali descrittivi deducibili dall'incrocio dei dati 
+- visita del vostro sito
+- data e l'ora di tale visita
+- dati personali descrittivi deducibili dall'incrocio dei dati 
   precedenti e dall'interesse per i contenuti del vostro sito
 
 Informazioni più che sufficienti, per Google, ad identificare
@@ -60,12 +61,12 @@ Giustizia dell'Unione Europea, l'uso Google Fonts non è attualmente
 conforme, in assenza di misure tecniche supplementari efficaci che non
 ci risultano presenti sul vostro sito, alle disposizioni del GDPR in
 ordine al trasferimento transfrontaliero dei dati personali.
-In forza di ciò, il Tribunale di Monaco, con la sentenza definitiva 
+In forza di ciò, il Tribunale di Monaco, con la sentenza definitiva
 3 O 17493/20  del 19 gennaio 2022 (disponibile all'indirizzo
-https://openjur.de/u/2384915.html ) ha già riconosciuto a 
-un soggetto interessato un risarcimento di 100€ da parte del Titolare 
+https://openjur.de/u/2384915.html ) ha già riconosciuto a
+un soggetto interessato un risarcimento di 100€ da parte del Titolare
 del Trattamento che aveva adottato tale strumento, imponendo al
-Titolare stesso l'interruzione immediata delle chiamate verso 
+Titolare stesso l'interruzione immediata delle chiamate verso
 Google Fonts pena una multa fino 250.000€ ogni sei mesi in caso
 di violazioni future.
 

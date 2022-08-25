@@ -42,8 +42,10 @@ class Template:
     1. fornite dall'osservatorio, ovvero
        - $owner che corrisponde all'identificativo del proprietario
          dell'automatismo in violazione
-       - $automatismi che corrisponde all'indirizzo dell'automatismo 
+       - $automatism che corrisponde all'indirizzo dell'automatismo 
          in violazione
+	   - $datetime che corrisponde alla data e l'ora di esecuzione della 
+	     verifica (in formato "YYYY-MM-DD hh:mm:ss.ns")
     2. fornite dal file TSV iniziale usato come sorgente per l'osservatorio, 
        ad esempio il file enti.tsv contenente l'anagrafica AgID-IPA;
        Tali variabili vengono fornite ai metodi headers() e message() come
@@ -119,6 +121,7 @@ def replaceVariables(execution: check.Execution, environment: dict[str, str], co
     """
     content = content.replace("$owner", execution.owner)
     content = content.replace("$automatism", execution.address)
+	content = content.replace("$datetime", execution.time)
     for var in environment:
         content = content.replace("${"+var+"}", environment[var])
     return content
