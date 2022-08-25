@@ -19,7 +19,7 @@ class Input:
         return "\t".join([self.owner, self.type, self.address])
 
 def parseInput(line: str) -> Input:
-    fields = line.strip(" \n").split('\t')
+    fields = line.strip(" \r\n").split('\t')
     return Input(fields[0], fields[1], fields[2])
 
 class Execution:
@@ -50,7 +50,7 @@ class Execution:
         return "\t".join([self.owner, self.type, self.address, self.time, self.completed, issues])
 
 def parseExecution(line: str) -> Execution:
-    fields = line.strip(" \n").split('\t')
+    fields = line.strip(" \r\n").split('\t')
     checkInput = Input(fields[0], fields[1], fields[2])
     execution = Execution(checkInput)
     execution.time = fields[3]
