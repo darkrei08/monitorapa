@@ -1,4 +1,4 @@
-CODICE	TIPO SITO		MAIL	FORM	DENOMINAZIONE
+CODICE	TIPO SITO	SITO	MAIL	FORM	DENOMINAZIONE
 ForzaItalia	Web	http://www.forzaitalia.it/	dpo@forzaitalia.it		Forza Italia
 FratelliDItalia	Web	https://www.fratelli-italia.it/			Fratelli d'Italia
 PartitoDemocratico	Web	https://www.partitodemocratico.it/	privacy@partitodemocratico.it		Partito Democratico
@@ -6,17 +6,17 @@ ItaliaViva	Web	https://www.italiaviva.it/	info@italiaviva.it		Italia Viva
 Movimento5Stelle	Web	https://www.movimento5stelle.eu/	info@movimento5stelle.eu		Movimento 5 Stelle
 Lega	Web	https://legaonline.it/	info@legaonline.it		Lega
 +Europa	Web	https://www.piueuropa.eu/	info@piueuropa.eu		+Europa
-Azione	Web	https://www.azione.it/	info@azione.it		Articolo Uno
-ArticoloUno	Web	https://articolo1mdp.it/	info@articolo1mdp.it		Sinistra Italiana
-SinistraItaliana	Web	https://www.sinistraitaliana.si/	organizzazione.sinistraitaliana@sxmail.it		Alternativa
-Alternativa	Web	https://www.pinocabras.it/	cabras_p@camera.it		Coraggio Italia
-CoraggioItalia	Web	https://www.coraggioitalia.it/	info@coraggioitalia.it		Cambiamo!
-Cambiamo	Web	https://cambiamo.eu/	info@cambiamo.eu		Europa Verde
-EuropaVerde	Web	https://europaverde.it/	info@europaverde.it 		Italexit
-Italexit	Web	https://italexitperlitalia.it/	organizzativo@italexitperlitalia.it		Unione di Centro
-UnionediCentro	Web	https://www.udc-italia.it/	info@udc-italia.it 		Noi con l'Italia
-NoiconLItalia	Web	https://www.noiconlitalia.it/	info@noiconlitalia.it		Partito Socialista Italiano
-PartitoSocialistaItaliano	Web	https://www.partitosocialista.it/	info@partitosocialista.it		Èviva
+Azione	Web	https://www.azione.it/	info@azione.it		Azione
+ArticoloUno	Web	https://articolo1mdp.it/	info@articolo1mdp.it		Articolo Uno
+SinistraItaliana	Web	https://www.sinistraitaliana.si/	organizzazione.sinistraitaliana@sxmail.it		Sinistra Italiana
+Alternativa	Web	https://www.pinocabras.it/	cabras_p@camera.it		Alternativa
+CoraggioItalia	Web	https://www.coraggioitalia.it/	info@coraggioitalia.it		Coraggio Italia
+Cambiamo	Web	https://cambiamo.eu/	info@cambiamo.eu		Cambiamo!
+EuropaVerde	Web	https://europaverde.it/	info@europaverde.it 		Europa Verde
+Italexit	Web	https://italexitperlitalia.it/	organizzativo@italexitperlitalia.it		Italexit
+UnioneDiCentro	Web	https://www.udc-italia.it/	info@udc-italia.it 		Unione di Centro
+NoiConLItalia	Web	https://www.noiconlitalia.it/	info@noiconlitalia.it		Noi con l'Italia
+PartitoSocialistaItaliano	Web	https://www.partitosocialista.it/	info@partitosocialista.it		Partito Socialista Italiano
 CentroDemocratico	Web	https://www.ilcentrodemocratico.it/	info@ilcentrodemocratico.it		Centro Democratico
 GreenItalia	Web	https://greenitalia.org/	greenitalia.nazionale@gmail.com		Green Italia
 DestraLiberaleItaliana	Web	https://www.destraliberale.it/		https://www.destraliberale.it/contatti/	Destra Liberale Italiana
@@ -42,6 +42,19 @@ AutonomiaResponsabile	Web	https://www.autonomiaresponsabilefvg.it/	segreteria@au
 Fassa	Web	http://www.forzafassa.it/	info@forzafassa.it		Fassa
 LaPugliaInPiù	Web	https://www.lapugliainpiu.it/			La Puglia in Più  Dario Stefàno
 PartitoSardoDAzione	Web	http://www.psdaz.net/	info@psdaz.net		Partito Sardo d'Azione
-UnionValdotain	Web	https://www.unionvaldotaine.org/	siegecentral@unionvaldotaine.org		Union Valdotain
+UnionValdotaine	Web	https://www.unionvaldotaine.org/	siegecentral@unionvaldotaine.org		Union Valdôtaine
 MovimentoAssociativoItalianiAllEstero	Web	https://maiemondiale.com/		https://maiemondiale.com/contatto/	Movimento Associativo Italiani all'Estero
 UnioneSudamericanaEmigratiItaliani	Web	https://www.usei-it.org/it/	info@usei-it.org		Unione Sudamericana Emigrati Italiani
+VerdiESinistra	Web	https://verdisinistra.it	privacy@verdisinistra.it 		Verdi e Sinistra
+AllianceValdotaine	Web	https://alliancevaldotaine.org/	info@alliancevaldotaine.org		Alliance Valdôtaine
+MovimentoStellaAlpina	Web	https://www.stella-alpina.org/	movimento@stella-alpina.org		Movimento Stella Alpina
+ReferendumEDemocrazia	Web	https://listareferendumedemocrazia.it/	info@associazionelucacoscioni.it		Referendum e Democrazia
+SudChiamaNord	Web	https://www.sud-chiamanord.it/	privacy@sud-chiamanord.it		Sud Chiama Nord
+Vita	Web	https://www.votalavita.it/	scrivici@votalavita.it		Vita
+MovimentoDelleLiberta	Web	https://movimentodelleliberta.eu/	info@movimentodelleliberta.eu		Movimento delle Libertà
+FREE	Web	https://www.freetalia.it/		https://www.freetalia.it/#CONTATTI	FREE
+PPA		https://www.ppa-pensieroazione.com/	ppa.partitopensieroazione@gmail.com		PPA MOVIMENTO POLITICO PENSIERO E AZIONE
+ForzaDelPopolo	Web	https://www.forzadelpopolo.org/	privacy@forzadelpopolo.org		Forza del Popolo
+ForzaNuova	Web	http://www.forzanuova.eu/			Forza Nuova
+ItaliaDelMeridione	Web	http://www.italiadelmeridione.it/	info@italiadelmeridione.it 		l’Italia del Meridione
+DestreUnite	Web	https://nuovaitaliaunita.it/	segreterianazionale@nuovaitaliaunita.it		Destre Unite
