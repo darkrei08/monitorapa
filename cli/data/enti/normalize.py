@@ -25,6 +25,22 @@ def normalizeUrl(url):
     url = url.lower()
     if len(url) < 4 or url.startswith('about'):
         return ""
+    if "@pec.it" in url or "@gmail.com" in url or "@istruzione.it" in url or "@libero.it" in url or "@yahoo.it" in url:
+        return "" # skip mail addresses
+    if url.startswith('about:'):
+        return ""
+    if url == "blank":
+        return ""
+    if url == "anagrafesquillace@libero.it":
+        return "https://www.comune.squillace.cz.it/"
+    if url == "enna@cert.ordine-opi.it":
+        return "https://www.opienna.it/"
+    if url == "rmic8bv005@istruzione.it":
+        return "https://www.icparcodiveio.edu.it/"
+    if url == "sistemabibliotecario@yahoo.it":
+        return "http://www.sbti.it/"
+    if url == "serra.segreteria@gmail.com":
+        return "https://comune.serrasantabbondio.pu.it/"
     if url.find(':') == 4 and url[0:7] != 'http://':
         return url.replace(url[0:5], 'http://')
     if url.find(':') == 5 and url[0:8] != 'https://':
@@ -48,8 +64,10 @@ def main(argv):
                 if i == 0:
                     i += 1 # skip column headers
                     continue
-                line = line.strip(" \n")
-                fields = line.split('\t');
+                line = line.strip(" \r\n")
+                fields = line.split('\t')
+                if fields[8] == "S": # Ente_in_liquidazione
+                    continue
                 outID = fields[1]
                 webSite = normalizeUrl(fields[29])
                 if webSite != '':
