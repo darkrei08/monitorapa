@@ -25,12 +25,6 @@ def normalizeUrl(url):
     url = url.lower()
     if len(url) < 4 or url.startswith('about'):
         return ""
-    if "@pec.it" in url or "@gmail.com" in url or "@istruzione.it" in url or "@libero.it" in url or "@yahoo.it" in url:
-        return "" # skip mail addresses
-    if url.startswith('about:'):
-        return ""
-    if url == "blank":
-        return ""
     if url == "anagrafesquillace@libero.it":
         return "https://www.comune.squillace.cz.it/"
     if url == "enna@cert.ordine-opi.it":
@@ -41,6 +35,12 @@ def normalizeUrl(url):
         return "http://www.sbti.it/"
     if url == "serra.segreteria@gmail.com":
         return "https://comune.serrasantabbondio.pu.it/"
+    if "@pec.it" in url or "@gmail.com" in url or "@istruzione.it" in url or "@libero.it" in url or "@yahoo.it" in url:
+        return "" # skip mail addresses
+    if url.startswith('about:'):
+        return ""
+    if url == "blank":
+        return ""
     if url.find(':') == 4 and url[0:7] != 'http://':
         return url.replace(url[0:5], 'http://')
     if url.find(':') == 5 and url[0:8] != 'https://':
