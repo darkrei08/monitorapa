@@ -19,9 +19,10 @@ From: Monitora PA <monitorapa@peceasy.it>
 To: ${DENOMINAZIONE} <${MAIL}>
 ______
 
-All'attenzione del Titolare del Trattamento dei dati personali
-per il sito ${SITO} ai sensi
-dell'art. 4 par. 1 n. 7 - GDPR.
+All'attenzione di:
+
+- ${DENOMINAZIONE}, in qualità di
+  soggetto titolare del trattamento ai sensi dell'art. 4 par. 1 n. 7 - GDPR.
 
 Il sottoscritto Fabio Pietrosanti, nato a Latina il 31/08/1980
 (codice fiscale: PTRFBA80M31E472W), scrive in proprio ed a nome della
@@ -76,10 +77,20 @@ una responsabilità gravissima nei confronti della democrazia del nostro
 Paese, resa eclatante dall'approssimarsi delle elezioni nazionali.
 
 
-Pertanto vi chiediamo di interrompere suddetti trasferimenti e qualsiasi
-altro trasferimento verso Google LLC o altra società sottoposta a normative
-incompatibili con i diritti fondamentali dei cittadini italiani ed europei
-entro 10 giorni dalla ricezione della presente.
+Pertanto vi chiediamo, entro 10 giorni dalla ricezione della presente, di
+
+- interrompere suddetti trasferimenti e qualsiasi altro trasferimento
+  verso Google LLC o altra società sottoposta a normative incompatibili
+  con i diritti fondamentali dei cittadini italiani ed europei;
+
+- notificare il data breach occorso all’Autorita Garante per
+  la Protezione dei Dati Personali nei termini previsti
+  dall'articolo 33 del GDPR;
+
+- comunicare ai visitatori del vostro sito suddetto data breach,
+  caratterizzato dalla perdita di controllo sui propri dati personali
+  sensibili che l'utilizzo di Google Analytics sullo stesso ha loro
+  causato, nei termini dell'articolo 34 del GDPR.
 
 In difetto di ottemperanza da parte Vostra nei termini su indicati
 agli obblighi di legge in materia di trattamento dei dati personali,
@@ -90,6 +101,18 @@ dell'art. 144 del Codice in materia di protezione dei dati personali
 e integrazioni) per una valutazione della Vostra condotta anche ai
 fini dell'emanazione di eventuali provvedimenti di cui
 all'art. 58 del GDPR.
+
+
+Precisiamo sin d'ora che tutta la corrispondenza di Monitora PA
+relativa allo speciale elezioni, inclusa ogni risposta ricevuta
+alla presente comunicazione, sarà oggetto di pubblicazione,
+privata esclusivamente dai dati personali del mittente,
+sul sito web della nostra comunità hacker.
+
+Questo per rendere la cittadinanza consapevole della sensibilità
+del vostro Partito rispetto alla protezione dei dati personali
+e della democrazia del nostro Paese.
+
 
 Rimaniamo a disposizione per ulteriori chiarimenti.
 
