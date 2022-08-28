@@ -7,6 +7,7 @@
 # conditions of the Hacking License (see LICENSE.txt)
 
 from lib import check
+import os
 
 """
 Classi di utilità per l'invio di segnalazioni agli enti in violazione
@@ -55,11 +56,14 @@ class Template:
        Le variabili non presenti non verranno sostituite, ma non comporteranno
        un errore.
     """
+    name: str
     def __init__(self, filePath: str, senderEmail: str):
         """
         Legge il template da filePath.
         Utilizza senderEmail come mittente.
         """
+        if not filePath.endswith('.template'):
+            raise ValueError("Template file name must end with .template")
         with open(filePath, "r") as f:
             lines = f.readlines()
         if len(lines) < 3:
@@ -69,6 +73,7 @@ class Template:
 
         separator = lines[0]
         index = 1
+        self.name = os.path.basename(filePath).replace(".template", "")
         self._documentation = ""
         self._headers = {}
         self._message = ""
@@ -121,7 +126,7 @@ def replaceVariables(execution: check.Execution, environment: dict[str, str], co
     """
     content = content.replace("$owner", execution.owner)
     content = content.replace("$automatism", execution.address)
-	content = content.replace("$datetime", execution.time)
+    content = content.replace("$datetime", execution.time)
     for var in environment:
         content = content.replace("${"+var+"}", environment[var])
     return content
