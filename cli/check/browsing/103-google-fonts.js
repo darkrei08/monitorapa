@@ -38,7 +38,7 @@ if(fonts.length == 0){
 if(fonts.length == 0){
     var regex = new RegExp('url\\\(.+?\\\)', 'ig');
     for(var sc of document.getElementsByTagName('style')){
-        if(sc.type !== "text/css"){
+        if(sc.type && sc.type !== "text/css"){
             continue;
         }
         try{
