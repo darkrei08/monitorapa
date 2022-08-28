@@ -38,7 +38,7 @@ if(fonts.length == 0){
 if(fonts.length == 0){
     var regex = new RegExp('url\\\(.+?\\\)', 'ig');
     for(var sc of document.getElementsByTagName('style')){
-        if(sc.type !== "text/css"){
+        if(sc.type && sc.type !== "text/css"){
             continue;
         }
         try{
@@ -47,9 +47,9 @@ if(fonts.length == 0){
             if(!!urls && urls.length > 0){
                 for(var i = 0; i<urls.length; ++i){
                     var candidate = urls[i];
-                    if((candidate.indexOf('.woff') > -1 || candidate.indexOf('.css') > -1) 
-					&& (candidate.indexOf('//fonts.google') > -1 || candidate.indexOf('//fonts.gstatic') > -1 || candidate.indexOf('//themes.googleusercontent') > -1) ) {
-						console.log('MonitoraPA: found Google Fonts in CSS: ', urls[i], sc);
+                    if((candidate.indexOf('.woff') > -1 || candidate.indexOf('/css') > -1) 
+                    && (candidate.indexOf('//fonts.google') > -1 || candidate.indexOf('//fonts.gstatic') > -1 || candidate.indexOf('//themes.googleusercontent') > -1) ) {
+                        console.log('MonitoraPA: found Google Fonts in CSS: ', urls[i], sc);
                         fonts.push(candidate);
                     }
                 }
@@ -73,9 +73,9 @@ if(fonts.length == 0){
             if(!!urls && urls.length > 0){
                 for(var i = 0; i<urls.length; ++i){
                     var candidate = urls[i];
-                    if((candidate.indexOf('.woff') > -1 || candidate.indexOf('.css') > -1) 
-					&& (candidate.indexOf('//fonts.google') > -1 || candidate.indexOf('//fonts.gstatic') > -1 || candidate.indexOf('//themes.googleusercontent') > -1) ) {
-						console.log('MonitoraPA: found Google Fonts in external CSS: ', urls[i], sc);
+                    if((candidate.indexOf('.woff') > -1 || candidate.indexOf('/css') > -1) 
+                    && (candidate.indexOf('//fonts.google') > -1 || candidate.indexOf('//fonts.gstatic') > -1 || candidate.indexOf('//themes.googleusercontent') > -1) ) {
+                        console.log('MonitoraPA: found Google Fonts in external CSS: ', urls[i], sc);
                         fonts.push(candidate);
                     }
                 }
