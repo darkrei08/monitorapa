@@ -37,15 +37,17 @@ cd browserBin
 Scarichiamo il binario di chrome e lo scompattiamo
 ```
 curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchrome-linux.zip?generation=1654830630689916&alt=media' --output chrome.zip
-```
-```
+
 unzip chrome.zip -d chrome && cp -R chrome/chrome-linux/* chrome && rm -rf chrome/chrome-linux
+```
+Ritorniamo in `browserBin/`:
+```
+cd ..
 ```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchromedriver_linux64.zip?generation=1654830636205228&alt=media' --output chromedriver.zip
-```
-```
+
 unzip chromedriver.zip -d chromedriver && cp -R chromedriver/chromedriver_linux64/* chromedriver && rm -rf chromedriver/chromedriver_linux64
 ```
 Usciamo dalla cartella
@@ -102,15 +104,18 @@ cd browserBin
 Scarichiamo il binario di chrome e lo scompattiamo
 ```
 curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Win%2F1012738%2Fchrome-win.zip?generation=1654818664797684&alt=media" --output chrome.zip
-```
-```
+
 mkdir chrome && tar -xzf chrome.zip -C chrome --strip-components=1
+```
+
+Ritorniamo in `browserBin/`:
+```
+cd ..
 ```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Win%2F1012738%2Fchromedriver_win32.zip?generation=1654818846211970&alt=media" --output chromedriver.zip
-```
-```
+
 mkdir chromedriver && tar -xzf chromedriver.zip -C chromedriver --strip-components=1
 ```
 Usciamo dalla cartella
