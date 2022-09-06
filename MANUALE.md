@@ -44,7 +44,7 @@ curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 
 unzip chrome.zip -d chrome && cp -R chrome/chrome-linux/* chrome && rm -rf chrome/chrome-linux
 ```
-Ritorniamo in `browserBin/`:
+Usciamo da `browserBin/`:
 ```
 cd ..
 ```
