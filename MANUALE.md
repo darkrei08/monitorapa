@@ -17,6 +17,10 @@ Installiamo unzip per scompattare gli zip. Su altre distro potrebbe non essere n
 ```
 sudo apt-get install unzip
 ```
+Installiamo curl per scaricare successivamente i binari
+```
+sudo apt-get install curl
+```
 Creiamo l'ambiente virtuale e lo attiviamo
 ```
 python3 -m venv .venv
