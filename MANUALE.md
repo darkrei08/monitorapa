@@ -79,6 +79,7 @@ python3 cli/check/browsing.py out/enti/2022-07-25/dataset.tsv
 
 Requisiti
 - [Python 3](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/downloads)
 
 NB: Tutti i comandi elencati vanno eseguiti da CMD e non da PowerShell
 
@@ -179,3 +180,31 @@ Ora che hai il file aperto potrai modificarlo a tuo piacimento per mantenere sol
 Mi raccomando, presta attenzione alla formattazione!
 
 Una volta modificato il file a tuo piacere, salvalo e riprendi a seguire le istruzioni del manuale per eseguire l'osservatorio sul nuovo dataset da te modificato!
+
+# Vuoi usare Docker? Puoi!
+
+ATTENZIONE: questa modalità d'esecuzione dell'osservatorio è sperimentale ed è supportata solo sui sistemi Linux
+
+Cloniamo la repo
+```
+git clone https://github.com/MonitoraPA/monitorapa.git
+```
+Entriamo nella repo
+```
+cd monitorapa
+```
+Entriamo nella cartella
+```
+cd docker
+```
+Eseguiamo lo script di setup
+```
+bash docker.sh
+```
+Nello script vi chiederà di scegliere tra 1 e 2. Scrivete 1 e premete invio.
+
+Dopo un po' vi ritroverete nel terminale del container docker con tutto preparato.
+
+Qui potrete usare l'osservatorio come se foste in un qualunque altro sistema Linux. Se volete seguire il manuale iniziate dal download del dataset.
+
+NB: Il container Docker al momento NON supporta l'utilizzo di Firefox come driver.
