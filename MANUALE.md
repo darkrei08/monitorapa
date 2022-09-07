@@ -78,7 +78,9 @@ python3 cli/check/browsing.py out/enti/2022-07-25/dataset.tsv
 # Sei su Windows e vuoi eseguire l'osservatorio?
 
 Requisiti
-- [Python](https://www.python.org/downloads/)
+- [Python 3](https://www.python.org/downloads/)
+
+NB: Tutti i comandi elencati vanno eseguiti da CMD e non da PowerShell
 
 Cloniamo la repo
 ```
@@ -160,3 +162,20 @@ Incolla "1012729" nel campo per il filtro in alto ed aspetta che i risultati ven
 Riceverai un risultato, nel nostro caso: https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux/101272/
 
 - A volte può succedere che dovrai diminuire il numero di commit fino a che trovi una build esistente. Nel nostro caso ho dovuto rimuovere l'ultimo numero
+
+# Devi controllare un sito in particolare?
+
+In caso tu voglia controllare un singolo sito basterà seguire il manuale fino alla normalizzazione del dataset.
+
+Una volta normalizzato il dataset recati nella cartella 
+```
+out/enti/2022-07-25
+```
+tramite l'esplora file del tuo sistema operativo (la data sarà diversa).
+Apri il file dataset.tsv con il tuo editor di preferenza.
+
+Ora che hai il file aperto potrai modificarlo a tuo piacimento per mantenere solo i siti da te desiderati/aggiungerne di nuovi.
+
+Mi raccomando, presta attenzione alla formattazione!
+
+Una volta modificato il file a tuo piacere, salvalo e riprendi a seguire le istruzioni del manuale per eseguire l'osservatorio sul nuovo dataset da te modificato!
