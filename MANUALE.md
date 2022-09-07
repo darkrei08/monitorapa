@@ -44,10 +44,6 @@ curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 
 unzip chrome.zip -d chrome && cp -R chrome/chrome-linux/* chrome && rm -rf chrome/chrome-linux
 ```
-Usciamo da `browserBin/`:
-```
-cd ..
-```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchromedriver_linux64.zip?generation=1654830636205228&alt=media' --output chromedriver.zip
