@@ -1,6 +1,18 @@
 # Comandi
 Questa è una lista di comandi/istruzioni sul come preparare l'osservatorio per la sua funzione su debian e generalizzata il più possibile.
+## Controlli preliminari
+Prima di iniziare controlliamo che sia tutto aggiornato
+```
+sudo apt-get update
+```
+```
+sudo apt-get upgrade
+```
 ## Procedimento
+Installiamo i comandi di GitHub
+```
+sudo apt-get install git
+```
 Cloniamo la repo
 ```
 git clone https://github.com/MonitoraPA/monitorapa.git
@@ -8,6 +20,10 @@ git clone https://github.com/MonitoraPA/monitorapa.git
 Entriamo nella repo
 ```
 cd monitorapa
+```
+Installiamo python3
+```
+sudo apt-get install python3
 ```
 Aggiungiamo la possibilità di creare ambienti virtuali per python. Su altre distro potrebbe non essere necessario/chiamarsi diversamente:
 ```
@@ -25,6 +41,7 @@ Creiamo l'ambiente virtuale e lo attiviamo
 ```
 python3 -m venv .venv
 ```
+Attiviamo l'ambiente virtuale (é consigliabile lavore in ambiene virtuale così che le modifiche non vengano apportate all'intero sistema ma solo all'ambiente)
 ```
 source .venv/bin/activate
 ```
@@ -43,10 +60,6 @@ Scarichiamo il binario di chrome e lo scompattiamo
 curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchrome-linux.zip?generation=1654830630689916&alt=media' --output chrome.zip
 
 unzip chrome.zip -d chrome && cp -R chrome/chrome-linux/* chrome && rm -rf chrome/chrome-linux
-```
-Ritorniamo in `browserBin/`:
-```
-cd ..
 ```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
