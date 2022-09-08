@@ -24,7 +24,8 @@ Further details are described in [ARCHITETTURA.md](./ARCHITETTURA.md) (Italian).
 MonitoraPA has been created by several [AUTHORS](./AUTHORS.md).
 
 It's brought to you under the [Hacking License](./LICENSE.txt) that, as
-an explicit wrap contract between you and the authors, must also be
+an explicit [shrink wrap contract](https://en.wikipedia.org/wiki/Shrink_wrap_contract) 
+between you and the authors, must also be
 applied to all dependant and derivative works (including the outputs
 you produce running the system), recursively.
 
