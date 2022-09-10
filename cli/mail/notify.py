@@ -59,6 +59,7 @@ def computeLogFileName(checkToNotify, mailTemplatePath):
     result = result.replace('.tsv', '.' + templateName + '.tsv')
     
     os.makedirs(os.path.dirname(result), 0o755, True)
+    os.makedirs(os.path.dirname(result) + '/' + templateName, 0o755, True)
     
     return result
 
@@ -73,7 +74,7 @@ def countLinesToSkip(logFileName):
         return 0
     return result
 
-def sendMail(server, template, environment, execution, debugReceiverEmail):
+def sendMail(server, template, environment, execution, debugReceiverEmail, dumpsDir):
     loggedAutomatism = check.Input(execution.owner, 'MonitoraPA_Notification', execution.address)
     loggedExecution = check.Execution(loggedAutomatism)
     
@@ -104,6 +105,14 @@ def sendMail(server, template, environment, execution, debugReceiverEmail):
         server.send_message(msg)   # Invio effettivo
         
         loggedExecution.complete(headers['To'])
+        with open(dumpsDir + '/' + template.name + '.' + execution.owner + '.txt', 'w') as dump:
+            for (header, value) in msg.items():
+                dump.write(header + ': ' + value + '\n')
+            dump.write('\n')
+            body = msg.get_body()
+            dump.write(body.get_content())
+        with open(dumpsDir + '/' + template.name + '.' + execution.owner + '.eml', 'w') as dump:
+            dump.write(str(msg))
         #sys.exit()
 
     except Exception as ex:
@@ -151,12 +160,11 @@ def main(argv):
     # notifica in memoria. Quando ciò dovesse risultare insostenibile
     # possiamo effettuare gli invii in blocchi via ./cli/tools/split.py
     executions = loadCheckResults(argv[1])
-        
+
     logFileName = computeLogFileName(argv[1], argv[2])
     linesToSkip = countLinesToSkip(logFileName)
     
     # leggo la configurazione del server mail
-    # TODO: prompt per la password, in modo da non doverla salvare
     configParser = configparser.RawConfigParser()
     configParser.read('./cli/mail/notify.cfg')
     config = dict(configParser.items('server-settings'))
@@ -175,6 +183,7 @@ def main(argv):
     print("OK.")
 
     template = mailer.Template(argv[2], senderEmail)
+    dumpsDir = os.path.dirname(logFileName) + '/' + template.name
 
     primaryKeyColumn = argv[4]
     lineNumber = 0
@@ -215,7 +224,7 @@ def main(argv):
             owner = environment[primaryKeyColumn]
             
             if owner in executions:
-                loggedExecution = sendMail(server, template, environment, executions[owner], debugReceiverEmail)
+                loggedExecution = sendMail(server, template, environment, executions[owner], debugReceiverEmail, dumpsDir)
                 time.sleep(delay)
             else:
                 loggedAutomatism = check.Input(owner, 'MonitoraPA_Notification', '')
