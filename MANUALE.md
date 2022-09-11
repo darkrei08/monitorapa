@@ -67,6 +67,10 @@ curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 
 unzip chromedriver.zip -d chromedriver && cp -R chromedriver/chromedriver_linux64/* chromedriver && rm -rf chromedriver/chromedriver_linux64
 ```
+Installiamo le librerie necessarie (qualora non già presenti)
+```
+sudo apt-get install libdrm2 libgbm1 libasound2
+```
 Usciamo dalla cartella
 ```
 cd ..
