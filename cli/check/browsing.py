@@ -387,7 +387,7 @@ def addPythonCheck(dataset, checksToRun, name, pythonFunction):
     checksToRun[name] = {
         'type': 'py',
         'function': pythonFunction,
-        'output': open(outputFile, "w", buffering=1)
+        'output': open(outputFile, "w", buffering=1, encoding="utf-8")
     }
 
 def addJSCheck(dataset, checksToRun, jsFile):
@@ -406,7 +406,7 @@ def addJSCheck(dataset, checksToRun, jsFile):
     checksToRun[jsFile] = {
         'type': 'js',
         'script': js,
-        'output': open(outputFile, "w", buffering=1)
+        'output': open(outputFile, "w", buffering=1, encoding="utf-8")
     }
 
 
