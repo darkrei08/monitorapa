@@ -87,6 +87,31 @@ if(fonts.length == 0){
 }
 
 if(fonts.length > 0){
-    return JSON.stringify(fonts);
+    /* check if resources can be actually downloaded, to avoid 
+     * false positives due to Content-Security-Policy
+     */
+    var safeFonts = []
+    for (var candidate of fonts){
+        if(candidate.indexOf('url(') == 0){
+            candidate = candidate.substring(4, candidate.length - 1);
+        }
+        if(candidate[0] == "'" || candidate[0] == '"'){
+            candidate = candidate.substring(1);
+        }
+        if(candidate[candidate.length - 1] == "'" || candidate[candidate.length - 1] == '"'){
+            candidate = candidate.substring(0, candidate.length - 1);
+        }
+        try{
+            var resource = monitoraPADownloadResource(candidate);
+            if(resource != ''){
+                safeFonts.push(candidate);
+            }
+        } catch {
+            console.log('103-google-fonts: cannot load ' + candidate + " DISCARDED.")
+        }
+    }
+    if(safeFonts.length > 0){
+        return JSON.stringify(safeFonts);
+    }
 }
 return "";

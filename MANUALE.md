@@ -1,6 +1,18 @@
 # Comandi
 Questa è una lista di comandi/istruzioni sul come preparare l'osservatorio per la sua funzione su debian e generalizzata il più possibile.
+## Controlli preliminari
+Prima di iniziare controlliamo che sia tutto aggiornato
+```
+sudo apt-get update
+```
+```
+sudo apt-get upgrade
+```
 ## Procedimento
+Installiamo i comandi di GitHub
+```
+sudo apt-get install git
+```
 Cloniamo la repo
 ```
 git clone https://github.com/MonitoraPA/monitorapa.git
@@ -8,6 +20,10 @@ git clone https://github.com/MonitoraPA/monitorapa.git
 Entriamo nella repo
 ```
 cd monitorapa
+```
+Installiamo python3
+```
+sudo apt-get install python3
 ```
 Aggiungiamo la possibilità di creare ambienti virtuali per python. Su altre distro potrebbe non essere necessario/chiamarsi diversamente:
 ```
@@ -17,10 +33,15 @@ Installiamo unzip per scompattare gli zip. Su altre distro potrebbe non essere n
 ```
 sudo apt-get install unzip
 ```
+Installiamo curl per scaricare successivamente i binari
+```
+sudo apt-get install curl
+```
 Creiamo l'ambiente virtuale e lo attiviamo
 ```
 python3 -m venv .venv
 ```
+Attiviamo l'ambiente virtuale (é consigliabile lavore in ambiene virtuale così che le modifiche non vengano apportate all'intero sistema ma solo all'ambiente)
 ```
 source .venv/bin/activate
 ```
@@ -37,15 +58,13 @@ cd browserBin
 Scarichiamo il binario di chrome e lo scompattiamo
 ```
 curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchrome-linux.zip?generation=1654830630689916&alt=media' --output chrome.zip
-```
-```
+
 unzip chrome.zip -d chrome && cp -R chrome/chrome-linux/* chrome && rm -rf chrome/chrome-linux
 ```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1012822%2Fchromedriver_linux64.zip?generation=1654830636205228&alt=media' --output chromedriver.zip
-```
-```
+
 unzip chromedriver.zip -d chromedriver && cp -R chromedriver/chromedriver_linux64/* chromedriver && rm -rf chromedriver/chromedriver_linux64
 ```
 Usciamo dalla cartella
@@ -72,7 +91,10 @@ python3 cli/check/browsing.py out/enti/2022-07-25/dataset.tsv
 # Sei su Windows e vuoi eseguire l'osservatorio?
 
 Requisiti
-- [Python](https://www.python.org/downloads/)
+- [Python 3](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/downloads)
+
+NB: Tutti i comandi elencati vanno eseguiti da CMD e non da PowerShell
 
 Cloniamo la repo
 ```
@@ -102,15 +124,18 @@ cd browserBin
 Scarichiamo il binario di chrome e lo scompattiamo
 ```
 curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Win%2F1012738%2Fchrome-win.zip?generation=1654818664797684&alt=media" --output chrome.zip
-```
-```
+
 mkdir chrome && tar -xzf chrome.zip -C chrome --strip-components=1
+```
+
+Ritorniamo in `browserBin/`:
+```
+cd ..
 ```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Win%2F1012738%2Fchromedriver_win32.zip?generation=1654818846211970&alt=media" --output chromedriver.zip
-```
-```
+
 mkdir chromedriver && tar -xzf chromedriver.zip -C chromedriver --strip-components=1
 ```
 Usciamo dalla cartella
@@ -151,3 +176,48 @@ Incolla "1012729" nel campo per il filtro in alto ed aspetta che i risultati ven
 Riceverai un risultato, nel nostro caso: https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux/101272/
 
 - A volte può succedere che dovrai diminuire il numero di commit fino a che trovi una build esistente. Nel nostro caso ho dovuto rimuovere l'ultimo numero
+
+# Devi controllare un sito in particolare?
+
+In caso tu voglia controllare un singolo sito basterà seguire il manuale fino alla normalizzazione del dataset.
+
+Una volta normalizzato il dataset recati nella cartella 
+```
+out/enti/2022-07-25
+```
+tramite l'esplora file del tuo sistema operativo (la data sarà diversa).
+Apri il file dataset.tsv con il tuo editor di preferenza.
+
+Ora che hai il file aperto potrai modificarlo a tuo piacimento per mantenere solo i siti da te desiderati/aggiungerne di nuovi.
+
+Mi raccomando, presta attenzione alla formattazione!
+
+Una volta modificato il file a tuo piacere, salvalo e riprendi a seguire le istruzioni del manuale per eseguire l'osservatorio sul nuovo dataset da te modificato!
+
+# Vuoi usare Docker? Puoi!
+
+ATTENZIONE: questa modalità d'esecuzione dell'osservatorio è sperimentale ed è supportata solo sui sistemi Linux
+
+Cloniamo la repo
+```
+git clone https://github.com/MonitoraPA/monitorapa.git
+```
+Entriamo nella repo
+```
+cd monitorapa
+```
+Entriamo nella cartella
+```
+cd docker
+```
+Eseguiamo lo script di setup
+```
+bash docker.sh
+```
+Nello script vi chiederà di scegliere tra 1 e 2. Scrivete 1 e premete invio.
+
+Dopo un po' vi ritroverete nel terminale del container docker con tutto preparato.
+
+Qui potrete usare l'osservatorio come se foste in un qualunque altro sistema Linux. Se volete seguire il manuale iniziate dal download del dataset.
+
+NB: Il container Docker al momento NON supporta l'utilizzo di Firefox come driver.
