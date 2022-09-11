@@ -132,10 +132,6 @@ curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 mkdir chrome && tar -xzf chrome.zip -C chrome --strip-components=1
 ```
 
-Ritorniamo in `browserBin/`:
-```
-cd ..
-```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Win%2F1012738%2Fchromedriver_win32.zip?generation=1654818846211970&alt=media" --output chromedriver.zip
