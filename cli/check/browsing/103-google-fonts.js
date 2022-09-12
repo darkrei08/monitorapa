@@ -64,7 +64,7 @@ if(fonts.length == 0){
 if(fonts.length == 0){
     var regex = new RegExp('url\\\(.+?\\\)', 'ig');
     for(var sc of document.getElementsByTagName('link')){
-        if(sc.rel !== "stylesheet"){
+        if(sc.rel !== "stylesheet" || (sc.fetchPriority && sc.fetchPriority !== "auto")){
             continue;
         }
         try{
