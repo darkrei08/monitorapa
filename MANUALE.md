@@ -67,6 +67,10 @@ curl -L 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 
 unzip chromedriver.zip -d chromedriver && cp -R chromedriver/chromedriver_linux64/* chromedriver && rm -rf chromedriver/chromedriver_linux64
 ```
+Installiamo le librerie necessarie (qualora non già presenti)
+```
+sudo apt-get install libdrm2 libgbm1 libasound2
+```
 Usciamo dalla cartella
 ```
 cd ..
@@ -128,10 +132,6 @@ curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snaps
 mkdir chrome && tar -xzf chrome.zip -C chrome --strip-components=1
 ```
 
-Ritorniamo in `browserBin/`:
-```
-cd ..
-```
 Scarichiamo il binario di chromedriver e lo scompattiamo
 ```
 curl -L "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Win%2F1012738%2Fchromedriver_win32.zip?generation=1654818846211970&alt=media" --output chromedriver.zip
