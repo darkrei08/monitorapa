@@ -14,15 +14,16 @@ sys.path.insert(0, '.') # NOTA: da eseguire dalla root del repository git
 from lib import mailer, check
 
 import smtplib
-import ssl
 import configparser
 import sys
-import datetime
 import os
 import time
-from email.message import EmailMessage
 from getpass import getpass
-
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.message import EmailMessage
+from email import encoders
 
 def usage():
     print("""
@@ -84,32 +85,44 @@ def sendMail(server, template, environment, execution, debugReceiverEmail, dumps
             headers["To"] = debugReceiverEmail
         # Ci mettiamo in Cc per vedere le mail che mandiamo
         # (Bcc non viene accettato dalle PEC)
-        if 'Cc' in headers and headers['Cc'] != headers['From']:
-            headers['Cc'] = headers['From'] + ', ' + headers['Cc']
-        else:
-            headers['Cc'] = headers['From']
+        #if 'Cc' in headers and headers['Cc'] != headers['From']:
+        #    headers['Cc'] = headers['From'] + ', ' + headers['Cc']
+        #else:
+        #    headers['Cc'] = headers['From']
 
         messageContent = template.message(execution, environment)
         
-        #print(headers)
-        #print(messageContent)
-        
-        msg = EmailMessage()
-        
+        msg = MIMEMultipart()
+        logMsg = EmailMessage()
+
+        files = []
+
         for header in headers:
-            msg[header] = headers[header]
+            if header == "AddAttachments":
+                files = headers[header].split(" ")
+            else:
+                msg[header] = headers[header]
         
+        logMsg.set_content(messageContent)
+        msg.attach(MIMEText(messageContent))
         
-        msg.set_content(messageContent)
-        
-        server.send_message(msg)   # Invio effettivo
-        
+        for path in files:
+            part = MIMEBase('application', "octet-stream")
+            with open(path, 'rb') as file:
+                part.set_payload(file.read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition',
+                            'attachment; filename={}'.format(os.path.basename(path)))
+            msg.attach(part)
+
+        server.send_message(msg) # Invio effettivo
+
         loggedExecution.complete(headers['To'])
         with open(dumpsDir + '/' + template.name + '.' + execution.owner + '.txt', 'w') as dump:
             for (header, value) in msg.items():
                 dump.write(header + ': ' + value + '\n')
             dump.write('\n')
-            body = msg.get_body()
+            body = logMsg.get_body()
             dump.write(body.get_content())
         with open(dumpsDir + '/' + template.name + '.' + execution.owner + '.eml', 'w') as dump:
             dump.write(str(msg))
@@ -184,7 +197,8 @@ def main(argv):
 
     template = mailer.Template(argv[2], senderEmail)
     dumpsDir = os.path.dirname(logFileName) + '/' + template.name
-
+    #print('dumpsDir', dumpsDir)
+    #sys.exit()
     primaryKeyColumn = argv[4]
     lineNumber = 0
     columnNames = []
@@ -225,13 +239,14 @@ def main(argv):
             
             if owner in executions:
                 loggedExecution = sendMail(server, template, environment, executions[owner], debugReceiverEmail, dumpsDir)
+                print(lineNumber, loggedExecution)
                 time.sleep(delay)
             else:
                 loggedAutomatism = check.Input(owner, 'MonitoraPA_Notification', '')
                 loggedExecution = check.Execution(loggedAutomatism)
                 loggedExecution.interrupt('No need for notification.')
+                print(lineNumber, loggedExecution)
             
-            print(lineNumber, loggedExecution)
             logFile.write(str(loggedExecution)+'\n')
             lineNumber += 1
 
