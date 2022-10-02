@@ -16,7 +16,7 @@ var fonts = []
 
 // direct link to stylesheet
 for(var sc of document.getElementsByTagName('link')){
-    if(sc.rel != "preconnect" && sc.href.indexOf('//fonts.google') > -1) {
+    if((!sc.rel || sc.rel == "stylesheet") && sc.href.indexOf('//fonts.google') > -1) {
         console.log('MonitoraPA: found Google Fonts in ', sc);
         fonts.push(sc.href);
     }
@@ -64,7 +64,7 @@ if(fonts.length == 0){
 if(fonts.length == 0){
     var regex = new RegExp('url\\\(.+?\\\)', 'ig');
     for(var sc of document.getElementsByTagName('link')){
-        if(sc.rel !== "stylesheet" || (sc.fetchPriority && sc.fetchPriority !== "auto")){
+        if(sc.rel !== "stylesheet" || !!sc.onload){
             continue;
         }
         try{

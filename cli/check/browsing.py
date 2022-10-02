@@ -157,11 +157,12 @@ def waitUntilPageLoaded(browser, period=2):
     #print('waitUntilPageLoaded %s ' % browser.current_url, end='')
     
     readyState = False
+    count = 0
     
-    while not readyState:
-        #print('.', end='')
+    while not readyState and count < 60:
         time.sleep(period)
         readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
+        count += 1
     #print()
 
 
@@ -185,6 +186,7 @@ def openBrowser(cacheDir):
     print(base_port)
     
     op.add_argument("--remote-debugging-port=" + str(base_port))
+    #op.add_argument("--auto-open-devtools-for-tabs")
     
     op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--home='+cacheDir.replace('udd', 'home'))
@@ -235,6 +237,12 @@ def browseTo(browser, url):
     browser.switch_to.window(browser.window_handles[-1])
     try:
         browser.get(url)
+        needRefresh = browser.execute_script('return document.getElementsByTagName("body").length == 0;')
+        if needRefresh:
+            browser.execute_script('window.location.reload();')
+            time.sleep(2)
+            browser.get('about:blank')
+            browser.get(url)
     except TimeoutException:
         if len(browser.title) > 1:
             pass # after 90 something has been loaded anyway
@@ -247,6 +255,7 @@ def browseTo(browser, url):
         else:
             raise
     browser.execute_script("window.addEventListener('unload', e => { window.monitoraPAUnloading = true; }, {capture:true});")
+    #print("browseTo DONE")
 
 def runPythonChecks(prefix, results, browser):
     for toRun in checksToRun:
@@ -444,9 +453,15 @@ def run(dataset):
     try:
         with open(dataset, 'r') as inf:
             for line in inf:
+                count += 1
+
+                #if count < 266:
+                #    continue
+
                 automatism = check.parseInput(line)
                 if automatism.type != 'Web':
                     continue
+
 
                 print()
                 print(count, automatism);
