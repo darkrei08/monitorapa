@@ -8,18 +8,16 @@
 # MonitoraPA is a hack. You can use it according to the terms and
 # conditions of the Hacking License (see LICENSE.txt)
 
-from email.mime import base
 import sys
 sys.path.insert(0, '.') # NOTA: da eseguire dalla root del repository git
+import signal
+signal.signal(signal.SIGINT, signal.default_int_handler)
 
 from lib import commons, check
 
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException, TimeoutException
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+import undetected_chromedriver as uc
+
+
 import time
 from datetime import datetime
 import os
@@ -28,8 +26,438 @@ import psutil
 import shutil
 import tempfile
 import socket
+from urllib.parse import urlparse
+
+def usage():
+    print("""
+./cli/check/browsing.py out/$SOURCE/$DATE/dataset.tsv
+
+Where:
+- $SOURCE is a folder dedicated to a particular data source
+- $DATE is the data source creation date in ISO 8601 format (eg 2022-02-28)
+""")
+    sys.exit(-1)
 
 checksToRun = {}
+networkLogs = []
+
+def run(dataset):
+    loadAllChecks(dataset, checksToRun)
+    cacheDir = getCacheDir(dataset)
+    browser = openBrowser(cacheDir)
+
+    count = 0
+    try:
+        with open(dataset, 'r') as inf:
+            for line in inf:
+                count += 1
+                
+                #if count < 266:
+                #    continue
+
+                automatism = check.parseInput(line)
+                if automatism.type != 'Web':
+                    continue
+
+
+                print()
+                print(count, automatism);
+                
+                try:
+                    runChecks(automatism, browser)
+                except BrowserNeedRestartException:
+                    if browserReallyNeedARestart(browser):
+                        browser = restartBrowser(browser, cacheDir)
+                    
+                #if count % 500 == 499:
+                #    browser = restartBrowser(browser, cacheDir)
+                count += 1
+    except (KeyboardInterrupt):
+        print("Interrupted at %s" % count)
+    finally:
+        browser.quit()
+        time.sleep(5)
+        shutil.rmtree(cacheDir, False)
+
+## Python checks
+
+GoogleFontsServers = [
+    'fonts.googleapis.com',
+    'fonts.gstatic.com',
+    'themes.googleusercontent',
+]
+AzureServers = [
+    '.accesscontrol.windows.net',
+    '.graph.windows.net',
+    '.onmicrosoft.com',
+    '.azure-api.net',
+    '.biztalk.windows.net',
+    '.blob.core.windows.net',
+    '.cloudapp.net',
+    '.cloudapp.azure.com',
+    '.azurecr.io',
+    '.azurecontainer.io',
+    '.vo.msecnd.net',
+    '.cosmos.azure.com',
+    '.documents.azure.com',
+    '.file.core.windows.net',
+    '.azurefd.net',
+    '.vault.azure.net',
+    '.management.core.windows.net',
+    '.origin.mediaservices.windows.net',
+    '.azure-mobile.net',
+    '.queue.core.windows.net',
+    '.servicebus.windows.net',
+    '.database.windows.net',
+    '.azureedge.net',
+    '.table.core.windows.net',
+    '.trafficmanager.net',
+    '.azurewebsites.net',
+    '.visualstudio.com'
+]
+AWSServers = [
+    '.amazonaws.com'
+]
+FontAwesomeServers = [
+    'use.fontawesome.com'
+]
+FacebookServers = [
+    "atlassolutions.com",
+    "e.gg",
+    "facebook.com",
+    "facebook.de",
+    "facebook.fr",
+    "facebook.net",
+    "fb.com",
+    "fb.me",
+    "fbcdn.net",
+    "friendfeed.com",
+    "instagram.com",
+    "internalfb.com",
+    "messenger.com",
+    "meta.com",
+    "oculus.com",
+    "oversightboard.com",
+    "whatsapp.com",
+    "workplace.com",
+    "apps.fbsbx.com",
+    "atdmt.com",
+    "atlassolutions.com",
+    "facebook.com",
+    "facebook.de",
+    "facebook.fr",
+    "facebook.net",
+    "fb.com",
+    "fb.me",
+    "fbcdn.net",
+    "fbsbx.com",
+    "friendfeed.com",
+    "instagram.com",
+    "messenger.com",
+
+    ".atlassolutions.com",
+    ".e.gg",
+    ".facebook.com",
+    ".facebook.de",
+    ".facebook.fr",
+    ".facebook.net",
+    ".fb.com",
+    ".fb.me",
+    ".fbcdn.net",
+    ".friendfeed.com",
+    ".instagram.com",
+    ".internalfb.com",
+    ".messenger.com",
+    ".meta.com",
+    ".oculus.com",
+    ".oversightboard.com",
+    ".whatsapp.com",
+    ".workplace.com",
+    ".apps.fbsbx.com",
+    ".atdmt.com",
+    ".atlassolutions.com",
+    ".facebook.com",
+    ".facebook.de",
+    ".facebook.fr",
+    ".facebook.net",
+    ".fb.com",
+    ".fb.me",
+    ".fbcdn.net",
+    ".fbsbx.com",
+    ".friendfeed.com",
+    ".instagram.com",
+    ".messenger.com"    
+]
+GoogleMapsServers = [
+    'maps.googleapis.com'
+]
+AdobeServers = [
+    "adobe.com",
+    "fyre.co",
+    "livefyre.com",
+    "typekit.com",
+    "2o7.net",
+    "auditude.com",
+    "demdex.com",
+    "demdex.net",
+    "dmtracker.com",
+    "efrontier.com",
+    "everestads.net",
+    "everestjs.net",
+    "everesttech.net",
+    "hitbox.com",
+    "omniture.com",
+    "omtrdc.net",
+    "touchclarity.com"
+]
+FontsExt = [
+    '.ttf',
+    '.woff',
+    '.woff2'
+]
+
+def checkContactedHosts(poisonedHosts):
+    evidences = []
+    for event in networkLogs:
+        url = urlparse(event['params']['request']['url'])
+        host = url.netloc
+        if ':' in host:
+            host = host[0:host.index(':')]
+        if host in poisonedHosts:
+            if host[0] == '.':
+                if url.netloc.endswith(host):
+                    evidences.append(event)
+            elif url.netloc == host:
+                evidences.append(event)
+    if len(evidences) == 0:
+        return ""
+    return str(evidences)
+
+def checkActualUrl(browser):
+    return browser.current_url
+
+def checkCookies(browser):
+    cookies = browser.get_cookies()
+    if len(cookies) == 0:
+        return ""
+    return str(cookies)
+
+def checkGoogleFonts(browser):
+    evidences = []
+    
+    for event in networkLogs:
+        url = urlparse(event['params']['request']['url'])
+        host = url.netloc
+        if ':' in host:
+            host = host[0:host.index(':')]
+        if host in GoogleFontsServers:
+            if url.path.contains('/css'):
+                evidences.append(event)
+            else:
+                for ext in FontsExt:
+                    if url.path.endswith(ext):
+                        evidences.append(event)
+                        break
+    if len(evidences) == 0:
+        return ""
+    return str(evidences)
+
+def checkAzure(browser):
+    return checkContactedHosts(AzureServers)
+def checkAWS(browser):
+    return checkContactedHosts(AWSServers)
+def checkFontAwesome(browser):
+    return checkContactedHosts(FontAwesomeServers)
+def checkFacebook(browser):
+    return checkContactedHosts(FacebookServers)
+def checkGoogleMaps(browser):
+    return checkContactedHosts(GoogleMapsServers)
+def checkGoogleReCAPTCHA(browser):
+    evidences = []
+    for event in networkLogs:
+        url = urlparse(event['params']['request']['url'])
+        host = url.netloc
+        if ':' in host:
+            host = host[0:host.index(':')]
+        if host == 'www.google.com' and url.path.startswith('/recaptcha/api.js'):
+            evidences.append(event)
+    if len(evidences) == 0:
+        return ""
+    return str(evidences)
+def checkAdobe(browser):
+    return checkContactedHosts(AdobeServers)
+
+
+## Check execution
+
+def runChecks(automatism, browser):
+    url = automatism.address
+
+    results = {}
+    jsChecksCount = countJSChecks(checksToRun)
+
+    try:
+        browseTo(browser, url)
+        actual_url = browser.current_url
+
+        runPythonChecks('000-', results, browser)
+        
+        #time.sleep(20)  # to wait for F12
+        
+        while countJSChecks(results) != jsChecksCount:
+            if actual_url != browser.current_url:
+                browseTo(browser, actual_url)
+
+            waitUntilPageLoaded(browser)
+
+            # due to the async nature of some check operations
+            # we need to regenerate and run this script several times
+            # collecting results provided by each run and excluding
+            # the previous executed tests.
+            script = jsFramework;        
+            allChecks = ""
+            for toRun in checksToRun:
+                if checksToRun[toRun]['type'] != 'js':
+                    continue
+                if not (toRun in results): 
+                    checkCode = checksToRun[toRun]['script']
+                    allChecks += singleJSCheck % (toRun, checkCode)
+
+            script += runAllJSChecks % allChecks
+            script += "return runAllJSChecks();";
+        
+            newResults = browser.execute_script(script)
+            print('script executed:', newResults)
+            for js in newResults:
+                if newResults[js]['issues'] != None:
+                    results[js] = newResults[js]
+ 
+        runPythonChecks('999-', results, browser)
+        
+        completionTime = str(datetime.now())
+                
+        for js in checksToRun:
+            execution = check.Execution(automatism)
+            issues = results[js]['issues']
+            if results[js]['completed']:
+                execution.complete(issues, completionTime)
+            else:
+                execution.interrupt(issues, completionTime)
+            print("execution of %s:" % js, str(execution))
+            checksToRun[js]['output'].write(str(execution)+'\n')
+            
+        print(networkLogs)
+        sys.exit()
+
+    except WebDriverException as err:
+        print("WebDriverException of type %s occurred" % err.__class__.__name__, err.msg)
+            
+        # un check ha causato una eccezione: 
+        # - registro i risultati raccolti
+        # - registro l'eccezione su tutti i check che non ho potuto eseguire
+        failTime = str(datetime.now())
+        for js in checksToRun:
+            execution = check.Execution(automatism)
+            if js in results:
+                issues = results[js]['issues']
+                if results[js]['completed']:
+                    execution.complete(issues, failTime)
+                else:
+                    execution.interrupt(issues, failTime)
+            else:
+                issues = "%s: %s" % (err.__class__.__name__, err.msg)
+                execution.interrupt(issues, failTime)
+            checksToRun[js]['output'].write(str(execution)+'\n')
+
+        if commons.isNetworkDown():
+            print('Network down: waiting...')
+            commons.waitUntilNetworkIsBack()
+            print('Network restored: back to work')
+
+        if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
+            raise BrowserNeedRestartException
+        if 'invalid session id' in err.msg:
+            raise BrowserNeedRestartException
+        if 'chrome not reachable' in err.msg:
+            raise BrowserNeedRestartException
+    #time.sleep(100000)
+
+def runPythonChecks(prefix, results, browser):
+    for toRun in checksToRun:
+        if not toRun.startswith(prefix):
+            continue
+        if checksToRun[toRun]['type'] != 'py':
+            continue
+        if toRun in results:
+            continue
+        try:
+            functionToRun = checksToRun[toRun]['function']
+            checkResult = functionToRun(browser)
+            #print(f'{toRun} completed:', checkResult)
+            results[toRun] = {
+                'completed': True,
+                'issues': checkResult
+            }
+        except Exception as err:
+            print(f'{toRun} interrupted:', str(err))
+            results[toRun] = {
+                'completed': False,
+                'issues': str(err)
+            }
+
+def loadAllChecks(dataset, checksToRun):
+    
+    addPythonCheck(dataset, checksToRun, '000-actual-url', checkActualUrl)
+    addPythonCheck(dataset, checksToRun, '000-cookies', checkCookies)
+    
+    files = os.listdir('./cli/check/browsing/')
+    files = sorted(files)
+    for jsFile in files:
+        addJSCheck(dataset, checksToRun, jsFile)
+
+    addPythonCheck(dataset, checksToRun, '998-cookies', checkCookies)
+    addPythonCheck(dataset, checksToRun, '999-aws', checkAWS)
+    addPythonCheck(dataset, checksToRun, '999-adobe', checkAdobe)
+    addPythonCheck(dataset, checksToRun, '999-azure', checkAzure)
+    addPythonCheck(dataset, checksToRun, '999-facebook', checkFacebook)
+    addPythonCheck(dataset, checksToRun, '999-fontawesome', checkFontAwesome)
+    addPythonCheck(dataset, checksToRun, '999-googlefonts', checkGoogleFonts)
+    addPythonCheck(dataset, checksToRun, '999-googlemaps', checkGoogleMaps)
+    addPythonCheck(dataset, checksToRun, '999-googlerecaptcha', checkGoogleReCAPTCHA)
+
+def addJSCheck(dataset, checksToRun, jsFile):
+    jsFilePath = './cli/check/browsing/%s' % jsFile
+    #print("jsFilePath %s" % jsFilePath)
+    if not (jsFile.endswith('.js') and os.path.isfile(jsFilePath)):
+        return # nothing to do
+
+    js = ""
+    with open(jsFilePath, "r") as f:
+        js = f.read()
+    outputFile = check.outputFileName(dataset, 'browsing', jsFile.replace('.js', '.tsv'))
+    directory = os.path.dirname(outputFile)
+    #print("mkdir %s", directory)
+    os.makedirs(directory, 0o755, True)
+    checksToRun[jsFile] = {
+        'type': 'js',
+        'script': js,
+        'output': open(outputFile, "w", buffering=1, encoding="utf-8")
+    }
+
+def countJSChecks(dictionary):
+    return len([c for c in dictionary if c.endswith('.js')])
+
+def addPythonCheck(dataset, checksToRun, name, pythonFunction):
+    outputFile = check.outputFileName(dataset, 'browsing', name + '.tsv')
+    directory = os.path.dirname(outputFile)
+    #print("mkdir %s", directory)
+    os.makedirs(directory, 0o755, True)
+    checksToRun[name] = {
+        'type': 'py',
+        'function': pythonFunction,
+        'output': open(outputFile, "w", buffering=1, encoding="utf-8")
+    }
+
 
 jsFramework = """
 
@@ -119,13 +547,6 @@ debugger;
 }
 """
 
-def checkActualUrl(browser):
-    return browser.current_url
-def checkCookies(browser):
-    cookies = browser.get_cookies()
-    if len(cookies) == 0:
-        return ""
-    return str(cookies)
 
 
 class BrowserNeedRestartException(Exception):
@@ -142,45 +563,19 @@ def tryPort(port):
     sock.close()
     return result
 
-def usage():
-    print("""
-./cli/check/browsing.py out/$SOURCE/$DATE/dataset.tsv
 
-Where:
-- $SOURCE is a folder dedicated to a particular data source
-- $DATE is the data source creation date in ISO 8601 format (eg 2022-02-28)
-""")
-    sys.exit(-1)
-
-
-def waitUntilPageLoaded(browser, period=2):
-    #print('waitUntilPageLoaded %s ' % browser.current_url, end='')
-    
-    readyState = False
-    count = 0
-    
-    while not readyState and count < 60:
-        time.sleep(period)
-        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
-        count += 1
-    #print()
-
-
+## Browser control functions
 def openBrowser(cacheDir):
-    op = ChromeOptions()
-    chrome_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
-    if os.name == 'nt': # Se viene eseguito su windows
-        chrome_path += ".exe"
-    op.binary_location = chrome_path
+    op = uc.ChromeOptions()
+    
     op.headless = True
+    op.add_argument('--headless')
 
-    # Disabilita il downlaod dei file (trovato su https://stackoverflow.com/questions/27378883/how-can-i-disable-file-download-in-webdriver-chromeprofile)
-    profile = {"download.default_directory": "NUL", "download.prompt_for_download": False, }
-    op.add_experimental_option("prefs", profile)
 
     # Tentiamo porte finchè non ne troviamo una libera
     base_port = 42069
     while(not tryPort(base_port)):
+        time.sleep(1)
         base_port += 1
 
     print(base_port)
@@ -190,42 +585,49 @@ def openBrowser(cacheDir):
     
     op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--home='+cacheDir.replace('udd', 'home'))
-    op.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"')
     op.add_argument('--incognito')
-    op.add_argument('--disable-web-security')
-    op.add_argument('--no-sandbox')
+    #op.add_argument('--disable-web-security')
+    #op.add_argument('--no-sandbox')
+    op.add_argument('--disable-popup-blocking')
     op.add_argument('--disable-extensions')
     op.add_argument('--dns-prefetch-disable')
     op.add_argument('--disable-gpu')
     op.add_argument('--disable-dev-shm-usage')
-    op.add_argument('--ignore-certificate-errors')
+    #op.add_argument('--ignore-certificate-errors')
     op.add_argument('--ignore-ssl-errors')
-    op.add_argument('enable-features=NetworkServiceInProcess')
-    op.add_argument('disable-features=NetworkService')
+    op.add_argument('--enable-features=NetworkServiceInProcess')
+    op.add_argument('--disable-features=NetworkService,SameSiteByDefaultCookies,CookiesWithoutSameSiteMustBeSecure')
     op.add_argument('--window-size=1920,1080')
     op.add_argument('--aggressive-cache-discard')
     op.add_argument('--disable-cache')
     op.add_argument('--disable-application-cache')
     op.add_argument('--disable-offline-load-stale-cache')
     op.add_argument('--disk-cache-size=' + str(5*1024*1024)) # 5MB
-    op.add_experimental_option("excludeSwitches", ["enable-automation"])
-    op.add_experimental_option('useAutomationExtension', False)
-    op.add_argument('--disable-blink-features=AutomationControlled')
+    #op.add_experimental_option("excludeSwitches", ["enable-automation"])
+    #op.add_experimental_option('useAutomationExtension', False)
+    #op.add_argument('--disable-blink-features=AutomationControlled')
+    op.add_argument('--no-first-run --no-service-autorun --password-store=basic')
 
-    chromedriver_path = os.path.join(os.getcwd(),'browserBin/chromedriver/chromedriver')
+    chromedriver_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
     if os.name == 'nt': # Se viene eseguito su windows
         chromedriver_path += ".exe"
     
-    browser = webdriver.Chrome(service=ChromeService(chromedriver_path), options=op)
+    browser = uc.Chrome(options=op, version_main=104, browser_executable_path=chromedriver_path, enable_cdp_events=True)
 
-    browser.set_page_load_timeout(90)
-        
     browser.get('about:blank')
 
-    return browser
+    browser.add_cdp_listener('Network.requestWillBeSent', collectNetworkLogs)
+    browser.add_cdp_listener('Network.requestWillBeSentExtraInfo', collectNetworkLogs)
+    browser.add_cdp_listener('Network.responseReceived', collectNetworkLogs)
+    browser.add_cdp_listener('Network.responseReceivedExtraInfo', collectNetworkLogs)
+    browser.set_page_load_timeout(90)
+        
     
+    return browser
+
 def browseTo(browser, url):
     # we are in incognito mode: each new tab get a clean state for cheap
+    networkLogs = []
     
     while len(browser.window_handles) > 1:
         browser.switch_to.window(browser.window_handles[-1])
@@ -257,120 +659,17 @@ def browseTo(browser, url):
     browser.execute_script("window.addEventListener('unload', e => { window.monitoraPAUnloading = true; }, {capture:true});")
     #print("browseTo DONE")
 
-def runPythonChecks(prefix, results, browser):
-    for toRun in checksToRun:
-        if not toRun.startswith(prefix):
-            continue
-        if checksToRun[toRun]['type'] != 'py':
-            continue
-        if toRun in results:
-            continue
-        try:
-            functionToRun = checksToRun[toRun]['function']
-            checkResult = functionToRun(browser)
-            #print(f'{toRun} completed:', checkResult)
-            results[toRun] = {
-                'completed': True,
-                'issues': checkResult
-            }
-        except Exception as err:
-            print(f'{toRun} interrupted:', str(err))
-            results[toRun] = {
-                'completed': False,
-                'issues': str(err)
-            }
-
-def countJSChecks(dictionary):
-    return len([c for c in dictionary if c.endswith('.js')])
-
-def runChecks(automatism, browser):
-    url = automatism.address
-    results = {}
-    jsChecksCount = countJSChecks(checksToRun)
-
-    try:
-        browseTo(browser, url)
-        actual_url = browser.current_url
-
-        runPythonChecks('000-', results, browser)
-        
-        #time.sleep(20)  # to wait for F12
-        
-        while countJSChecks(results) != jsChecksCount:
-            if actual_url != browser.current_url:
-                browseTo(browser, actual_url)
-
-            waitUntilPageLoaded(browser)
-
-            # due to the async nature of some check operations
-            # we need to regenerate and run this script several times
-            # collecting results provided by each run and excluding
-            # the previous executed tests.
-            script = jsFramework;        
-            allChecks = ""
-            for toRun in checksToRun:
-                if checksToRun[toRun]['type'] != 'js':
-                    continue
-                if not (toRun in results): 
-                    checkCode = checksToRun[toRun]['script']
-                    allChecks += singleJSCheck % (toRun, checkCode)
-
-            script += runAllJSChecks % allChecks
-            script += "return runAllJSChecks();";
-        
-            newResults = browser.execute_script(script)
-            print('script executed:', newResults)
-            for js in newResults:
-                if newResults[js]['issues'] != None:
-                    results[js] = newResults[js]
- 
-        runPythonChecks('999-', results, browser)
-        
-        completionTime = str(datetime.now())
-                
-        for js in checksToRun:
-            execution = check.Execution(automatism)
-            issues = results[js]['issues']
-            if results[js]['completed']:
-                execution.complete(issues, completionTime)
-            else:
-                execution.interrupt(issues, completionTime)
-            print("execution of %s:" % js, str(execution))
-            checksToRun[js]['output'].write(str(execution)+'\n')
-
-    except WebDriverException as err:
-        print("WebDriverException of type %s occurred" % err.__class__.__name__, err.msg)
-            
-        # un check ha causato una eccezione: 
-        # - registro i risultati raccolti
-        # - registro l'eccezione su tutti i check che non ho potuto eseguire
-        failTime = str(datetime.now())
-        for js in checksToRun:
-            execution = check.Execution(automatism)
-            if js in results:
-                issues = results[js]['issues']
-                if results[js]['completed']:
-                    execution.complete(issues, failTime)
-                else:
-                    execution.interrupt(issues, failTime)
-            else:
-                issues = "%s: %s" % (err.__class__.__name__, err.msg)
-                execution.interrupt(issues, failTime)
-            checksToRun[js]['output'].write(str(execution)+'\n')
-
-        if commons.isNetworkDown():
-            print('Network down: waiting...')
-            commons.waitUntilNetworkIsBack()
-            print('Network restored: back to work')
-
-        if err.__class__.__name__ == 'TimeoutException' and 'receiving message from renderer' in err.msg:
-            raise BrowserNeedRestartException
-        if 'invalid session id' in err.msg:
-            raise BrowserNeedRestartException
-        if 'chrome not reachable' in err.msg:
-            raise BrowserNeedRestartException
-
-    #time.sleep(100000)
+def waitUntilPageLoaded(browser, period=2):
+    #print('waitUntilPageLoaded %s ' % browser.current_url, end='')
+    
+    readyState = False
+    count = 0
+    
+    while not readyState and count < 60:
+        time.sleep(period)
+        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
+        count += 1
+    #print()
 
 def restartBrowser(browser, cacheDir):
     print('restarting Browser: pid %d, dataDir %s' % (browser.service.process.pid, cacheDir))
@@ -387,49 +686,10 @@ def restartBrowser(browser, cacheDir):
     browser = None
     time.sleep(10)
     return openBrowser(cacheDir)
-    
-def addPythonCheck(dataset, checksToRun, name, pythonFunction):
-    outputFile = check.outputFileName(dataset, 'browsing', name + '.tsv')
-    directory = os.path.dirname(outputFile)
-    #print("mkdir %s", directory)
-    os.makedirs(directory, 0o755, True)
-    checksToRun[name] = {
-        'type': 'py',
-        'function': pythonFunction,
-        'output': open(outputFile, "w", buffering=1, encoding="utf-8")
-    }
 
-def addJSCheck(dataset, checksToRun, jsFile):
-    jsFilePath = './cli/check/browsing/%s' % jsFile
-    #print("jsFilePath %s" % jsFilePath)
-    if not (jsFile.endswith('.js') and os.path.isfile(jsFilePath)):
-        return # nothing to do
-
-    js = ""
-    with open(jsFilePath, "r") as f:
-        js = f.read()
-    outputFile = check.outputFileName(dataset, 'browsing', jsFile.replace('.js', '.tsv'))
-    directory = os.path.dirname(outputFile)
-    #print("mkdir %s", directory)
-    os.makedirs(directory, 0o755, True)
-    checksToRun[jsFile] = {
-        'type': 'js',
-        'script': js,
-        'output': open(outputFile, "w", buffering=1, encoding="utf-8")
-    }
-
-
-def loadChecks(dataset, checksToRun):
-    
-    addPythonCheck(dataset, checksToRun, '000-actual-url', checkActualUrl)
-    addPythonCheck(dataset, checksToRun, '000-cookies', checkCookies)
-    
-    files = os.listdir('./cli/check/browsing/')
-    files = sorted(files)
-    for jsFile in files:
-        addJSCheck(dataset, checksToRun, jsFile)
-
-    addPythonCheck(dataset, checksToRun, '999-cookies', checkCookies)
+def collectNetworkLogs(event):
+    networkLogs.append(event)
+    #print(event)
 
 def browserReallyNeedARestart(browser):
     try:
@@ -444,44 +704,12 @@ def getCacheDir(dataset):
     cacheDir = tempfile.mkdtemp(prefix='udd-%d-' % os.getpid(), dir=cacheDirsContainer)
     return cacheDir
 
-def run(dataset):
-    loadChecks(dataset, checksToRun)
-    cacheDir = getCacheDir(dataset)
-    browser = openBrowser(cacheDir)
-
-    count = 0
-    try:
-        with open(dataset, 'r') as inf:
-            for line in inf:
-                count += 1
-
-                #if count < 266:
-                #    continue
-
-                automatism = check.parseInput(line)
-                if automatism.type != 'Web':
-                    continue
 
 
-                print()
-                print(count, automatism);
-                
-                try:
-                    runChecks(automatism, browser)
-                except BrowserNeedRestartException:
-                    if browserReallyNeedARestart(browser):
-                        browser = restartBrowser(browser, cacheDir)
-                    
-                #if count % 500 == 499:
-                #    browser = restartBrowser(browser, cacheDir)
-                count += 1
-    except (KeyboardInterrupt):
-        print("Interrupted at %s" % count)
-    finally:
-        browser.quit()
-        time.sleep(5)
-        shutil.rmtree(cacheDir, False)
-    
+
+
+
+
 
 def main(argv):
     if len(argv) != 2:
