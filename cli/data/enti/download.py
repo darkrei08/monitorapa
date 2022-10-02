@@ -65,9 +65,10 @@ def computeOutDir():
 
 def main():
     outDir = computeOutDir()
+    headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
 
     url = 'https://indicepa.gov.it/ipa-dati/datastore/dump/d09adf99-dc10-4349-8c53-27b1e5aa97b6?bom=True&format=tsv'
-    response = requests.get(url, allow_redirects=True)
+    response = requests.get(url, allow_redirects=True, headers=headers)
 
     with open(f"{outDir}/enti.tsv", "wb") as outFile:
         outFile.write(response.content)
