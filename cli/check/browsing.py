@@ -216,9 +216,14 @@ FontsExt = [
     '.woff2'
 ]
 
+def eventToEvidence(event):
+    return event['request']
+
 def checkContactedHosts(poisonedHosts):
     evidences = []
     for event in networkLogs:
+        if event['method'] != 'Network.requestWillBeSent':
+            continue
         url = urlparse(event['params']['request']['url'])
         host = url.netloc
         if ':' in host:
@@ -226,9 +231,9 @@ def checkContactedHosts(poisonedHosts):
         if host in poisonedHosts:
             if host[0] == '.':
                 if url.netloc.endswith(host):
-                    evidences.append(event)
+                    evidences.append(eventToEvidence(event))
             elif url.netloc == host:
-                evidences.append(event)
+                evidences.append(eventToEvidence(event))
     if len(evidences) == 0:
         return ""
     return str(evidences)
@@ -252,11 +257,11 @@ def checkGoogleFonts(browser):
             host = host[0:host.index(':')]
         if host in GoogleFontsServers:
             if url.path.contains('/css'):
-                evidences.append(event)
+                evidences.append(eventToEvidence(event))
             else:
                 for ext in FontsExt:
                     if url.path.endswith(ext):
-                        evidences.append(event)
+                        evidences.append(eventToEvidence(event))
                         break
     if len(evidences) == 0:
         return ""
@@ -280,7 +285,7 @@ def checkGoogleReCAPTCHA(browser):
         if ':' in host:
             host = host[0:host.index(':')]
         if host == 'www.google.com' and url.path.startswith('/recaptcha/api.js'):
-            evidences.append(event)
+            evidences.append(eventToEvidence(event))
     if len(evidences) == 0:
         return ""
     return str(evidences)
@@ -346,9 +351,6 @@ def runChecks(automatism, browser):
             print("execution of %s:" % js, str(execution))
             checksToRun[js]['output'].write(str(execution)+'\n')
             
-        print(networkLogs)
-        sys.exit()
-
     except WebDriverException as err:
         print("WebDriverException of type %s occurred" % err.__class__.__name__, err.msg)
             
@@ -415,7 +417,7 @@ def loadAllChecks(dataset, checksToRun):
     for jsFile in files:
         addJSCheck(dataset, checksToRun, jsFile)
 
-    addPythonCheck(dataset, checksToRun, '998-cookies', checkCookies)
+    addPythonCheck(dataset, checksToRun, '999-cookies', checkCookies)
     addPythonCheck(dataset, checksToRun, '999-aws', checkAWS)
     addPythonCheck(dataset, checksToRun, '999-adobe', checkAdobe)
     addPythonCheck(dataset, checksToRun, '999-azure', checkAzure)
