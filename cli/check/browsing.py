@@ -217,7 +217,9 @@ FontsExt = [
 ]
 
 def eventToEvidence(event):
-    return event['request']
+    evidence = {}
+    evidence['request'] = event['params']['request']
+    return evidence
 
 def checkContactedHosts(poisonedHosts):
     evidences = []
