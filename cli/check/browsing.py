@@ -388,7 +388,7 @@ def checkGoogleReCAPTCHA(browser):
         return ""
     return json.dumps(evidences)
 def checkGoogleHostedLibraries(browser):
-    return checkConnectedHosts(GoogleHostedLibraries)
+    return checkConnectedHosts(GoogleHostedLibrariesHostNames)
 def checkTwitter(browser):
     return checkConnectedHosts(['.twitter.com'])
 def checkAdobe(browser):
