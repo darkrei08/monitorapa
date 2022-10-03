@@ -16,17 +16,18 @@ signal.signal(signal.SIGINT, signal.default_int_handler)
 from lib import commons, check
 
 import undetected_chromedriver as uc
-
+from selenium.common.exceptions import WebDriverException, TimeoutException
 
 import time
-from datetime import datetime
 import os
 import os.path
 import psutil
 import shutil
 import tempfile
 import socket
+import json
 from urllib.parse import urlparse
+from datetime import datetime
 
 def usage():
     print("""
@@ -81,15 +82,19 @@ def run(dataset):
 
 ## Python checks
 
-GoogleFontsServers = [
+GoogleFontsHostNames = [
     'fonts.googleapis.com',
     'fonts.gstatic.com',
     'themes.googleusercontent',
 ]
-AzureServers = [
+AzureHostNames = [
     '.accesscontrol.windows.net',
     '.graph.windows.net',
     '.onmicrosoft.com',
+    ".azure.com",
+    ".azureedge.net",
+    ".azure.net",
+    ".azurerms.com",
     '.azure-api.net',
     '.biztalk.windows.net',
     '.blob.core.windows.net',
@@ -113,48 +118,105 @@ AzureServers = [
     '.table.core.windows.net',
     '.trafficmanager.net',
     '.azurewebsites.net',
-    '.visualstudio.com'
+    '.visualstudio.com',
+    '.windowsazure.com'
 ]
-AWSServers = [
+MicrosoftHostNames = [
+    ".aadrm.com",
+    ".acompli.net",
+    ".adbureau.net",
+    ".adecn.com",
+    ".aka.ms",
+    ".aquantive.com",
+    ".aspnetcdn.com",
+    ".assets-yammer.com",
+    ".bing.com",
+    ".clarity.ms",
+    ".cloudapp.net",
+    ".cloudappsecurity.com",
+    ".gamesforwindows.com",
+    ".gaug.es",
+    ".getgamesmart.com",
+    ".gfx.ms",
+    ".github.com",
+    ".github.io",
+    ".githubusercontent.com",
+    ".healthvault.com",
+    ".hockeyapp.net",
+    ".ieaddons.com",
+    ".iegallery.com",
+    ".licdn.com",
+    ".linkedin.com",
+    ".live.com",
+    ".microsoftalumni.com",
+    ".microsoftalumni.org",
+    ".microsoftazuread-sso.com",
+    ".microsoft.com",
+    ".microsoftedgeinsider.com",
+    ".microsoftedgeinsiders.com",
+    ".microsoftonline.com",
+    ".microsoftonline-p.com",
+    ".microsoftonline-p.net",
+    ".microsoftstart.cn",
+    ".microsoftstart.com",
+    ".microsoftstore.com",
+    ".microsoftstream.com",
+    ".msads.net",
+    ".msappproxy.net",
+    ".msauthimages.net",
+    ".msecnd.net",
+    ".msedge.net",
+    ".msftidentity.com",
+    ".msft.net",
+    ".msidentity.com",
+    ".msn.com",
+    ".msndirect.com",
+    ".msocdn.com",
+    ".netconversions.com",
+    ".o365weve.com",
+    ".oaspapps.com",
+    ".office365.com",
+    ".office.com",
+    ".officelive.com",
+    ".office.net",
+    ".onedrive.com",
+    ".onenote.com",
+    ".onenote.net",
+    ".onestore.ms",
+    ".onmicrosoft.com",
+    ".outlook.com",
+    ".outlookmobile.com",
+    ".phonefactor.net",
+    ".roiservice.com",
+    ".sfbassets.com",
+    ".sfx.ms",
+    ".sharepoint.com",
+    ".sharepoint-df.com",
+    ".skypeassets.com",
+    ".skype.com",
+    ".skypeforbusiness.com",
+    ".s-msn.com",
+    ".staffhub.ms",
+    ".sway-cdn.com",
+    ".sway.com",
+    ".sway-extensions.com",
+    ".trafficmanager.net",
+    ".virtualearth.net",
+    ".visualstudio.com",
+    ".windowsphone.com",
+    ".worldwidetelescope.org",
+    ".wunderlist.com",
+    ".xbox.com",
+    ".yammer.com",
+    ".yammerusercontent.com"
+]
+AWSHostNames = [
     '.amazonaws.com'
 ]
-FontAwesomeServers = [
+FontAwesomeHostNames = [
     'use.fontawesome.com'
 ]
-FacebookServers = [
-    "atlassolutions.com",
-    "e.gg",
-    "facebook.com",
-    "facebook.de",
-    "facebook.fr",
-    "facebook.net",
-    "fb.com",
-    "fb.me",
-    "fbcdn.net",
-    "friendfeed.com",
-    "instagram.com",
-    "internalfb.com",
-    "messenger.com",
-    "meta.com",
-    "oculus.com",
-    "oversightboard.com",
-    "whatsapp.com",
-    "workplace.com",
-    "apps.fbsbx.com",
-    "atdmt.com",
-    "atlassolutions.com",
-    "facebook.com",
-    "facebook.de",
-    "facebook.fr",
-    "facebook.net",
-    "fb.com",
-    "fb.me",
-    "fbcdn.net",
-    "fbsbx.com",
-    "friendfeed.com",
-    "instagram.com",
-    "messenger.com",
-
+FacebookHostNames = [
     ".atlassolutions.com",
     ".e.gg",
     ".facebook.com",
@@ -188,27 +250,34 @@ FacebookServers = [
     ".instagram.com",
     ".messenger.com"    
 ]
-GoogleMapsServers = [
+GoogleMapsHostNames = [
     'maps.googleapis.com'
 ]
-AdobeServers = [
-    "adobe.com",
-    "fyre.co",
-    "livefyre.com",
-    "typekit.com",
-    "2o7.net",
-    "auditude.com",
-    "demdex.com",
-    "demdex.net",
-    "dmtracker.com",
-    "efrontier.com",
-    "everestads.net",
-    "everestjs.net",
-    "everesttech.net",
-    "hitbox.com",
-    "omniture.com",
-    "omtrdc.net",
-    "touchclarity.com"
+GoogleHostedLibrariesHostNames = [
+    'ajax.googleapis.com'
+]
+AdobeHostNames = [
+    ".adobe.com",
+    ".fyre.co",
+    ".livefyre.com",
+    ".typekit.com",
+    ".2o7.net",
+    ".auditude.com",
+    ".demdex.com",
+    ".demdex.net",
+    ".dmtracker.com",
+    ".efrontier.com",
+    ".everestads.net",
+    ".everestjs.net",
+    ".everesttech.net",
+    ".hitbox.com",
+    ".omniture.com",
+    ".omtrdc.net",
+    ".touchclarity.com"
+]
+MoatAds = [
+    ".moat.com",
+    ".moatads.com"
 ]
 FontsExt = [
     '.ttf',
@@ -218,10 +287,26 @@ FontsExt = [
 
 def eventToEvidence(event):
     evidence = {}
-    evidence['request'] = event['params']['request']
+    if event['method'] == 'Network.requestWillBeSent':
+        evidence['request'] = event['params']['request']
+
+        #requestID = event['params']['requestId']
+        #extraInfos = None
+        #for log in networkLogs:
+        #    if log['method'] == 'Network.requestWillBeSentExtraInfo' and event['params']['requestId'] == requestID:
+        #        extraInfos = event['params']
+        #        break
+        #if extraInfos != None:
+        #    evidence['cookies'] = extraInfos['associatedCookies']
+        #    evidence['headers'] = extraInfos['headers']
+        #else:
+        #    evidence['cookies'] = []
+        #    evidence['headers'] = evidence['request']['headers']
+    else:
+        raise ValueError(str(event))
     return evidence
 
-def checkContactedHosts(poisonedHosts):
+def checkConnectedHosts(poisonedHosts):
     evidences = []
     for event in networkLogs:
         if event['method'] != 'Network.requestWillBeSent':
@@ -234,31 +319,38 @@ def checkContactedHosts(poisonedHosts):
             if host[0] == '.':
                 if url.netloc.endswith(host):
                     evidences.append(eventToEvidence(event))
+                elif url.netloc == host[1:] :
+                    evidences.append(eventToEvidence(event))
             elif url.netloc == host:
                 evidences.append(eventToEvidence(event))
     if len(evidences) == 0:
         return ""
-    return str(evidences)
+    return json.dumps(evidences)
 
 def checkActualUrl(browser):
     return browser.current_url
 
 def checkCookies(browser):
-    cookies = browser.get_cookies()
+
+    res = browser.execute_cdp_cmd('Network.getAllCookies', {})
+    #cookies = browser.get_cookies()
+    cookies = res['cookies']
     if len(cookies) == 0:
         return ""
-    return str(cookies)
+    return json.dumps(cookies)
 
 def checkGoogleFonts(browser):
     evidences = []
     
     for event in networkLogs:
+        if event['method'] != 'Network.requestWillBeSent':
+            continue
         url = urlparse(event['params']['request']['url'])
         host = url.netloc
         if ':' in host:
             host = host[0:host.index(':')]
-        if host in GoogleFontsServers:
-            if url.path.contains('/css'):
+        if host in GoogleFontsHostNames:
+            if '/css' in url.path:
                 evidences.append(eventToEvidence(event))
             else:
                 for ext in FontsExt:
@@ -267,21 +359,25 @@ def checkGoogleFonts(browser):
                         break
     if len(evidences) == 0:
         return ""
-    return str(evidences)
+    return json.dumps(evidences)
 
 def checkAzure(browser):
-    return checkContactedHosts(AzureServers)
+    return checkConnectedHosts(AzureHostNames)
+def checkMicrosoft(browser):
+    return checkConnectedHosts(MicrosoftHostNames)
 def checkAWS(browser):
-    return checkContactedHosts(AWSServers)
+    return checkConnectedHosts(AWSHostNames)
 def checkFontAwesome(browser):
-    return checkContactedHosts(FontAwesomeServers)
+    return checkConnectedHosts(FontAwesomeHostNames)
 def checkFacebook(browser):
-    return checkContactedHosts(FacebookServers)
+    return checkConnectedHosts(FacebookHostNames)
 def checkGoogleMaps(browser):
-    return checkContactedHosts(GoogleMapsServers)
+    return checkConnectedHosts(GoogleMapsHostNames)
 def checkGoogleReCAPTCHA(browser):
     evidences = []
     for event in networkLogs:
+        if event['method'] != 'Network.requestWillBeSent':
+            continue
         url = urlparse(event['params']['request']['url'])
         host = url.netloc
         if ':' in host:
@@ -290,9 +386,13 @@ def checkGoogleReCAPTCHA(browser):
             evidences.append(eventToEvidence(event))
     if len(evidences) == 0:
         return ""
-    return str(evidences)
+    return json.dumps(evidences)
+def checkGoogleHostedLibraries(browser):
+    return checkConnectedHosts(GoogleHostedLibraries)
+def checkTwitter(browser):
+    return checkConnectedHosts(['.twitter.com'])
 def checkAdobe(browser):
-    return checkContactedHosts(AdobeServers)
+    return checkConnectedHosts(AdobeHostNames)
 
 
 ## Check execution
@@ -404,6 +504,7 @@ def runPythonChecks(prefix, results, browser):
             }
         except Exception as err:
             print(f'{toRun} interrupted:', str(err))
+            raise
             results[toRun] = {
                 'completed': False,
                 'issues': str(err)
@@ -428,6 +529,9 @@ def loadAllChecks(dataset, checksToRun):
     addPythonCheck(dataset, checksToRun, '999-googlefonts', checkGoogleFonts)
     addPythonCheck(dataset, checksToRun, '999-googlemaps', checkGoogleMaps)
     addPythonCheck(dataset, checksToRun, '999-googlerecaptcha', checkGoogleReCAPTCHA)
+    addPythonCheck(dataset, checksToRun, '999-microsoft', checkMicrosoft)
+    addPythonCheck(dataset, checksToRun, '999-googlehostedlibraries', checkGoogleHostedLibraries)
+    addPythonCheck(dataset, checksToRun, '999-twitter', checkTwitter)
 
 def addJSCheck(dataset, checksToRun, jsFile):
     jsFilePath = './cli/check/browsing/%s' % jsFile
@@ -621,9 +725,9 @@ def openBrowser(cacheDir):
     browser.get('about:blank')
 
     browser.add_cdp_listener('Network.requestWillBeSent', collectNetworkLogs)
-    browser.add_cdp_listener('Network.requestWillBeSentExtraInfo', collectNetworkLogs)
-    browser.add_cdp_listener('Network.responseReceived', collectNetworkLogs)
-    browser.add_cdp_listener('Network.responseReceivedExtraInfo', collectNetworkLogs)
+    #browser.add_cdp_listener('Network.requestWillBeSentExtraInfo', collectNetworkLogs)
+    #browser.add_cdp_listener('Network.responseReceived', collectNetworkLogs)
+    #browser.add_cdp_listener('Network.responseReceivedExtraInfo', collectNetworkLogs)
     browser.set_page_load_timeout(90)
         
     
@@ -639,6 +743,8 @@ def browseTo(browser, url):
         browser.close()
     browser.switch_to.window(browser.window_handles[0])
     browser.get('about:blank')
+    browser.execute_cdp_cmd('Network.clearBrowserCache', {})
+    browser.execute_cdp_cmd('Network.clearBrowserCookies', {})
     browser.execute_script("window.open('');")
     browser.switch_to.window(browser.window_handles[-1])
     try:
