@@ -16,7 +16,7 @@ signal.signal(signal.SIGINT, signal.default_int_handler)
 from lib import commons, check
 
 import undetected_chromedriver as uc
-from selenium.common.exceptions import WebDriverException, TimeoutException
+from selenium.common.exceptions import WebDriverException, TimeoutException, UnexpectedAlertPresentException, NoAlertPresentException
 
 import time
 import os
@@ -81,7 +81,164 @@ def run(dataset):
         shutil.rmtree(cacheDir, False)
 
 ## Python checks
-
+YouTubeHostNames = [
+    ".youtube.ae",
+    ".youtube.at",
+    ".youtube.az",
+    ".youtube.ba",
+    ".youtube.be",
+    ".youtube.bg",
+    ".youtube.bh",
+    ".youtube.bo",
+    ".youtube.by",
+    ".youtube.ca",
+    ".youtube.cat",
+    ".youtube.ch",
+    ".youtube.cl",
+    ".youtube.co",
+    ".youtube.co.ae",
+    ".youtube.co.at",
+    ".youtube.co.cr",
+    ".youtube.co.hu",
+    ".youtube.co.id",
+    ".youtube.co.il",
+    ".youtube.co.in",
+    ".youtube.co.jp",
+    ".youtube.co.ke",
+    ".youtube.co.kr",
+    ".youtube.co.ma",
+    ".youtube.co.nz",
+    ".youtube.co.th",
+    ".youtube.co.tz",
+    ".youtube.co.ug",
+    ".youtube.co.uk",
+    ".youtube.co.ve",
+    ".youtube.co.za",
+    ".youtube.co.zw",
+    ".youtube.com",
+    ".youtube.com.ar",
+    ".youtube.com.au",
+    ".youtube.com.az",
+    ".youtube.com.bd",
+    ".youtube.com.bh",
+    ".youtube.com.bo",
+    ".youtube.com.br",
+    ".youtube.com.by",
+    ".youtube.com.co",
+    ".youtube.com.do",
+    ".youtube.com.ec",
+    ".youtube.com.ee",
+    ".youtube.com.eg",
+    ".youtube.com.es",
+    ".youtube.com.gh",
+    ".youtube.com.gr",
+    ".youtube.com.gt",
+    ".youtube.com.hk",
+    ".youtube.com.hn",
+    ".youtube.com.hr",
+    ".youtube.com.jm",
+    ".youtube.com.jo",
+    ".youtube.com.kw",
+    ".youtube.com.lb",
+    ".youtube.com.lv",
+    ".youtube.com.ly",
+    ".youtube.com.mk",
+    ".youtube.com.mt",
+    ".youtube.com.mx",
+    ".youtube.com.my",
+    ".youtube.com.ng",
+    ".youtube.com.ni",
+    ".youtube.com.om",
+    ".youtube.com.pa",
+    ".youtube.com.pe",
+    ".youtube.com.ph",
+    ".youtube.com.pk",
+    ".youtube.com.pt",
+    ".youtube.com.py",
+    ".youtube.com.qa",
+    ".youtube.com.ro",
+    ".youtube.com.sa",
+    ".youtube.com.sg",
+    ".youtube.com.sv",
+    ".youtube.com.tn",
+    ".youtube.com.tr",
+    ".youtube.com.tw",
+    ".youtube.com.ua",
+    ".youtube.com.uy",
+    ".youtube.com.ve",
+    ".youtube.cr",
+    ".youtube.cz",
+    ".youtube.de",
+    ".youtube.dk",
+    ".youtube.ee",
+    ".youtube.es",
+    ".youtube.fi",
+    ".youtube.fr",
+    ".youtube.ge",
+    ".youtube.gr",
+    ".youtube.gt",
+    ".youtube.hk",
+    ".youtube.hr",
+    ".youtube.hu",
+    ".youtube.ie",
+    ".youtube.in",
+    ".youtube.iq",
+    ".youtube.is",
+    ".youtube.it",
+    ".youtube.jo",
+    ".youtube.jp",
+    ".youtube.kr",
+    ".youtube.kz",
+    ".youtube.lk",
+    ".youtube.lt",
+    ".youtube.lu",
+    ".youtube.lv",
+    ".youtube.ly",
+    ".youtube.ma",
+    ".youtube.me",
+    ".youtube.mk",
+    ".youtube.mx",
+    ".youtube.my",
+    ".youtube.net.in",
+    ".youtube.ng",
+    ".youtube.ni",
+    ".youtube.nl",
+    ".youtube.no",
+    ".youtube.pa",
+    ".youtube.pe",
+    ".youtube.ph",
+    ".youtube.pk",
+    ".youtube.pl",
+    ".youtube.pr",
+    ".youtube.pt",
+    ".youtube.qa",
+    ".youtube.ro",
+    ".youtube.rs",
+    ".youtube.ru",
+    ".youtube.sa",
+    ".youtube.se",
+    ".youtube.sg",
+    ".youtube.si",
+    ".youtube.sk",
+    ".youtube.sn",
+    ".youtube.sv",
+    ".youtube.tn",
+    ".youtube.tv",
+    ".youtube.ua",
+    ".youtube.ug",
+    ".youtube.uy",
+    ".youtube.vn",
+    ".youtube.voto",
+    '.googlevideo.com',
+    '.youtu.be',
+    '.youtube-nocookie.com',
+    '.ytimg.com',
+    '.video-stats.l.google.com',
+    '.youtube.googleapis.com',
+    '.youtubei.googleapis.com',
+    '.ytimg.l.google.com',
+    '.youtube'
+]
 GoogleFontsHostNames = [
     'fonts.googleapis.com',
     'fonts.gstatic.com',
@@ -288,7 +445,8 @@ FontsExt = [
 def eventToEvidence(event):
     evidence = {}
     if event['method'] == 'Network.requestWillBeSent':
-        evidence['request'] = event['params']['request']
+        evidence['url'] = event['params']['request']['url'] 
+        #evidence['request'] = event['params']['request']
 
         #requestID = event['params']['requestId']
         #extraInfos = None
@@ -304,7 +462,7 @@ def eventToEvidence(event):
         #    evidence['headers'] = evidence['request']['headers']
     else:
         raise ValueError(str(event))
-    return evidence
+    return evidence['url']
 
 def checkConnectedHosts(poisonedHosts):
     evidences = []
@@ -325,6 +483,8 @@ def checkConnectedHosts(poisonedHosts):
                 evidences.append(eventToEvidence(event))
     if len(evidences) == 0:
         return ""
+    if len(evidences) > 1:
+        evidences = list(set(evidences))
     return json.dumps(evidences)
 
 def checkActualUrl(browser):
@@ -359,6 +519,8 @@ def checkGoogleFonts(browser):
                         break
     if len(evidences) == 0:
         return ""
+    if len(evidences) > 1:
+        evidences = list(set(evidences))
     return json.dumps(evidences)
 
 def checkAzure(browser):
@@ -386,6 +548,8 @@ def checkGoogleReCAPTCHA(browser):
             evidences.append(eventToEvidence(event))
     if len(evidences) == 0:
         return ""
+    if len(evidences) > 1:
+        evidences = list(set(evidences))
     return json.dumps(evidences)
 def checkGoogleHostedLibraries(browser):
     return checkConnectedHosts(GoogleHostedLibrariesHostNames)
@@ -393,7 +557,8 @@ def checkTwitter(browser):
     return checkConnectedHosts(['.twitter.com'])
 def checkAdobe(browser):
     return checkConnectedHosts(AdobeHostNames)
-
+def checkYouTube(browser):
+    return checkConnectedHosts(YouTubeHostNames)
 
 ## Check execution
 
@@ -433,7 +598,8 @@ def runChecks(automatism, browser):
             script += runAllJSChecks % allChecks
             script += "return runAllJSChecks();";
         
-            newResults = browser.execute_script(script)
+            newResults = executeInBrowser(browser, script)
+
             print('script executed:', newResults)
             for js in newResults:
                 if newResults[js]['issues'] != None:
@@ -532,6 +698,7 @@ def loadAllChecks(dataset, checksToRun):
     addPythonCheck(dataset, checksToRun, '999-microsoft', checkMicrosoft)
     addPythonCheck(dataset, checksToRun, '999-googlehostedlibraries', checkGoogleHostedLibraries)
     addPythonCheck(dataset, checksToRun, '999-twitter', checkTwitter)
+    addPythonCheck(dataset, checksToRun, '999-youtube', checkYouTube)
 
 def addJSCheck(dataset, checksToRun, jsFile):
     jsFilePath = './cli/check/browsing/%s' % jsFile
@@ -660,11 +827,34 @@ debugger;
 class BrowserNeedRestartException(Exception):
     pass
 
-def tryPort(port):
+def executeInBrowser(browser, js):
+    #rprint('\n\nexecuting', js)
+    try:
+        return browser.execute_script(js)
+    except UnexpectedAlertPresentException:
+        try:
+            time.sleep(3)
+            alert = browser.switch_to.alert
+            time.sleep(1)
+            alert.accept()
+        except NoAlertPresentException:
+            pass
+        return browser.execute_script(js)
+
+
+def removePortLockFile(filename):
+    os.remove(filename)
+
+def tcpPortIsFree(port, cacheDir):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    lockDir = os.path.dirname(cacheDir)
     result = False
     try:
         sock.bind(("127.0.0.1", port))
+        portLockFile = f"{lockDir}/{port}.txt"
+        with open(portLockFile, "x") as f:
+            f.write(cacheDir + "\n")
+        atexit.register(removePortLockFile, portLockFile)
         result = True
     except:
         print("Port is in use")
@@ -676,32 +866,13 @@ def tryPort(port):
 def openBrowser(cacheDir):
     op = uc.ChromeOptions()
     
-    op.headless = True
-    op.add_argument('--headless')
-
-
-    # Tentiamo porte finchè non ne troviamo una libera
-    base_port = 42069
-    while(not tryPort(base_port)):
-        time.sleep(1)
-        base_port += 1
-
-    print(base_port)
-    
-    op.add_argument("--remote-debugging-port=" + str(base_port))
-    #op.add_argument("--auto-open-devtools-for-tabs")
-    
-    op.add_argument('--user-data-dir='+cacheDir)
     op.add_argument('--home='+cacheDir.replace('udd', 'home'))
     op.add_argument('--incognito')
-    #op.add_argument('--disable-web-security')
-    #op.add_argument('--no-sandbox')
     op.add_argument('--disable-popup-blocking')
     op.add_argument('--disable-extensions')
     op.add_argument('--dns-prefetch-disable')
     op.add_argument('--disable-gpu')
     op.add_argument('--disable-dev-shm-usage')
-    #op.add_argument('--ignore-certificate-errors')
     op.add_argument('--ignore-ssl-errors')
     op.add_argument('--enable-features=NetworkServiceInProcess')
     op.add_argument('--disable-features=NetworkService,SameSiteByDefaultCookies,CookiesWithoutSameSiteMustBeSecure')
@@ -711,16 +882,15 @@ def openBrowser(cacheDir):
     op.add_argument('--disable-application-cache')
     op.add_argument('--disable-offline-load-stale-cache')
     op.add_argument('--disk-cache-size=' + str(5*1024*1024)) # 5MB
-    #op.add_experimental_option("excludeSwitches", ["enable-automation"])
-    #op.add_experimental_option('useAutomationExtension', False)
-    #op.add_argument('--disable-blink-features=AutomationControlled')
     op.add_argument('--no-first-run --no-service-autorun --password-store=basic')
 
-    chromedriver_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
+    chrome_path = os.path.join(os.getcwd(),'browserBin/chrome/chrome')
+    driver_path = os.path.join(os.getcwd(),'browserBin/chromedriver/chromedriver')
     if os.name == 'nt': # Se viene eseguito su windows
-        chromedriver_path += ".exe"
+        chrome_path += ".exe"
+        driver_path += ".exe"
     
-    browser = uc.Chrome(options=op, version_main=104, browser_executable_path=chromedriver_path, enable_cdp_events=True)
+    browser = uc.Chrome(options=op, version_main=104, headless=True, browser_executable_path=chrome_path, driver_executable_path=driver_path, enable_cdp_events=True)
 
     browser.get('about:blank')
 
@@ -735,6 +905,7 @@ def openBrowser(cacheDir):
 
 def browseTo(browser, url):
     # we are in incognito mode: each new tab get a clean state for cheap
+    global networkLogs
     networkLogs = []
     
     while len(browser.window_handles) > 1:
@@ -745,13 +916,13 @@ def browseTo(browser, url):
     browser.get('about:blank')
     browser.execute_cdp_cmd('Network.clearBrowserCache', {})
     browser.execute_cdp_cmd('Network.clearBrowserCookies', {})
-    browser.execute_script("window.open('');")
+    executeInBrowser(browser, "window.open('');")
     browser.switch_to.window(browser.window_handles[-1])
     try:
         browser.get(url)
-        needRefresh = browser.execute_script('return document.getElementsByTagName("body").length == 0;')
+        needRefresh = executeInBrowser(browser, 'return document.getElementsByTagName("body").length == 0;')
         if needRefresh:
-            browser.execute_script('window.location.reload();')
+            executeInBrowser(browser, 'window.location.reload();')
             time.sleep(2)
             browser.get('about:blank')
             browser.get(url)
@@ -766,7 +937,7 @@ def browseTo(browser, url):
             return
         else:
             raise
-    browser.execute_script("window.addEventListener('unload', e => { window.monitoraPAUnloading = true; }, {capture:true});")
+    executeInBrowser(browser, "window.addEventListener('unload', e => { window.monitoraPAUnloading = true; }, {capture:true});")
     #print("browseTo DONE")
 
 def waitUntilPageLoaded(browser, period=2):
@@ -777,7 +948,7 @@ def waitUntilPageLoaded(browser, period=2):
     
     while not readyState and count < 60:
         time.sleep(period)
-        readyState = browser.execute_script('return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
+        readyState = executeInBrowser(browser, 'return document.readyState == "complete" && !window.monitoraPAUnloading && !window.monitoraPACallbackPending;')
         count += 1
     #print()
 
