@@ -47,6 +47,8 @@ class Template:
          in violazione
 	   - $datetime che corrisponde alla data e l'ora di esecuzione della 
 	     verifica (in formato "YYYY-MM-DD hh:mm:ss.ns")
+       - $issues che corrisponde alla stringa che rappresenta le evidenze
+         riscontrate
     2. fornite dal file TSV iniziale usato come sorgente per l'osservatorio, 
        ad esempio il file enti.tsv contenente l'anagrafica AgID-IPA;
        Tali variabili vengono fornite ai metodi headers() e message() come
@@ -55,6 +57,10 @@ class Template:
        a environment['Descrizione Ente'].
        Le variabili non presenti non verranno sostituite, ma non comporteranno
        un errore.
+    
+    Possono inoltre includere il contenuto di file presenti attraverso 
+    il formato !{path/to/file.txt}. Path assoluti o path relativi 
+    interromperanno l'esecuzione con un'eccezione.
     """
     name: str
     def __init__(self, filePath: str, senderEmail: str):
@@ -120,6 +126,8 @@ class Template:
         result = replaceVariables(execution, environment, self._message)
         return result
 
+includePattern = re.compile('!{[-._/\w]+}')
+
 def replaceVariables(execution: check.Execution, environment: dict[str, str], content: str) -> str:
     """
     Sostituisce le variabili contenute in content con i valori forniti da environment e automatism
@@ -127,8 +135,20 @@ def replaceVariables(execution: check.Execution, environment: dict[str, str], co
     content = content.replace("$owner", execution.owner)
     content = content.replace("$automatism", execution.address)
     content = content.replace("$datetime", execution.time)
+    content = content.replace("$issues", execution.issues)
     for var in environment:
         content = content.replace("${"+var+"}", environment[var])
+    for include in includePattern.findall(content):
+        if len(include) == 0:
+            raise ValueError("empty path in !{}. Content: \n\n" + content)
+        if include[0] = '/' or include[0:2] == '..':
+            raise ValueError("cannot include absolute paths or path out of the working directory: invalid path " + include)
+        if not os.path.isfile(include):
+            raise ValueError("Cannot find file to include " + include)
+        replacement = ""
+        with open(include, "r") as f:
+            replacement += f.read()
+        content = content.replace("!{"+include+"}", replacement)
     return content
 
 
